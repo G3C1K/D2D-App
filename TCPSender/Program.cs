@@ -128,9 +128,10 @@ namespace TCPSender
                 }
                 else if (input == "plik2")
                 {
-                    string path = @"C:\Users\Czarek\Desktop\tru_haki\so.zip";
+                    string path = @"C:\Users\Czarek\Desktop\pobrane\jajko.exe";
 
                     FileInfo info = new FileInfo(path);
+                    string extension = info.Extension;
                     long fileSize = info.Length;
                     FileStream fileStream = new FileStream(path, FileMode.Open, FileAccess.Read);
                     int packetCount = (int)Math.Floor((double)fileSize / BUFFER_SIZE);
@@ -139,6 +140,7 @@ namespace TCPSender
                     byte[] lastOne = new byte[reszta];
 
                     _writer.Write(input);
+                    _writer.Write(extension);
 
                     _writer.Write(packetCount.ToString());
                     for (int i = 0; i < packetCount; i++)
@@ -172,7 +174,6 @@ namespace TCPSender
                 if (input == "plik")
                 {
                     long size = (long.Parse(_reader.ReadString()));
-                    byte byteHolder;
 
                     FileStream fileStream = File.OpenWrite(@"C:\_stop\plik");
 
@@ -185,10 +186,12 @@ namespace TCPSender
                 }
                 else if (input == "plik2")
                 {
+
+                    string extension = _reader.ReadString();
                     int packetCount = int.Parse(_reader.ReadString());
                     byte[] buffer = new byte[BUFFER_SIZE];
 
-                    FileStream fileStream = File.OpenWrite(@"C:\_stop\plik");
+                    FileStream fileStream = File.OpenWrite(@"C:\_stop\plik"+extension);
 
                     for (int i = 0; i < packetCount; i++)
                     {
