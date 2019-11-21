@@ -11,92 +11,92 @@ using System.Threading;
 
 namespace TCPSender
 {
-    //public class CommClient
-    //{
-    //    TcpClient client;
-    //    BinaryReader reader;
-    //    BinaryWriter writer;
-    //    Thread writerThread;
-    //    Thread readerThread;
-    //    string messageGet;
-    //    string MessageSet
-    //    {
-    //        get { return messageSet_; }
-    //        set
-    //        {
-    //            messageSet_ = value;
-    //            waitHandle.Set();
-    //        }
-    //    }
-    //    string messageSet_;
-    //    AutoResetEvent waitHandle = new AutoResetEvent(false);
+    public class CommClient
+    {
+        //KODY KOMEND (na razie)
+        //m = message
+        //f - plik
+        //x - end communication
+        //enum Command { Message = 1, File = 2, Exit = 3 };
 
-    //    public CommClient(IPAddress _adresIP, bool isServer) //jak isServer true to swoj, jak isServer false to czyjs
-    //    {
-    //        if(isServer == true)
-    //        {
-    //            Listen(_adresIP);
-    //        }
-    //        else
-    //        {
-    //            Connect(_adresIP);
-    //        }
-    //        writerThread = new Thread(() => WriteToHost_T(client));
-    //        readerThread = new Thread(() => ReadFromHost(client, Console.WriteLine));
-    //    }
+        TcpClient client;
+        IPAddress cIP;
 
-    //    private bool Listen(IPAddress _adresInterfejsuNasluchu)
-    //    {
-    //        TcpListener listener = new TcpListener(_adresInterfejsuNasluchu, 40001);
-    //        listener.Start();
-    //        client = listener.AcceptTcpClient();
-    //        return true;
-    //    }
+        BinaryWriter writer;
 
-    //    private bool Connect(IPAddress _adresIPHosta)
-    //    {
-    //        client = new TcpClient();   //tworzenie klienta
-    //        try
-    //        {
-    //            client.Connect(_adresIPHosta, 40001); //tworzenie polaczenia
-    //        }
-    //        catch (Exception e)
-    //        {
-    //            Console.WriteLine(e.Message);
-    //        }
-    //        return true;
-    //    }
+        
+        public enum ConnectionType { Client, Server};
 
-    //    public void ReadFromHost(TcpClient _client, Action<string> _stringDestination)
-    //    {
-    //        if (_client == null) throw new ArgumentException("Brak połączenia");
+        public CommClient(IPAddress _adresIP, ConnectionType isServer) //serwer = listen, client = connect
+        {
+            cIP = _adresIP;
+            if (isServer == ConnectionType.Server)
+            {
+                Listen(_adresIP);
+            }
+            else
+            {
+                Connect(_adresIP);
+            }
+            OpenCommandLine();
+            SendMessage("Connected!");
+        }
 
-    //        string input = null;
-    //        BinaryReader reader = new BinaryReader(_client.GetStream());
-    //        while (true)
-    //        {
-    //            input = reader.ReadString();
-    //            _stringDestination(input);
-    //        }
-    //    }
+        private bool Listen(IPAddress _adresInterfejsuNasluchu)
+        {
+            TcpListener listener = new TcpListener(_adresInterfejsuNasluchu, 40001);
+            listener.Start();
+            client = listener.AcceptTcpClient();
+            return true;
+        }
 
-    //    private void WriteToHost_T(TcpClient _client)
-    //    {
-    //        waitHandle.WaitOne();
+        private bool Connect(IPAddress _adresIPHosta)
+        {
+            client = new TcpClient();   //tworzenie klienta
+            try
+            {
+                client.Connect(_adresIPHosta, 40001); //tworzenie polaczenia
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            return true;
+        }
 
-    //        if (_client == null) throw new ArgumentException("Brak połączenia");
+        private void ListenForCommands()
+        {
+            BinaryReader reader = new BinaryReader(client.GetStream());
+            string input = null;
+            while(input != "x")
+            {
+                input = reader.ReadString();
+                if(input == "m")
+                {
+                    input = reader.ReadString();
+                    Console.WriteLine(input);
+                } else if(input == "f")
+                {
+                    input = reader.ReadString();    //placeholder
+                    Console.WriteLine(input);
+                }
+            }
+        }
 
-    //        writer.Write(MessageSet);
+        private void OpenCommandLine()
+        {
+            writer = new BinaryWriter(client.GetStream());
+            Thread commandLineThread = new Thread(() => ListenForCommands());
+            commandLineThread.Start();
+        }
 
-    //        waitHandle.
-    //    }
-
-    //    public void WriteToHost(string _message)
-    //    {
-    //        MessageSet = _message;
-    //    }
-
-    //}
+        public void SendMessage(string _message)
+        {
+            writer.Write("m");
+            writer.Write(_message);
+        }
+        
+    }
 
 
     class Program
@@ -219,55 +219,79 @@ namespace TCPSender
         static int Main(string[] args)
         {
 
-            TcpClient client = null;   //polaczenie TCP
+            //TcpClient client = null;   //polaczenie TCP
 
 
 
-            Console.WriteLine("wpisz listen/connect");
+            //Console.WriteLine("wpisz listen/connect");
 
-            string komenda = Console.ReadLine();
-            if (komenda == "listen")
+            //string komenda = Console.ReadLine();
+            //if (komenda == "listen")
+            //{
+            //    Console.WriteLine("Adres interfejsu do nasluchu: ");
+            //    IPAddress adresInterfejsuDoNasluchu = IPAddress.Parse(Console.ReadLine());  //adres IP interfejsu
+            //    //IPAddress adresInterfejsuDoNasluchu = IPAddress.Parse("192.168.0.105");  //adres IP interfejsu
+            //    Console.WriteLine("Port do nasluchu: ");
+            //    TcpListener listener = new TcpListener(adresInterfejsuDoNasluchu, int.Parse(Console.ReadLine()));   //stworzenie listenera na polaczenia tcp na adresie IP i porcie
+            //    //TcpListener listener = new TcpListener(adresInterfejsuDoNasluchu, 4000);   //stworzenie listenera na polaczenia tcp na adresie IP i porcie
+            //    listener.Start();   //start listenera
+            //    client = listener.AcceptTcpClient();    //gdy listener zaakceptuje polaczenie 
+            //    if (client != null) Console.WriteLine("connected");
+            //}
+            //if (komenda == "connect")
+            //{
+            //    client = new TcpClient();   //tworzenie klienta
+            //    Console.WriteLine("Adres hosta do polaczenia: ");
+            //    IPAddress adresInterfejsuDoPolaczenia = IPAddress.Parse(Console.ReadLine());  //adres IP interfejsu
+            //    Console.WriteLine("Port do polaczenia: ");
+            //    try
+            //    {
+            //        client.Connect(adresInterfejsuDoPolaczenia, int.Parse(Console.ReadLine())); //tworzenie polaczenia
+            //    }
+            //    catch (Exception e)
+            //    {
+            //        Console.WriteLine(e.ToString());
+
+            //    }
+            //}
+
+
+            //if (client != null)
+            //{
+            //    BinaryReader reader = new BinaryReader(client.GetStream());
+            //    BinaryWriter writer = new BinaryWriter(client.GetStream());
+
+
+
+            //    Thread writerThread = new Thread(() => WriteToWriter_T(writer, "end", client));
+            //    Thread readerThread = new Thread(() => ReadFromWriter_T(reader, "end", client));
+            //    writerThread.Start();
+            //    readerThread.Start();
+
+            //}
+
+            CommClient client = null;
+
+            Console.WriteLine("listen/connect");
+            string listenConnect = Console.ReadLine();
+            if(listenConnect == "listen")
             {
                 Console.WriteLine("Adres interfejsu do nasluchu: ");
                 IPAddress adresInterfejsuDoNasluchu = IPAddress.Parse(Console.ReadLine());  //adres IP interfejsu
-                //IPAddress adresInterfejsuDoNasluchu = IPAddress.Parse("192.168.0.105");  //adres IP interfejsu
-                Console.WriteLine("Port do nasluchu: ");
-                TcpListener listener = new TcpListener(adresInterfejsuDoNasluchu, int.Parse(Console.ReadLine()));   //stworzenie listenera na polaczenia tcp na adresie IP i porcie
-                //TcpListener listener = new TcpListener(adresInterfejsuDoNasluchu, 4000);   //stworzenie listenera na polaczenia tcp na adresie IP i porcie
-                listener.Start();   //start listenera
-                client = listener.AcceptTcpClient();    //gdy listener zaakceptuje polaczenie 
-                if (client != null) Console.WriteLine("connected");
+                client = new CommClient(adresInterfejsuDoNasluchu, CommClient.ConnectionType.Server);
             }
-            if (komenda == "connect")
+            if(listenConnect == "connect")
             {
-                client = new TcpClient();   //tworzenie klienta
                 Console.WriteLine("Adres hosta do polaczenia: ");
                 IPAddress adresInterfejsuDoPolaczenia = IPAddress.Parse(Console.ReadLine());  //adres IP interfejsu
-                Console.WriteLine("Port do polaczenia: ");
-                try
-                {
-                    client.Connect(adresInterfejsuDoPolaczenia, int.Parse(Console.ReadLine())); //tworzenie polaczenia
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.ToString());
-
-                }
+                client = new CommClient(adresInterfejsuDoPolaczenia, CommClient.ConnectionType.Client);
             }
 
-
-            if (client != null)
+            string input = null;
+            while (input != "x")
             {
-                BinaryReader reader = new BinaryReader(client.GetStream());
-                BinaryWriter writer = new BinaryWriter(client.GetStream());
-
-
-
-                Thread writerThread = new Thread(() => WriteToWriter_T(writer, "end", client));
-                Thread readerThread = new Thread(() => ReadFromWriter_T(reader, "end", client));
-                writerThread.Start();
-                readerThread.Start();
-
+                input = Console.ReadLine();
+                client.SendMessage(input);
             }
 
             return 0;
