@@ -94,7 +94,8 @@ namespace TCPSender
                 else if (input == "f")
                 {
                     input = reader.ReadString();    //placeholder
-                    ReceiveFile(input);
+                    Thread rec = new Thread(() => ReceiveFile(input));
+                    rec.Start();
                 }
             }
         }
