@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 namespace TCPSender
 {
 
-    public enum ConnectionType { Client, Server };
+    public enum ConnectionType { Connect, Listen };
 
     public class CommClient
     {
@@ -28,16 +29,17 @@ namespace TCPSender
 
         TcpClient client;               //klient tcp dla komend
         IPAddress cIP;                  //adres IP. Zalezy od tego czy instancja jest klientem czy serwerem
+        Action<string> outputFunc;
 
         BinaryWriter writer;            //writer dla SendMessage, tutaj zeby nie tworzyc caly czas nowego. na porcie 50001
         int BUFFER_SIZE = 10000;                       //rozmiar bufora dla danych pliku w bajtach
 
         public string DownloadPath { get; set; } = "downloads"; //directory w ktorym beda zapisywane pliki. domyslnie relative/downloads
 
-        public CommClient(IPAddress _adresIP, ConnectionType isServer) //serwer = listen, client = connect
+        public CommClient(IPAddress _adresIP, ConnectionType isServer, Action<string> _funkcjaDoPrzekazaniaMessagy) //serwer = listen, client = connect
         {
             cIP = _adresIP;
-            if (isServer == ConnectionType.Server)
+            if (isServer == ConnectionType.Listen)
             {
                 Listen(_adresIP);
             }
@@ -46,6 +48,7 @@ namespace TCPSender
                 Connect(_adresIP);
             }
             OpenCommandLine();
+            outputFunc = _funkcjaDoPrzekazaniaMessagy;
             SendMessage("Connected!");
         }
 
@@ -75,29 +78,38 @@ namespace TCPSender
         private void OpenCommandLine()
         {
             writer = new BinaryWriter(client.GetStream());
-            Thread commandLineThread = new Thread(() => ListenForCommands());
+            Thread commandLineThread = new Thread(() => ListenForCommands(outputFunc));
             commandLineThread.Start();
         }
 
-        private void ListenForCommands()            //Uruchamia watek nasluchiwania na wiadomosci. Do przerobienia z uwzglednieniem Action
+        private void ListenForCommands(Action<string> _outputFunc)            //Uruchamia watek nasluchiwania na wiadomosci. Do przerobienia z uwzglednieniem Action
         {
             BinaryReader reader = new BinaryReader(client.GetStream());
             string input = null;
             while (input != "x")
             {
-                input = reader.ReadString();
+                try
+                {
+                    input = reader.ReadString();
+                }
+                catch
+                {
+                    Close_Self();
+                }
+
                 if (input == "m")
                 {
                     input = reader.ReadString();
-                    Console.WriteLine(input);       //tu musi wystapic zamiana na Action
+                    outputFunc(input);     
                 }
                 else if (input == "f")
                 {
-                    input = reader.ReadString();    //placeholder
+                    input = reader.ReadString();   
                     Thread rec = new Thread(() => ReceiveFile(input));
                     rec.Start();
                 }
             }
+            Close_Self();
         }
 
         private void SendFile_T(string _path)
@@ -184,6 +196,19 @@ namespace TCPSender
         {
             Thread fileThread = new Thread(() => SendFile_T(_path));
             fileThread.Start();
+        }
+
+        public void Close()
+        {
+           // writer.Write("x");
+            Close_Self();
+        }
+
+        private void Close_Self()
+        {
+            writer.Close();
+            client.Close();
+
         }
 
         public static IPAddress GetLocalIPAddress() //Zwraca adres IP domyslnej sieci. Nie musi byc tutaj, w razie potrzeby mozna przeniesc do jakiejs 100% statycznej klasy
