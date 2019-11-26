@@ -29,7 +29,8 @@ namespace TCPSender
 
         TcpClient client;               //klient tcp dla komend
         IPAddress cIP;                  //adres IP. Zalezy od tego czy instancja jest klientem czy serwerem
-        Action<string> outputFunc;
+        Action<string> outputFunc;      //funkcja ktora jest wywolywana gdy pojawi sie message od hosta
+        bool IsConnected { get; }
 
         BinaryWriter writer;            //writer dla SendMessage, tutaj zeby nie tworzyc caly czas nowego. na porcie 50001
         int BUFFER_SIZE = 10000;                       //rozmiar bufora dla danych pliku w bajtach
@@ -49,6 +50,7 @@ namespace TCPSender
             }
             OpenCommandLine();
             outputFunc = _funkcjaDoPrzekazaniaMessagy;
+            IsConnected = true;
             SendMessage("Connected!");
         }
 
