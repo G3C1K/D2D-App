@@ -30,7 +30,7 @@ namespace TCPSender
         TcpClient client;               //klient tcp dla komend
         IPAddress cIP;                  //adres IP. Zalezy od tego czy instancja jest klientem czy serwerem
         Action<string> outputFunc;      //funkcja ktora jest wywolywana gdy pojawi sie message od hosta
-        bool IsConnected { get; }
+        public bool IsConnected { get; internal set; }
 
         BinaryWriter writer;            //writer dla SendMessage, tutaj zeby nie tworzyc caly czas nowego. na porcie 50001
         int BUFFER_SIZE = 10000;                       //rozmiar bufora dla danych pliku w bajtach
@@ -210,7 +210,7 @@ namespace TCPSender
         {
             writer.Close();
             client.Close();
-
+            IsConnected = false;
         }
 
         public static IPAddress GetLocalIPAddress() //Zwraca adres IP domyslnej sieci. Nie musi byc tutaj, w razie potrzeby mozna przeniesc do jakiejs 100% statycznej klasy

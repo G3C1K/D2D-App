@@ -29,8 +29,9 @@ namespace TCPSender
                 client = new CommClient(adresInterfejsuDoPolaczenia, ConnectionType.Connect, Console.WriteLine);
             }
 
+
             string input = null;
-            while (input != "x")
+            while (client.IsConnected == true)
             {
                 input = Console.ReadLine();
                 if (input == "plik")
