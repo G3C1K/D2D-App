@@ -10,7 +10,7 @@ namespace TCPSender
 {
     public static class Test
     {
-        public static void TCPSender_Test()
+        public static void CommClient_Test()
         {
 
             CommClient client = null;
@@ -56,34 +56,8 @@ namespace TCPSender
 
 
 
-        public static void AutoconfigTest()
+        public static void AutoConfig_Test()
         {
-
-            //string input = Console.ReadLine();
-            //if (input == "listen")
-            //{
-            //    IPEndPoint receivePoint = new IPEndPoint(IPAddress.Any, 50000);
-            //    UdpClient client = new UdpClient(50000);
-            //    while (true)
-            //    {
-            //        string receivedData = Encoding.UTF8.GetString(client.Receive(ref receivePoint));
-            //        Console.WriteLine("received data: {0}", receivedData);
-            //    }
-            //}
-            //if (input == "send")
-            //{
-            //    IPEndPoint localNICEndPoint = new IPEndPoint(CommClient.GetLocalIPAddress(), 50000);
-            //    UdpClient client = new UdpClient(localNICEndPoint);
-            //    byte[] sendBytes = Encoding.UTF8.GetBytes("Is anybody there?");
-            //    client.EnableBroadcast = true;
-            //    client.MulticastLoopback = false;
-            //    IPEndPoint broadcastIP = new IPEndPoint(IPAddress.Broadcast, 50000);
-            //    while (true)
-            //    {
-            //        Console.ReadLine();
-            //        client.Send(sendBytes, sendBytes.Length, broadcastIP);
-            //    }
-            //}
 
             AutoConfig auto = new AutoConfig();
 
