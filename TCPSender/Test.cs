@@ -58,25 +58,30 @@ namespace TCPSender
 
         public static void AutoconfigTest()
         {
-            UdpClient client = new UdpClient();
-            //client.Connect(IPAddress.Broadcast, 50001);
-            byte[] sendBytes = Encoding.ASCII.GetBytes("Is anybody there?");
+
             string input = Console.ReadLine();
             if(input == "listen")
             {
-                IPEndPoint iPEndPoint = new IPEndPoint(IPAddress.Any, 50001);
-                client.Receive(ref iPEndPoint);
+                IPEndPoint receivePoint = new IPEndPoint(IPAddress.Any, 50000);
+                UdpClient client = new UdpClient(50000);
+                while (true)
+                {
+                    string receivedData = Encoding.UTF8.GetString(client.Receive(ref receivePoint));
+                    Console.WriteLine("received data: {0}", receivedData);
+                }
             }
             if(input == "send")
             {
+                IPEndPoint localNICEndPoint = new IPEndPoint(CommClient.GetLocalIPAddress(), 50000);
+                UdpClient client = new UdpClient(localNICEndPoint);
+                byte[] sendBytes = Encoding.UTF8.GetBytes("Is anybody there?");
                 client.EnableBroadcast = true;
-                client.MulticastLoopback = true;
-
-                IPEndPoint ip = new IPEndPoint(IPAddress.Parse("255.255.255.255"), 50001);
+                client.MulticastLoopback = false;
+                IPEndPoint broadcastIP = new IPEndPoint(IPAddress.Broadcast, 50000);
                 while (true)
                 {
                     Console.ReadLine();
-                    client.Send(sendBytes, sendBytes.Length, ip);
+                    client.Send(sendBytes, sendBytes.Length, broadcastIP);
                 }
             }
         }

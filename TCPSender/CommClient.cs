@@ -37,6 +37,8 @@ namespace TCPSender
 
         public string DownloadPath { get; set; } = "downloads"; //directory w ktorym beda zapisywane pliki. domyslnie relative/downloads
 
+
+
         public CommClient(IPAddress _adresIP, ConnectionType isServer, Action<string> _funkcjaDoPrzekazaniaMessagy) //serwer = listen, client = connect
         {
             cIP = _adresIP;
