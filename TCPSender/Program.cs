@@ -18,7 +18,10 @@ namespace TCPSender
         static int Main(string[] args)
         {
 
-            Test.TCPSender_Test();
+            //Test.TCPSender_Test();
+
+
+            Test.AutoconfigTest();
 
             return 0;
         }

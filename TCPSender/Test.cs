@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -34,23 +35,50 @@ namespace TCPSender
             while (client.IsConnected == true)
             {
                 input = Console.ReadLine();
-                if (input == "plik")
+                if(client.IsConnected == true)
                 {
-                    client.SendFile(@"C:\Users\Czarek\Desktop\tru_haki\asd.zip");
-                }
-                else
-                {
-                    client.SendMessage(input);
-                }
-                if (input == "x")
-                {
-                    client.Close();
+                    if (input == "plik")
+                    {
+                        client.SendFile(@"C:\Users\Czarek\Desktop\tru_haki\asd.zip");
+                    }
+                    else
+                    {
+                        client.SendMessage(input);
+                    }
+                    if (input == "x")
+                    {
+                        client.Close();
+                    }
                 }
             }
-
-
             Console.ReadLine();
+        }
 
+
+
+        public static void AutoconfigTest()
+        {
+            UdpClient client = new UdpClient();
+            //client.Connect(IPAddress.Broadcast, 50001);
+            byte[] sendBytes = Encoding.ASCII.GetBytes("Is anybody there?");
+            string input = Console.ReadLine();
+            if(input == "listen")
+            {
+                IPEndPoint iPEndPoint = new IPEndPoint(IPAddress.Any, 50001);
+                client.Receive(ref iPEndPoint);
+            }
+            if(input == "send")
+            {
+                client.EnableBroadcast = true;
+                client.MulticastLoopback = true;
+
+                IPEndPoint ip = new IPEndPoint(IPAddress.Parse("255.255.255.255"), 50001);
+                while (true)
+                {
+                    Console.ReadLine();
+                    client.Send(sendBytes, sendBytes.Length, ip);
+                }
+            }
         }
     }
 }
