@@ -20,10 +20,10 @@ namespace TCPSender
 
             
 
-            //Test.CommClient_Test();
+            Test.CommClient_Test();
 
 
-            Test.AutoConfig_Test();
+            //Test.AutoConfig_Test();
 
             return 0;
         }
