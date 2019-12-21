@@ -39,7 +39,8 @@ namespace TCPSender
                 {
                     if (input == "plik")
                     {
-                        client.SendFile(@"C:\Users\Czarek\Desktop\tru_haki\asd.zip");
+                        Console.WriteLine("path");
+                        client.SendFile(Console.ReadLine());
                     }
                     else
                     {
