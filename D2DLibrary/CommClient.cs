@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -36,6 +37,8 @@ namespace TCPSender
         int BUFFER_SIZE = 10000;                       //rozmiar bufora dla danych pliku w bajtach
 
         public string DownloadPath { get; set; } = "downloads"; //directory w ktorym beda zapisywane pliki. domyslnie relative/downloads
+
+        Thread commandLineThread;
 
         public CommClient(IPAddress _adresIP, ConnectionType isServer, Action<string> _funkcjaDoPrzekazaniaMessagy) //serwer = listen, client = connect
         {
@@ -80,7 +83,7 @@ namespace TCPSender
         private void OpenCommandLine()
         {
             writer = new BinaryWriter(client.GetStream());
-            Thread commandLineThread = new Thread(() => ListenForCommands(outputFunc));
+            commandLineThread = new Thread(() => ListenForCommands(outputFunc));
             commandLineThread.Start();
         }
 
@@ -97,6 +100,7 @@ namespace TCPSender
                 catch
                 {
                     Close_Self();
+                    return;
                 }
 
                 if (input == "m")
@@ -109,6 +113,11 @@ namespace TCPSender
                     input = reader.ReadString();   
                     Thread rec = new Thread(() => ReceiveFile(input));
                     rec.Start();
+                }
+                else if (input == "v")
+                {
+                    input = reader.ReadString();
+                    SetVolume(input);
                 }
             }
             Close_Self();
@@ -200,6 +209,29 @@ namespace TCPSender
             fileThread.Start();
         }
 
+        public void SendVolume(string _mode)
+        {
+            writer.Write("v");
+            writer.Write(_mode);
+        }
+
+        public void SetVolume(string _mode)
+        {
+            switch (_mode)
+            {
+                case "mute":
+                    VolumeChanger.Mute();
+                    break;
+                case "up":
+                    VolumeChanger.VolumeUp();
+                    break;
+                case "down":
+                    VolumeChanger.VolumeDown();
+                    break;
+            }
+
+        }
+
         public void Close()
         {
            // writer.Write("x");
@@ -229,4 +261,37 @@ namespace TCPSender
 
    
 
+}
+
+class VolumeChanger
+{
+    private const byte VK_VOLUME_MUTE = 0xAD;
+    private const byte VK_VOLUME_DOWN = 0xAE;
+    private const byte VK_VOLUME_UP = 0xAF;
+    private const UInt32 KEYEVENTF_EXTENDEDKEY = 0x0001;
+    private const UInt32 KEYEVENTF_KEYUP = 0x0002;
+
+    [DllImport("user32.dll")]
+    static extern void keybd_event(byte bVk, byte bScan, UInt32 dwFlags, UInt32 dwExtraInfo);
+
+    [DllImport("user32.dll")]
+    static extern Byte MapVirtualKey(UInt32 uCode, UInt32 uMapType);
+
+    public static void VolumeUp()
+    {
+        keybd_event(VK_VOLUME_UP, MapVirtualKey(VK_VOLUME_UP, 0), KEYEVENTF_EXTENDEDKEY, 0);
+        keybd_event(VK_VOLUME_UP, MapVirtualKey(VK_VOLUME_UP, 0), KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
+    }
+
+    public static void VolumeDown()
+    {
+        keybd_event(VK_VOLUME_DOWN, MapVirtualKey(VK_VOLUME_DOWN, 0), KEYEVENTF_EXTENDEDKEY, 0);
+        keybd_event(VK_VOLUME_DOWN, MapVirtualKey(VK_VOLUME_DOWN, 0), KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
+    }
+
+    public static void Mute()
+    {
+        keybd_event(VK_VOLUME_MUTE, MapVirtualKey(VK_VOLUME_MUTE, 0), KEYEVENTF_EXTENDEDKEY, 0);
+        keybd_event(VK_VOLUME_MUTE, MapVirtualKey(VK_VOLUME_MUTE, 0), KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
+    }
 }

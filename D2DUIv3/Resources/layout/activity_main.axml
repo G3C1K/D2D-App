@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:orientation="vertical"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:minWidth="25px"
+	android:minHeight="25px">
+	<EditText
+		android:layout_width="match_parent"
+		android:layout_height="61.5dp"
+		android:id="@+id/textBoxIP"
+		android:contentDescription="Adres IP do polaczenia"  />
+	<Button
+		android:text="Connect"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:id="@+id/buttonConnect" />
+	<ScrollView
+		android:minWidth="25px"
+		android:minHeight="25px"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:id="@+id/scrollView1">
+		<TextView
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:id="@+id/textBoxMessageOutput"
+			android:layout_marginBottom="0.0dp"
+			android:scrollbars="vertical"
+			android:maxLines = "10"
+			android:height="100dp" />
+	</ScrollView>
+	<EditText
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:id="@+id/textBoxMessageInput" />
+	<Button
+		android:text="Send message"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:id="@+id/buttonSend" />
+	<GridLayout
+		android:minWidth="25px"
+		android:minHeight="25px"
+		android:layout_width="match_parent"
+		android:layout_height="59.0dp"
+		android:id="@+id/gridLayout1">
+		<Button
+			android:text="Up"
+			android:id="@+id/buttonVolumeUp" />
+		<Button
+			android:text="Down"
+			android:id="@+id/buttonVolumeDown" />
+		<ToggleButton
+			android:id="@+id/toggleButtonMute" />
+	</GridLayout>
+</LinearLayout>
