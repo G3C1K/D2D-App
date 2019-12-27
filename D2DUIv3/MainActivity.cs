@@ -5,9 +5,13 @@ using Android.Runtime;
 using Android.Widget;
 using TCPSender;
 using System.Net;
+using System;
+
+
 
 namespace D2DUIv3
 {
+    
     [Activity(Label = "@string/app_name", Theme = "@style/AppTheme", MainLauncher = true)]
     public class MainActivity : AppCompatActivity
     {
@@ -17,7 +21,6 @@ namespace D2DUIv3
 
         public void SetText2(string _message)
         {
-            textNumber = FindViewById<TextView>(Resource.Id.textBoxMessageOutput);
             RunOnUiThread(() => textNumber.Text += _message + "\n");
         }
 
@@ -26,11 +29,24 @@ namespace D2DUIv3
 
             base.OnCreate(savedInstanceState);
             // Set our view from the "main" layout resource
-            SetContentView(Resource.Layout.activity_main); 
+            SetContentView(Resource.Layout.activity_main);
+
+            textNumber = FindViewById<TextView>(Resource.Id.textBoxMessageOutput);
 
             FindViewById<Button>(Resource.Id.buttonConnect).Click += (o, e) =>
             {
-                client = new CommClient(IPAddress.Parse(FindViewById<EditText>(Resource.Id.textBoxIP).Text), ConnectionType.Connect, SetText2);
+                try
+                {
+                    client = new CommClient(IPAddress.Parse(FindViewById<EditText>(Resource.Id.textBoxIP).Text), ConnectionType.Connect, SetText2);
+                }
+                catch (Exception ex)
+                {
+                    textNumber.Text =
+                    "Exception caught: \n" +
+                    "Message: " + ex.Message + "\n" +
+                    "Source: " + ex.Source + "\n" +
+                    "TargetSite: " + ex.TargetSite + "\n";
+                }
             };
 
             FindViewById<Button>(Resource.Id.buttonSend).Click += (o, e) =>
