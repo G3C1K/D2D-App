@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -90,6 +91,18 @@ namespace TCPSender
 
             Console.WriteLine("done");
             Console.ReadLine();
+
+        }
+
+        public static void LZ4_Test()
+        {
+            CompressScreen display = new CompressScreen();
+            display.Iterate();
+
+
+            DecompressScreen dcmpDisplay = new DecompressScreen(display.getData());
+            int i = 0;
+            Bitmap test1 = dcmpDisplay.DAiB(dcmpDisplay.decompressed);
 
         }
     }
