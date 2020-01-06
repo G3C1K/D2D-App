@@ -104,6 +104,19 @@ namespace TCPSender
             int i = 0;
             Bitmap test1 = dcmpDisplay.DAiB(dcmpDisplay.decompressed);
 
+            Console.ReadLine();
+        }
+
+        public static void LZ4_PerformanceTest()
+        {
+            CompressScreen display = new CompressScreen();
+
+            for(int i = 0; i<100; i++)
+            {
+                display.PerformanceTest();
+            }
+
+            Console.ReadLine();
         }
     }
 }

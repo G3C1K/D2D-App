@@ -30,8 +30,7 @@ namespace TCPSender
         private Bitmap cur;
         private byte[] compressionBuffer;
 
-        private int backBufSize;
-        private CompressedScreen backBuf;
+        private CompressedScreen compressedScreen;
 
         private int n = 0;
 
@@ -49,86 +48,55 @@ namespace TCPSender
 
             compressionBuffer = new byte[screenBounds.Width * screenBounds.Height * 4];
 
-            int backBufSize = LZ4.LZ4Codec.MaximumOutputLength(this.compressionBuffer.Length) + 4;
-            backBuf = new CompressedScreen(backBufSize);
+            int backBufSize = LZ4.LZ4Codec.MaximumOutputLength(compressionBuffer.Length) + 4;
+            compressedScreen = new CompressedScreen(backBufSize);
         }
 
-        private void Capture()
+        private void Capture(Bitmap output)
         {
-            using(var gfxScreenshot = Graphics.FromImage(cur))
-            {
-                gfxScreenshot.CopyFromScreen(screenBounds.X, screenBounds.Y, 0, 0, screenBounds.Size, CopyPixelOperation.SourceCopy);
-            }
-        }
 
-        private unsafe void ApplyXor(BitmapData previous, BitmapData current)
-        {
-            byte* prev0 = (byte*)previous.Scan0.ToPointer();
-            byte* cur0 = (byte*)current.Scan0.ToPointer();
-
-            int height = previous.Height;
-            int width = previous.Width;
-            int halfwidth = width / 2;
-            fixed (byte* target = this.compressionBuffer)
-            {
-                ulong* dst = (ulong*)target;
-
-                for(int y = 0; y < height; ++y)
-                {
-                    ulong* prevRow = (ulong*)(prev0 + previous.Stride * y);
-                    ulong* curRow = (ulong*)(cur0 + current.Stride * y);
-
-                    for(int x = 0; x < halfwidth; ++x)
-                    {
-                        *(dst++) = curRow[x] ^ prevRow[x];
-                    }
-                }
-            }
-        }
-
-        public static unsafe void ApplyXorV2(BitmapData image, byte[] _xorDiff)
-        {
-            byte* image0 = (byte*)image.Scan0.ToPointer();
-            //byte* cur0 = (byte*)current.Scan0.ToPointer();
-
-            int height = image.Height;
-            int width = image.Width;
-            int halfwidth = width / 2;
-            fixed (byte* xorDiff = _xorDiff)
-            {
-                ulong* dst = (ulong*)xorDiff;
-
-                for (int y = 0; y < height; ++y)
-                {
-                    ulong* imageRow = (ulong*)(image0 + image.Stride * y);
-                    //ulong* curRow = (ulong*)(cur0 + current.Stride * y);
-
-                    for (int x = 0; x < halfwidth; ++x)
-                    {
-                        //*(dst++) = target[x] ^ prevRow[x];
-                        //Console.WriteLine(imageRow[x].ToString() + "   " + (*dst).ToString());
-                        imageRow[x] = *(dst++) ^ imageRow[x];
-                        //Console.WriteLine(imageRow[x].ToString() + "   " + (*dst).ToString());
-
-                    }
-                }
-            }
-        }
-
-        private int Compress()
-        {
-            var backBuf = this.backBuf;
-
-            backBuf.Size = LZ4.LZ4Codec.Encode(this.compressionBuffer, 0, this.compressionBuffer.Length, backBuf.Data, 0, backBuf.Data.Length);
-
-            return backBuf.Size;
+            Graphics.FromImage(cur).CopyFromScreen(screenBounds.X, screenBounds.Y, 0, 0, screenBounds.Size, CopyPixelOperation.SourceCopy);
+            //using (var gfxScreenshot = Graphics.FromImage(output))
+            //{
+            //    gfxScreenshot.CopyFromScreen(screenBounds.X, screenBounds.Y, 0, 0, screenBounds.Size, CopyPixelOperation.SourceCopy);
+                
+            //}
         }
 
         public void Iterate()
         {
+
+            // Capture(cur);
+            Graphics.FromImage(cur).CopyFromScreen(screenBounds.X, screenBounds.Y, 0, 0, screenBounds.Size, CopyPixelOperation.SourceCopy);
+
+            var locked1 = cur.LockBits(new Rectangle(0, 0, cur.Width, cur.Height), ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
+            var locked2 = prev.LockBits(new Rectangle(0, 0, prev.Width, prev.Height), ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
+
+            try
+            {
+                XOR.CountDifference(locked2, locked1, this.compressionBuffer);
+
+
+                compressedScreen.Size = LZ4.LZ4Codec.Encode(compressionBuffer, 0, compressionBuffer.Length, compressedScreen.Data, 0, compressedScreen.Data.Length);
+
+
+                var tmp = cur;
+                cur = prev;
+                prev = tmp;
+            }
+            finally
+            {
+                cur.UnlockBits(locked1);
+                prev.UnlockBits(locked2);
+            }
+        }
+
+        public void PerformanceTest()
+        {
             Stopwatch sw = Stopwatch.StartNew();
 
-            Capture();
+            //Capture(cur);
+            Graphics.FromImage(cur).CopyFromScreen(screenBounds.X, screenBounds.Y, 0, 0, screenBounds.Size, CopyPixelOperation.SourceCopy);
 
             TimeSpan timetoCapture = sw.Elapsed;
             var locked1 = cur.LockBits(new Rectangle(0, 0, cur.Width, cur.Height), ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
@@ -136,19 +104,18 @@ namespace TCPSender
 
             try
             {
-                ApplyXor(locked2, locked1);
+                XOR.CountDifference(locked2, locked1, this.compressionBuffer);
 
                 TimeSpan timeToXor = sw.Elapsed;
 
-                int length = Compress();
+                compressedScreen.Size = LZ4.LZ4Codec.Encode(compressionBuffer, 0, compressionBuffer.Length, compressedScreen.Data, 0, compressedScreen.Data.Length);
 
                 TimeSpan timeToCompress = sw.Elapsed;
 
-                if((++n) % 50 == 0)
-                {
-                    Console.Write("Iteration: {0:0.00}s, {1:0.00}s, {2:0.00}s" + "{3} Kb => {4:0.0} FPS     \r", timetoCapture.TotalSeconds, timeToXor.TotalSeconds,
-                        timeToCompress.TotalSeconds, length / 1024, 1.0 / sw.Elapsed.TotalSeconds);
-                }
+
+                Console.WriteLine("Iteration: {0}ms, {1}ms, {2}ms, " + "{3} Kb => {4:0.0} FPS     \r", timetoCapture.TotalMilliseconds, timeToXor.TotalMilliseconds,
+                        timeToCompress.TotalMilliseconds, compressedScreen.Size / 1024, 1.0 / sw.Elapsed.TotalSeconds);
+
 
                 var tmp = cur;
                 cur = prev;
@@ -163,7 +130,7 @@ namespace TCPSender
 
         public CompressedScreen getData()
         {
-            return backBuf;
+            return compressedScreen;
         }
 
     }
@@ -197,20 +164,76 @@ namespace TCPSender
                 g.Clear(Color.Black);
             }
             var locked1 = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
-            CompressScreen.ApplyXorV2(locked1, input);
+            XOR.ApplyDifference(locked1, input);
             bmp.UnlockBits(locked1);
             bmp.Save("image.png", ImageFormat.Png);
 
             //outbmp.UnlockBits(outbmpData);
 
+
+            
             return bmp;
         }
     }
 
+    public static class XOR
+    {
+        public static unsafe void CountDifference(BitmapData previous, BitmapData current, byte[] outputArray)
+        {
+            byte* prev0 = (byte*)previous.Scan0.ToPointer();
+            byte* cur0 = (byte*)current.Scan0.ToPointer();
 
+            int height = previous.Height;
+            int width = previous.Width;
+            int halfwidth = width / 2;
+            //fixed (byte* target = this.compressionBuffer)
 
+            fixed (byte* target = outputArray)
+            {
+                ulong* dst = (ulong*)target;
 
+                for (int y = 0; y < height; ++y)
+                {
+                    ulong* prevRow = (ulong*)(prev0 + previous.Stride * y);
+                    ulong* curRow = (ulong*)(cur0 + current.Stride * y);
 
+                    for (int x = 0; x < halfwidth; ++x)
+                    {
+                        *(dst++) = curRow[x] ^ prevRow[x];
+                    }
+                }
+            }
+        }
+
+        public static unsafe void ApplyDifference(BitmapData imageInput, byte[] _xorDiff)
+        {
+            byte* image0 = (byte*)imageInput.Scan0.ToPointer();
+            //byte* cur0 = (byte*)current.Scan0.ToPointer();
+
+            int height = imageInput.Height;
+            int width = imageInput.Width;
+            int halfwidth = width / 2;
+            fixed (byte* xorDiff = _xorDiff)
+            {
+                ulong* dst = (ulong*)xorDiff;
+
+                for (int y = 0; y < height; ++y)
+                {
+                    ulong* imageRow = (ulong*)(image0 + imageInput.Stride * y);
+                    //ulong* curRow = (ulong*)(cur0 + current.Stride * y);
+
+                    for (int x = 0; x < halfwidth; ++x)
+                    {
+                        //*(dst++) = target[x] ^ prevRow[x];
+                        //Console.WriteLine(imageRow[x].ToString() + "   " + (*dst).ToString());
+                        imageRow[x] = *(dst++) ^ imageRow[x];
+                        //Console.WriteLine(imageRow[x].ToString() + "   " + (*dst).ToString());
+
+                    }
+                }
+            }
+        }
+    }
 
 
 }
