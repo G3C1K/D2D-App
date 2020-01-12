@@ -95,6 +95,7 @@ namespace TCPSender
         {
             Stopwatch sw = Stopwatch.StartNew();
 
+
             //Capture(cur);
             Graphics.FromImage(cur).CopyFromScreen(screenBounds.X, screenBounds.Y, 0, 0, screenBounds.Size, CopyPixelOperation.SourceCopy);
 

@@ -138,25 +138,22 @@ namespace TCPSender
         public static void DXCaptureScreenTest()
         {
 
-            Stopwatch sw = Stopwatch.StartNew();
 
             List<double> lista = new List<double>();
 
             var screenStateLogger = new ScreenStateLogger();
             screenStateLogger.ScreenRefreshed += (sender, data) =>
             {
-                TimeSpan timeToScreenCapture = sw.Elapsed;
-                lista.Add(timeToScreenCapture.TotalMilliseconds);
                 
             };
             screenStateLogger.Start();
             Thread.Sleep(1000);
             screenStateLogger.Stop();
 
-            for(int i=0; i < 10; i++)
-            {
-                Console.WriteLine(lista[i]);
-            }
+            //for(int i=0; i < 10; i++)
+            //{
+            //    Console.WriteLine(lista[i]);
+            //}
 
             //TimeSpan timeToScreenCapture = sw.Elapsed;
 

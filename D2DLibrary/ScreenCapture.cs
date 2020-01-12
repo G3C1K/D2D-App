@@ -132,6 +132,10 @@ namespace D2DLibrary
                     {
                         try
                         {
+
+                            Stopwatch sw = new Stopwatch();
+                            sw.Start();
+
                             SharpDX.DXGI.Resource screenResource;
                             OutputDuplicateFrameInformation duplicateFrameInformation;
 
@@ -168,15 +172,19 @@ namespace D2DLibrary
                                 bitmap.UnlockBits(mapDest);
                                 device.ImmediateContext.UnmapSubresource(screenTexture, 0);
 
-                                using (var ms = new MemoryStream())
-                                {
-                                    bitmap.Save(ms, ImageFormat.Bmp);
-                                    ScreenRefreshed?.Invoke(this, ms.ToArray());
-                                    _init = true;
-                                }
+                                //using (var ms = new MemoryStream())
+                                //{
+                                //    bitmap.Save(ms, ImageFormat.Bmp);
+                                //    ScreenRefreshed?.Invoke(this, ms.ToArray());
+                                //    _init = true;
+                                //}
                             }
                             screenResource.Dispose();
                             duplicatedOutput.ReleaseFrame();
+
+
+                            Console.WriteLine(sw.Elapsed.TotalMilliseconds);
+
                         }
                         catch (SharpDXException e)
                         {
