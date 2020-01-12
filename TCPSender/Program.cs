@@ -25,7 +25,9 @@ namespace TCPSender
 
             //Test.AutoConfig_Test();
 
-            Test.LZ4_PerformanceTest();
+            //Test.LZ4_PerformanceTest();
+
+            Test.DXCaptureScreenTest();
 
             return 0;
         }

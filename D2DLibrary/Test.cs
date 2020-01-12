@@ -1,10 +1,13 @@
-﻿using System;
+﻿using D2DLibrary;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace TCPSender
@@ -118,5 +121,50 @@ namespace TCPSender
 
             Console.ReadLine();
         }
+
+        public static void CaptureScreenTest()
+        {
+            Stopwatch sw = Stopwatch.StartNew();
+
+            Bitmap bitmapa = ScreenCapture.CaptureScreen();
+
+            TimeSpan timeToScreenCapture = sw.Elapsed;
+
+            Console.WriteLine("Screen: {0}ms", timeToScreenCapture.TotalMilliseconds);
+
+            Console.ReadLine();
+        }
+
+        public static void DXCaptureScreenTest()
+        {
+
+            Stopwatch sw = Stopwatch.StartNew();
+
+            List<double> lista = new List<double>();
+
+            var screenStateLogger = new ScreenStateLogger();
+            screenStateLogger.ScreenRefreshed += (sender, data) =>
+            {
+                TimeSpan timeToScreenCapture = sw.Elapsed;
+                lista.Add(timeToScreenCapture.TotalMilliseconds);
+                
+            };
+            screenStateLogger.Start();
+            Thread.Sleep(1000);
+            screenStateLogger.Stop();
+
+            for(int i=0; i < 10; i++)
+            {
+                Console.WriteLine(lista[i]);
+            }
+
+            //TimeSpan timeToScreenCapture = sw.Elapsed;
+
+            //Console.WriteLine("Screen: {0}ms", timeToScreenCapture.TotalMilliseconds);
+
+            Console.ReadLine();
+        }
+
+
     }
 }
