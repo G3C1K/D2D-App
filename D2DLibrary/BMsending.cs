@@ -50,7 +50,7 @@ namespace TCPSender
         SharpDX.DXGI.Resource screenResource;
         OutputDuplicateFrameInformation duplicateFrameInformation;
 
-        public CompressScreen()
+        public CompressScreen(bool _dxMode)
         {
             this.screenBounds = Screen.PrimaryScreen.Bounds;
 
@@ -68,26 +68,30 @@ namespace TCPSender
             compressedScreen = new CompressedScreen(backBufSize);
 
             //directX Constructor
-            factory = new Factory1();
-            adapter = factory.GetAdapter1(0);
-            device = new SharpDX.Direct3D11.Device(adapter);
-            output = adapter.GetOutput(0);
-            output1 = output.QueryInterface<Output1>();
-            textureDesc = new Texture2DDescription
+
+            if (_dxMode == true)
             {
-                CpuAccessFlags = CpuAccessFlags.Read,
-                BindFlags = BindFlags.None,
-                Format = Format.B8G8R8A8_UNorm,
-                Width = screenBounds.Width,
-                Height = screenBounds.Height,
-                OptionFlags = ResourceOptionFlags.None,
-                MipLevels = 1,
-                ArraySize = 1,
-                SampleDescription = { Count = 1, Quality = 0 },
-                Usage = ResourceUsage.Staging
-            };
-            screenTexture = new Texture2D(device, textureDesc);
-            duplicatedOutput = output1.DuplicateOutput(device);
+                factory = new Factory1();
+                adapter = factory.GetAdapter1(0);
+                device = new SharpDX.Direct3D11.Device(adapter);
+                output = adapter.GetOutput(0);
+                output1 = output.QueryInterface<Output1>();
+                textureDesc = new Texture2DDescription
+                {
+                    CpuAccessFlags = CpuAccessFlags.Read,
+                    BindFlags = BindFlags.None,
+                    Format = Format.B8G8R8A8_UNorm,
+                    Width = screenBounds.Width,
+                    Height = screenBounds.Height,
+                    OptionFlags = ResourceOptionFlags.None,
+                    MipLevels = 1,
+                    ArraySize = 1,
+                    SampleDescription = { Count = 1, Quality = 0 },
+                    Usage = ResourceUsage.Staging
+                };
+                screenTexture = new Texture2D(device, textureDesc);
+                duplicatedOutput = output1.DuplicateOutput(device); 
+            }
         }
 
         private void Capture(Bitmap output)

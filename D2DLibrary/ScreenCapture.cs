@@ -132,6 +132,8 @@ namespace D2DLibrary
                     //try
                     //{
 
+
+
                     Thread.Sleep(2000);
                             Stopwatch sw = new Stopwatch();
                             sw.Start();
