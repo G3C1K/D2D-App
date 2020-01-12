@@ -27,7 +27,13 @@ namespace TCPSender
 
             //Test.LZ4_PerformanceTest();
 
-            Test.DXCaptureScreenTest();
+            //Test.DXCaptureScreenTest();
+
+            //Test.LZ4_Test();
+
+            Thread.Sleep(5000);
+
+            Test.LZ4_DX_PerformanceTest();
 
             return 0;
         }

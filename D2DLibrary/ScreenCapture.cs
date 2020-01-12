@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using SharpDX;
 using SharpDX.Direct3D11;
@@ -94,21 +95,21 @@ namespace D2DLibrary
         public void Start()
         {
             _run = true;
-            var factory = new Factory1();
+            Factory1 factory = new Factory1();
             //Get first adapter
-            var adapter = factory.GetAdapter1(0);
+            Adapter1 adapter = factory.GetAdapter1(0);
             //Get device from adapter
-            var device = new SharpDX.Direct3D11.Device(adapter);
+            SharpDX.Direct3D11.Device device = new SharpDX.Direct3D11.Device(adapter);
             //Get front buffer of the adapter
-            var output = adapter.GetOutput(0);
-            var output1 = output.QueryInterface<Output1>();
+            Output output = adapter.GetOutput(0);
+            Output1 output1 = output.QueryInterface<Output1>();
 
             // Width/Height of desktop to capture
             int width = output.Description.DesktopBounds.Right;
             int height = output.Description.DesktopBounds.Bottom;
 
             // Create Staging texture CPU-accessible
-            var textureDesc = new Texture2DDescription
+            Texture2DDescription textureDesc = new Texture2DDescription
             {
                 CpuAccessFlags = CpuAccessFlags.Read,
                 BindFlags = BindFlags.None,
@@ -121,18 +122,17 @@ namespace D2DLibrary
                 SampleDescription = { Count = 1, Quality = 0 },
                 Usage = ResourceUsage.Staging
             };
-            var screenTexture = new Texture2D(device, textureDesc);
+            Texture2D screenTexture = new Texture2D(device, textureDesc);
 
             Task.Factory.StartNew(() =>
             {
                 // Duplicate the output
-                using (var duplicatedOutput = output1.DuplicateOutput(device))
+                using (OutputDuplication duplicatedOutput = output1.DuplicateOutput(device))
                 {
-                    while (_run)
-                    {
-                        try
-                        {
+                    //try
+                    //{
 
+                    Thread.Sleep(2000);
                             Stopwatch sw = new Stopwatch();
                             sw.Start();
 
@@ -140,11 +140,13 @@ namespace D2DLibrary
                             OutputDuplicateFrameInformation duplicateFrameInformation;
 
                             // Try to get duplicated frame within given time is ms
-                            duplicatedOutput.AcquireNextFrame(5, out duplicateFrameInformation, out screenResource);
+                            duplicatedOutput.AcquireNextFrame(15, out duplicateFrameInformation, out screenResource);
 
                             // copy resource into memory that can be accessed by the CPU
                             using (var screenTexture2D = screenResource.QueryInterface<Texture2D>())
+                            {
                                 device.ImmediateContext.CopyResource(screenTexture2D, screenTexture);
+                            }
 
                             // Get the desktop capture texture
                             var mapSource = device.ImmediateContext.MapSubresource(screenTexture, 0, MapMode.Read, SharpDX.Direct3D11.MapFlags.None);
@@ -172,6 +174,7 @@ namespace D2DLibrary
                                 bitmap.UnlockBits(mapDest);
                                 device.ImmediateContext.UnmapSubresource(screenTexture, 0);
 
+                                bitmap.Save("inputOG.png", ImageFormat.Png);
                                 //using (var ms = new MemoryStream())
                                 //{
                                 //    bitmap.Save(ms, ImageFormat.Bmp);
@@ -185,19 +188,18 @@ namespace D2DLibrary
 
                             Console.WriteLine(sw.Elapsed.TotalMilliseconds);
 
-                        }
-                        catch (SharpDXException e)
-                        {
-                            if (e.ResultCode.Code != SharpDX.DXGI.ResultCode.WaitTimeout.Result.Code)
-                            {
-                                Trace.TraceError(e.Message);
-                                Trace.TraceError(e.StackTrace);
-                            }
-                        }
-                    }
+                        //}
+                        //catch (SharpDXException e)
+                        //{
+                        //    if (e.ResultCode.Code != SharpDX.DXGI.ResultCode.WaitTimeout.Result.Code)
+                        //    {
+                        //        Trace.TraceError(e.Message);
+                        //        Trace.TraceError(e.StackTrace);
+                        //    }
+                        //}
+                    
                 }
             });
-            while (!_init) ;
         }
 
         public void Stop()

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -110,6 +111,19 @@ namespace TCPSender
             Console.ReadLine();
         }
 
+        public static void LZ4_Test_DX()
+        {
+            CompressScreen display = new CompressScreen();
+            display.IterateDX();
+
+
+            DecompressScreen dcmpDisplay = new DecompressScreen(display.getData());
+            int i = 0;
+            Bitmap test1 = dcmpDisplay.DAiB(dcmpDisplay.decompressed);
+
+            Console.ReadLine();
+        }
+
         public static void LZ4_PerformanceTest()
         {
             CompressScreen display = new CompressScreen();
@@ -117,6 +131,18 @@ namespace TCPSender
             for(int i = 0; i<100; i++)
             {
                 display.PerformanceTest();
+            }
+
+            Console.ReadLine();
+        }
+
+        public static void LZ4_DX_PerformanceTest()
+        {
+            CompressScreen display = new CompressScreen();
+
+            for (int i = 0; i < 100; i++)
+            {
+                display.PerformanceTestDX();
             }
 
             Console.ReadLine();
