@@ -71,16 +71,6 @@ namespace D2DLibrary
             }
         }
 
-
-
-
-
-
-
-
-
-
-
     public class ScreenStateLogger
     {
         private byte[] _previousScreen;

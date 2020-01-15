@@ -33,7 +33,7 @@ namespace TCPSender
 
             Thread.Sleep(5000);
 
-            Test.LZ4_DX_PerformanceTest();
+            ScreenCaptureLibrary.Test.LZ4_DX_PerformanceTest();
 
             return 0;
         }
