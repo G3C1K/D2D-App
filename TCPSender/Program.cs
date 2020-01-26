@@ -93,9 +93,9 @@ namespace TCPSender
 
             //Console.ReadLine();
 
-            
 
-            
+
+            int i = 0;
             
             return 0;
         }
