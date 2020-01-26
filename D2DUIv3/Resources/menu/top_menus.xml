@@ -4,7 +4,7 @@
       >
   <item
        android:id="@+id/menu_disconnect"
-       android:icon="@mipmap/ic_action_content_save"
+       android:icon="@mipmap/disconnect"
        app:showAsAction="always"
        android:title="Disconnect" />
   <item

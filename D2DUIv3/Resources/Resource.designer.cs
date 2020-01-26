@@ -3154,31 +3154,34 @@ namespace D2DUIv3
 		{
 			
 			// aapt resource value: 0x7f030000
-			public const int ic_action_content_create = 2130903040;
+			public const int disconnect = 2130903040;
 			
 			// aapt resource value: 0x7f030001
-			public const int ic_action_content_save = 2130903041;
+			public const int ic_action_content_create = 2130903041;
 			
 			// aapt resource value: 0x7f030002
-			public const int ic_launcher = 2130903042;
+			public const int ic_action_content_save = 2130903042;
 			
 			// aapt resource value: 0x7f030003
-			public const int ic_launcher_foreground = 2130903043;
+			public const int ic_launcher = 2130903043;
 			
 			// aapt resource value: 0x7f030004
-			public const int ic_launcher_round = 2130903044;
+			public const int ic_launcher_foreground = 2130903044;
 			
 			// aapt resource value: 0x7f030005
-			public const int ic_menu_copy_holo_dark = 2130903045;
+			public const int ic_launcher_round = 2130903045;
 			
 			// aapt resource value: 0x7f030006
-			public const int ic_menu_cut_holo_dark = 2130903046;
+			public const int ic_menu_copy_holo_dark = 2130903046;
 			
 			// aapt resource value: 0x7f030007
-			public const int ic_menu_paste_holo_dark = 2130903047;
+			public const int ic_menu_cut_holo_dark = 2130903047;
 			
 			// aapt resource value: 0x7f030008
-			public const int ic_menu_search_holo_dark = 2130903048;
+			public const int ic_menu_paste_holo_dark = 2130903048;
+			
+			// aapt resource value: 0x7f030009
+			public const int ic_menu_search_holo_dark = 2130903049;
 			
 			static Mipmap()
 			{
