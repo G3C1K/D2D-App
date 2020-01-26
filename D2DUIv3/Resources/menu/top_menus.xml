@@ -1,12 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      >
   <item
-       android:id="@+id/menu_save"
+       android:id="@+id/menu_disconnect"
        android:icon="@mipmap/ic_action_content_save"
-       android:showAsAction="ifRoom"
-       android:title="Save" />
+       app:showAsAction="always"
+       android:title="Disconnect" />
   <item
-       android:id="@+id/menu_preferences"
-       android:showAsAction="never"
-       android:title="Preferences" />
+       android:id="@+id/menu_settings"
+       app:showAsAction="never"
+       android:title="Settings" />
 </menu>

@@ -6,8 +6,7 @@ using Android.Widget;
 using TCPSender;
 using System.Net;
 using System;
-
-
+using Android.Views;
 
 namespace D2DUIv3
 {
@@ -80,6 +79,19 @@ namespace D2DUIv3
             //
             //moze zaczac wysylanie plikow
 
+        }
+
+        public override bool OnCreateOptionsMenu(IMenu menu)
+        {
+            MenuInflater.Inflate(Resource.Menu.top_menus, menu);
+            return base.OnCreateOptionsMenu(menu);
+        }
+
+        public override bool OnOptionsItemSelected(IMenuItem item)
+        {
+            Toast.MakeText(this, "Action selected: " + item.TitleFormatted,
+                ToastLength.Short).Show();
+            return base.OnOptionsItemSelected(item);
         }
     }
 }
