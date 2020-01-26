@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -27,6 +28,7 @@ namespace TCPSender
         //porty polaczen
         int commandPort = 50001;        //port komend/message
         int filePort = 50002;           //port dla plikow. zasada dzialania jak w FTP
+        int imageXORPort = 50003;
 
         TcpClient client;               //klient tcp dla komend
         IPAddress cIP;                  //adres IP. Zalezy od tego czy instancja jest klientem czy serwerem
@@ -39,6 +41,11 @@ namespace TCPSender
         public string DownloadPath { get; set; } = "downloads"; //directory w ktorym beda zapisywane pliki. domyslnie relative/downloads
 
         Thread commandLineThread;
+
+        Thread imageXORThreadSend;
+        Thread imageXORThreadRec;
+        bool stillSend = false;
+        public BlockingCollection<byte[]> queueXOR { get; internal set; }
 
         public CommClient(IPAddress _adresIP, ConnectionType isServer, Action<string> _funkcjaDoPrzekazaniaMessagy) //serwer = listen, client = connect
         {
@@ -119,9 +126,16 @@ namespace TCPSender
                     input = reader.ReadString();
                     SetVolume(input);
                 }
+                else if (input == "i")
+                {
+                    input = reader.ReadString();
+                    imageXORThreadRec = new Thread(() => ReceiveImageXOR(input));
+                    imageXORThreadRec.Start();
+                }
             }
             Close_Self();
         }
+
 
         private void SendFile_T(string _path)
         {
@@ -208,6 +222,87 @@ namespace TCPSender
             Thread fileThread = new Thread(() => SendFile_T(_path));
             fileThread.Start();
         }
+
+        public void SendImageXOR()
+        {
+            queueXOR = new BlockingCollection<byte[]>();
+            stillSend = true;
+            Console.WriteLine("send image xor");
+            imageXORThreadSend = new Thread(() => SendImageXOR_T());
+            imageXORThreadSend.Start();
+        }
+
+        public void StopImageXOR()
+        {
+            stillSend = false;
+            if (imageXORThreadSend != null)
+            {
+                imageXORThreadSend.Abort();
+            }
+            if(imageXORThreadRec != null)
+            {
+                imageXORThreadRec.Abort();
+            }
+        }
+
+        private void SendImageXOR_T()
+        {
+            Console.WriteLine("send image xor T");
+            TcpClient imageClient = new TcpClient();
+            IPAddress ownIPAddress = GetLocalIPAddress();
+            TcpListener imageListener = new TcpListener(ownIPAddress, imageXORPort);
+            imageListener.Start();
+            writer.Write("i");
+            Console.WriteLine("listening for connection reply");
+            writer.Write(ownIPAddress.ToString());
+            imageClient = imageListener.AcceptTcpClient();
+            imageListener.Stop();
+
+            BinaryWriter imageWriter = new BinaryWriter(imageClient.GetStream());
+
+            while(stillSend == true)
+            {
+                byte[] data = null;
+
+                try
+                {
+                    data = queueXOR.Take();
+                }
+                catch (InvalidOperationException) { }
+
+                if(data != null)
+                {
+                    int datasize = data.Length;
+                    imageWriter.Write(datasize.ToString());
+                    imageWriter.Write(data, 0, datasize);
+                }
+            }
+        }
+
+
+        private void ReceiveImageXOR(string _targetIPAddress)
+        {
+            TcpClient imageClient = new TcpClient();
+            imageClient.Connect(IPAddress.Parse(_targetIPAddress), imageXORPort);
+            Console.WriteLine("connected image");
+            BinaryReader imageReader = new BinaryReader(imageClient.GetStream());
+
+            stillSend = true;
+
+            int datasize;
+
+            while (stillSend == true)
+            {
+                datasize = int.Parse(imageReader.ReadString());
+                byte[] data = new byte[datasize];
+                data = imageReader.ReadBytes(datasize);
+
+
+                Console.WriteLine("image got " + data.Length.ToString());
+                //function_PassByteArrayTo(data);
+            }
+        }
+
 
         public void SendVolume(string _mode)
         {

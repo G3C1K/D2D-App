@@ -7,6 +7,8 @@ using TCPSender;
 using System.Net;
 using System;
 using Android.Views;
+using Android.Graphics;
+
 
 namespace D2DUIv3
 {
@@ -70,7 +72,6 @@ namespace D2DUIv3
                 client.SendVolume("up");
             };
 
-
             //do zrobienia:
             //lepsze ui
             //usiniecie/dezaktywacja connectButton po podlaczeniu sie, lub zamiana go na disconnectButton
@@ -91,6 +92,8 @@ namespace D2DUIv3
         {
             Toast.MakeText(this, "Action selected: " + item.TitleFormatted,
                 ToastLength.Short).Show();
+
+            
             return base.OnOptionsItemSelected(item);
         }
     }
