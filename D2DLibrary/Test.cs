@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace TCPSender
@@ -19,8 +22,9 @@ namespace TCPSender
             string listenConnect = Console.ReadLine();
             if (listenConnect == "listen")
             {
-                Console.WriteLine("Adres interfejsu do nasluchu: ");
-                IPAddress adresInterfejsuDoNasluchu = IPAddress.Parse(Console.ReadLine());  //adres IP interfejsu
+                IPAddress adresInterfejsuDoNasluchu = CommClient.GetLocalIPAddress();
+                Console.WriteLine("Nasluchiwanie na adresie: " + adresInterfejsuDoNasluchu.ToString());
+                
                 client = new CommClient(adresInterfejsuDoNasluchu, ConnectionType.Listen, Console.WriteLine);
             }
             if (listenConnect == "connect")
@@ -91,5 +95,6 @@ namespace TCPSender
             Console.ReadLine();
 
         }
+
     }
 }
