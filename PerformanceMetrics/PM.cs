@@ -51,7 +51,7 @@ namespace PerfMetrics
             //  PerformanceCounter GPU = new PerformanceCounter("GPU Engine", "Utilization Percentage", "pid_10248_luid_0x00000000_0x0000DC78_phys_0_eng_0_engtype_3D");
             while (true)
             {
-                CPUValue = CPU.NextValue();
+                //CPUValue = CPU.NextValue();
                 MemValue = Mem.NextValue();///(1024*1024*1024);
                 DiskCRValue = DiskCRead.NextValue()/1024;
                 DiskCWValue = DiskCWrite.NextValue()/1024;
@@ -64,6 +64,8 @@ namespace PerfMetrics
                 //}
                 //float GPUValue = GPU.NextValue();
                 Console.Clear();
+                //CPUValue = CPU.NextValue();
+
                 Console.WriteLine("CPU Usage " +Math.Round(CPUValue,2) + " %");
                 Console.WriteLine("Memory Usage " +Math.Round(MemValue,2) + " %");
                 //foreach()
@@ -72,21 +74,26 @@ namespace PerfMetrics
                 Console.WriteLine("C:// Disk Read " + Math.Round(DiskCRValue,2) +" KB/s");
                 Console.WriteLine("C:// Disk Write " + Math.Round(DiskCWValue,2) + " KB/s");
 
-               // Console.WriteLine("C:\\ " + "Read " + Math.Round(DiskRead[0]));
-               // Console.WriteLine("C:\\ " + "Write " + Math.Round(DiskWrite[0]));
+                // Console.WriteLine("C:\\ " + "Read " + Math.Round(DiskRead[0]));
+                // Console.WriteLine("C:\\ " + "Write " + Math.Round(DiskWrite[0]));
 
                 //foreach (DriveInfo drive in drives)
                 //{
-                  //  Console.WriteLine(drive.VolumeLabel + " " + drive.Name + " " + drive.AvailableFreeSpace / 1024 / 1024 / 1024 + " GB free " + 
-                    //    " Disk Read " + DiskRead[iterator2] +" KB/s " + " Disk Write " + DiskWrite[iterator2+1] + " KB/s ") ;
-                   // iterator2 = iterator2 + 2;
-              //  }
+                //  Console.WriteLine(drive.VolumeLabel + " " + drive.Name + " " + drive.AvailableFreeSpace / 1024 / 1024 / 1024 + " GB free " + 
+                //    " Disk Read " + DiskRead[iterator2] +" KB/s " + " Disk Write " + DiskWrite[iterator2+1] + " KB/s ") ;
+                // iterator2 = iterator2 + 2;
+                //  }
 
                 //Console.WriteLine(GPUValue);
-                System.Threading.Thread.Sleep(1000);
+                CPUValue = CPU.NextValue();
+
+                System.Threading.Thread.Sleep(200);
+
+                CPUValue = CPU.NextValue();
+
             }
-            
-            
+
+
 
 
         }
