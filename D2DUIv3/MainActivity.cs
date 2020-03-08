@@ -8,7 +8,7 @@ using System.Net;
 using System;
 using Android.Views;
 using Android.Graphics;
-
+using Android.Content;
 
 namespace D2DUIv3
 {
@@ -36,9 +36,12 @@ namespace D2DUIv3
 
             FindViewById<Button>(Resource.Id.buttonConnect).Click += (o, e) =>
             {
+                bool isConnected = true;
+                IPAddress iPAddress = IPAddress.Parse(FindViewById<EditText>(Resource.Id.textBoxIP).Text);
+
                 try
                 {
-                    client = new CommClient(IPAddress.Parse(FindViewById<EditText>(Resource.Id.textBoxIP).Text), ConnectionType.Connect, SetText2);
+                    client = new CommClient(iPAddress, ConnectionType.Connect, SetText2);
                 }
                 catch (Exception ex)
                 {
@@ -47,6 +50,16 @@ namespace D2DUIv3
                     "Message: " + ex.Message + "\n" +
                     "Source: " + ex.Source + "\n" +
                     "TargetSite: " + ex.TargetSite + "\n";
+                    isConnected = false;
+                }
+                finally
+                {
+                    if (isConnected)
+                    {
+                        Intent nextActivity = new Intent(this, typeof(MainMenuActivity));
+                        nextActivity.PutExtra("IP", iPAddress.ToString());
+                        StartActivity(nextActivity);
+                    }
                 }
             };
 
@@ -84,7 +97,7 @@ namespace D2DUIv3
 
         public override bool OnCreateOptionsMenu(IMenu menu)
         {
-            MenuInflater.Inflate(Resource.Menu.top_menus, menu);
+            MenuInflater.Inflate(Resource.Menu.intro_toolbar, menu);
             return base.OnCreateOptionsMenu(menu);
         }
 

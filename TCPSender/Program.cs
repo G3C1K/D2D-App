@@ -20,7 +20,7 @@ namespace TCPSender
 
 
 
-            //Test.CommClient_Test();
+            Test.CommClient_Test();
 
 
             //Test.AutoConfig_Test();
@@ -35,61 +35,61 @@ namespace TCPSender
 
             //ScreenCaptureLibrary.Test.LZ4_DX_PerformanceTest();
 
-            CommClient client = null;
+            //CommClient client = null;
 
-            Console.WriteLine("listen/connect");
-            string listenConnect = Console.ReadLine();
-            if (listenConnect == "listen")
-            {
-                IPAddress adresInterfejsuDoNasluchu = CommClient.GetLocalIPAddress();
-                Console.WriteLine("Nasluchiwanie na adresie: " + adresInterfejsuDoNasluchu.ToString());
+            //Console.WriteLine("listen/connect");
+            //string listenConnect = Console.ReadLine();
+            //if (listenConnect == "listen")
+            //{
+            //    IPAddress adresInterfejsuDoNasluchu = CommClient.GetLocalIPAddress();
+            //    Console.WriteLine("Nasluchiwanie na adresie: " + adresInterfejsuDoNasluchu.ToString());
 
-                client = new CommClient(adresInterfejsuDoNasluchu, ConnectionType.Listen, Console.WriteLine);
-            }
-            if (listenConnect == "connect")
-            {
-                Console.WriteLine("Adres hosta do polaczenia: ");
-                IPAddress adresInterfejsuDoPolaczenia = IPAddress.Parse(Console.ReadLine());  //adres IP interfejsu
-                client = new CommClient(adresInterfejsuDoPolaczenia, ConnectionType.Connect, Console.WriteLine);
-            }
+            //    client = new CommClient(adresInterfejsuDoNasluchu, ConnectionType.Listen, Console.WriteLine);
+            //}
+            //if (listenConnect == "connect")
+            //{
+            //    Console.WriteLine("Adres hosta do polaczenia: ");
+            //    IPAddress adresInterfejsuDoPolaczenia = IPAddress.Parse(Console.ReadLine());  //adres IP interfejsu
+            //    client = new CommClient(adresInterfejsuDoPolaczenia, ConnectionType.Connect, Console.WriteLine);
+            //}
 
-            if (listenConnect == "listen")
-            {
-                CompressScreen display = new CompressScreen(false);
-                Console.WriteLine("in listen loop");
-                Thread IterateWithQueueThread = new Thread(() =>
-                {
-                    client.SendImageXOR();
-                    for (int i = 0; i < 10000; i++)
-                    {
-                        display.Iterate_with_queue(client.queueXOR);
-                    }
-                    client.StopImageXOR();
-                });
-                IterateWithQueueThread.Start();
-            }
+            //if (listenConnect == "listen")
+            //{
+            //    CompressScreen display = new CompressScreen(false);
+            //    Console.WriteLine("in listen loop");
+            //    Thread IterateWithQueueThread = new Thread(() =>
+            //    {
+            //        client.SendImageXOR();
+            //        for (int i = 0; i < 10000; i++)
+            //        {
+            //            display.Iterate_with_queue(client.queueXOR);
+            //        }
+            //        client.StopImageXOR();
+            //    });
+            //    IterateWithQueueThread.Start();
+            //}
 
-            string input = null;
-            while (client.IsConnected == true)
-            {
-                input = Console.ReadLine();
-                if (client.IsConnected == true)
-                {
-                    if (input == "plik")
-                    {
-                        Console.WriteLine("path");
-                        client.SendFile(Console.ReadLine());
-                    }
-                    else
-                    {
-                        client.SendMessage(input);
-                    }
-                    if (input == "x")
-                    {
-                        client.Close();
-                    }
-                }
-            }
+            //string input = null;
+            //while (client.IsConnected == true)
+            //{
+            //    input = Console.ReadLine();
+            //    if (client.IsConnected == true)
+            //    {
+            //        if (input == "plik")
+            //        {
+            //            Console.WriteLine("path");
+            //            client.SendFile(Console.ReadLine());
+            //        }
+            //        else
+            //        {
+            //            client.SendMessage(input);
+            //        }
+            //        if (input == "x")
+            //        {
+            //            client.Close();
+            //        }
+            //    }
+            //}
 
             //Console.ReadLine();
 
