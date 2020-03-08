@@ -46,6 +46,7 @@ namespace TCPSender
         Thread imageXORThreadRec;
         bool stillSend = false;
         public BlockingCollection<byte[]> queueXOR { get; internal set; }
+        public Action<byte[]> byteArrayAction { get; set; }
 
         public CommClient(IPAddress _adresIP, ConnectionType isServer, Action<string> _funkcjaDoPrzekazaniaMessagy) //serwer = listen, client = connect
         {
@@ -129,7 +130,7 @@ namespace TCPSender
                 else if (input == "i")
                 {
                     input = reader.ReadString();
-                    imageXORThreadRec = new Thread(() => ReceiveImageXOR(input));
+                    imageXORThreadRec = new Thread(() => ReceiveImageXOR(input, byteArrayAction));
                     imageXORThreadRec.Start();
                 }
             }
@@ -280,7 +281,7 @@ namespace TCPSender
         }
 
 
-        private void ReceiveImageXOR(string _targetIPAddress)
+        private void ReceiveImageXOR(string _targetIPAddress, Action<byte[]> function_PassByteArrayTo)
         {
             TcpClient imageClient = new TcpClient();
             imageClient.Connect(IPAddress.Parse(_targetIPAddress), imageXORPort);
@@ -298,8 +299,12 @@ namespace TCPSender
                 data = imageReader.ReadBytes(datasize);
 
 
-                Console.WriteLine("image got " + data.Length.ToString());
+                if(function_PassByteArrayTo == null)
+                {
+                    //Console.WriteLine("image got " + data.Length.ToString());
+                }
                 //function_PassByteArrayTo(data);
+   
             }
         }
 

@@ -13,6 +13,7 @@ using SharpDX.DXGI;
 using SharpDX.Direct3D11;
 using SharpDX;
 using System.Collections.Concurrent;
+using System.IO;
 
 namespace TCPSender
 {
@@ -62,6 +63,12 @@ namespace TCPSender
             {
                 g.Clear(Color.Black);
             }
+
+            //asdsad
+            //MemoryStream stream = new MemoryStream();
+            //prev.Save(stream, System.Drawing.Imaging.ImageFormat.Bmp);
+            //byte[] bytes = stream.ToArray();
+            //asdsad
 
             compressionBuffer = new byte[screenBounds.Width * screenBounds.Height * 4];
 
@@ -167,6 +174,7 @@ namespace TCPSender
                 compressedScreen.Size = LZ4.LZ4Codec.Encode(compressionBuffer, 0, compressionBuffer.Length, compressedScreen.Data, 0, compressedScreen.Data.Length);
 
 
+
                 var tmp = cur;
                 cur = prev;
                 prev = tmp;
@@ -193,7 +201,7 @@ namespace TCPSender
                 XOR.CountDifference(locked2, locked1, this.compressionBuffer);
 
                 compressedScreen.Data = LZ4.LZ4Codec.Encode(compressionBuffer, 0, compressionBuffer.Length);
-                compressedScreen.Size = compressedScreen.Data.Length;
+                //compressedScreen.Size = compressedScreen.Data.Length;
                 //Console.WriteLine("compressed screen size " + compressedScreen.Size + " compressed screen data size " + compressedScreen.Data.Length);
                 queueXOR.Add(compressedScreen.Data);
 
