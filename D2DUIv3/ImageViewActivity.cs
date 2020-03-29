@@ -12,10 +12,11 @@ using Android.Views;
 using Android.Widget;
 using TCPSender;
 
+
 namespace D2DUIv3
 {
-    [Activity(Label = "Volume", Theme = "@style/AppTheme")]
-    public class VolumeActivity : AppCompatActivity
+    [Activity(Label = "ImageViewActivity")]
+    public class ImageViewActivity : AppCompatActivity
     {
 
         public CommClient client;
@@ -24,36 +25,20 @@ namespace D2DUIv3
         {
             base.OnCreate(savedInstanceState);
 
+            SetContentView(Resource.Layout.imageview_submenu);
+
             client = ClientHolder.Client;
 
-            SetContentView(Resource.Layout.volume_submenu);
-
-            var buttonVolumeUp = FindViewById<Button>(Resource.Id.buttonVolumeUp2);
-            var buttonVolumeDown = FindViewById<Button>(Resource.Id.buttonVolumeDown2);
-            var buttonToggleMute = FindViewById<Button>(Resource.Id.toggleButtonMute2);
-
-            buttonVolumeDown.Click += (o, e) =>
-            {
-                client.SendVolume("down");
-            };
-
-            buttonVolumeUp.Click += (o, e) =>
-            {
-                client.SendVolume("up");
-            };
-
-            buttonToggleMute.Click += (o, e) =>
-            {
-                client.SendVolume("mute");
-            };
 
 
+
+            // Create your application here
         }
-
 
         public override bool OnCreateOptionsMenu(IMenu menu)
         {
             MenuInflater.Inflate(Resource.Menu.basic_submenu_toolbar, menu);
+
             SupportActionBar.SetDisplayHomeAsUpEnabled(true);
             SupportActionBar.SetDisplayShowHomeEnabled(true);
             return base.OnCreateOptionsMenu(menu);
@@ -72,5 +57,4 @@ namespace D2DUIv3
             return base.OnOptionsItemSelected(item);
         }
     }
-
 }

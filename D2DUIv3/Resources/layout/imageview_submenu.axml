@@ -4,22 +4,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 	<TextView
-		android:text="Połączono z:"
+		android:text="to be added"
 		android:textAppearance="?android:attr/textAppearanceLarge"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:minWidth="25px"
 		android:minHeight="25px"
-		android:id="@+id/textIPInfo" />
-	<Button
-		android:text="Volume"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:id="@+id/buttonVolume" />
-	<Button
-		android:text="Imageview"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:id="@+id/buttonImageView" />
+		android:id="@+id/textView1" />
 
 </LinearLayout>

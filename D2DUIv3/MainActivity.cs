@@ -42,6 +42,7 @@ namespace D2DUIv3
                 try
                 {
                     client = new CommClient(iPAddress, ConnectionType.Connect, SetText2);
+                    ClientHolder.Client = client;
                 }
                 catch (Exception ex)
                 {
@@ -70,29 +71,6 @@ namespace D2DUIv3
                 textOutput.Text = "";
             };
 
-            FindViewById<Button>(Resource.Id.toggleButtonMute).Click += (o, e) =>
-            {
-                client.SendVolume("mute");
-            };
-
-            FindViewById<Button>(Resource.Id.buttonVolumeDown).Click += (o, e) =>
-            {
-                client.SendVolume("down");
-            };
-
-            FindViewById<Button>(Resource.Id.buttonVolumeUp).Click += (o, e) =>
-            {
-                client.SendVolume("up");
-            };
-
-            //do zrobienia:
-            //lepsze ui
-            //usiniecie/dezaktywacja connectButton po podlaczeniu sie, lub zamiana go na disconnectButton
-            //w zakladkach mam kod jak dostac volume poszczegolnych aplikacji
-            //moze remote mute mikra
-            //
-            //moze zaczac wysylanie plikow
-
         }
 
         public override bool OnCreateOptionsMenu(IMenu menu)
@@ -106,7 +84,6 @@ namespace D2DUIv3
             Toast.MakeText(this, "Action selected: " + item.TitleFormatted,
                 ToastLength.Short).Show();
 
-            
             return base.OnOptionsItemSelected(item);
         }
     }

@@ -10,12 +10,16 @@ using Android.Runtime;
 using Android.Support.V7.App;
 using Android.Views;
 using Android.Widget;
+using TCPSender;
 
 namespace D2DUIv3
 {
     [Activity(Label = "Main menu", Theme = "@style/AppTheme")]
     public class MainMenuActivity : AppCompatActivity
     {
+
+        public CommClient client;
+
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -23,8 +27,17 @@ namespace D2DUIv3
             SetContentView(Resource.Layout.main_menu);
             string ip = Intent.GetStringExtra("IP" ?? "not recv");
 
+            client = ClientHolder.Client;
+
             var txtIP = FindViewById<TextView>(Resource.Id.textIPInfo);
-            txtIP.Text += " " + ip;
+            if (client != null)
+            {
+                txtIP.Text += " " + ip + " " + client.DownloadPath;
+            }
+            else
+            {
+                txtIP.Text = "client not inst";
+            }
 
             var buttonVolume = FindViewById<Button>(Resource.Id.buttonVolume);
 
@@ -47,6 +60,7 @@ namespace D2DUIv3
         {
             if(item.ItemId == Resource.Id.menu_disconnect)
             {
+                client.Close();
                 this.Finish();
                 return true;
             }

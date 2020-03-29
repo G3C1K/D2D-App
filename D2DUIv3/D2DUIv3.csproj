@@ -56,6 +56,8 @@
     <Reference Include="Mono.Android" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ClientHolder.cs" />
+    <Compile Include="ImageViewActivity.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="MainMenuActivity.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
@@ -223,6 +225,11 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\menu\basic_submenu_toolbar.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\imageview_submenu.axml">
       <SubType>Designer</SubType>
     </AndroidResource>
   </ItemGroup>
