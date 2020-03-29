@@ -8,7 +8,7 @@ using System.Net;
 using System;
 using Android.Views;
 using Android.Graphics;
-
+using Android.Content;
 
 namespace D2DUIv3
 {
@@ -36,9 +36,13 @@ namespace D2DUIv3
 
             FindViewById<Button>(Resource.Id.buttonConnect).Click += (o, e) =>
             {
+                bool isConnected = true;
+                IPAddress iPAddress = IPAddress.Parse(FindViewById<EditText>(Resource.Id.textBoxIP).Text);
+
                 try
                 {
-                    client = new CommClient(IPAddress.Parse(FindViewById<EditText>(Resource.Id.textBoxIP).Text), ConnectionType.Connect, SetText2);
+                    client = new CommClient(iPAddress, ConnectionType.Connect, SetText2);
+                    ClientHolder.Client = client;
                 }
                 catch (Exception ex)
                 {
@@ -47,6 +51,16 @@ namespace D2DUIv3
                     "Message: " + ex.Message + "\n" +
                     "Source: " + ex.Source + "\n" +
                     "TargetSite: " + ex.TargetSite + "\n";
+                    isConnected = false;
+                }
+                finally
+                {
+                    if (isConnected)
+                    {
+                        Intent nextActivity = new Intent(this, typeof(MainMenuActivity));
+                        nextActivity.PutExtra("IP", iPAddress.ToString());
+                        StartActivity(nextActivity);
+                    }
                 }
             };
 
@@ -57,34 +71,11 @@ namespace D2DUIv3
                 textOutput.Text = "";
             };
 
-            FindViewById<Button>(Resource.Id.toggleButtonMute).Click += (o, e) =>
-            {
-                client.SendVolume("mute");
-            };
-
-            FindViewById<Button>(Resource.Id.buttonVolumeDown).Click += (o, e) =>
-            {
-                client.SendVolume("down");
-            };
-
-            FindViewById<Button>(Resource.Id.buttonVolumeUp).Click += (o, e) =>
-            {
-                client.SendVolume("up");
-            };
-
-            //do zrobienia:
-            //lepsze ui
-            //usiniecie/dezaktywacja connectButton po podlaczeniu sie, lub zamiana go na disconnectButton
-            //w zakladkach mam kod jak dostac volume poszczegolnych aplikacji
-            //moze remote mute mikra
-            //
-            //moze zaczac wysylanie plikow
-
         }
 
         public override bool OnCreateOptionsMenu(IMenu menu)
         {
-            MenuInflater.Inflate(Resource.Menu.top_menus, menu);
+            MenuInflater.Inflate(Resource.Menu.intro_toolbar, menu);
             return base.OnCreateOptionsMenu(menu);
         }
 
@@ -93,7 +84,6 @@ namespace D2DUIv3
             Toast.MakeText(this, "Action selected: " + item.TitleFormatted,
                 ToastLength.Short).Show();
 
-            
             return base.OnOptionsItemSelected(item);
         }
     }

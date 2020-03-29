@@ -316,6 +316,7 @@ namespace TCPSender
             {
                 case "mute":
                     VolumeChanger.Mute();
+                    //Console.WriteLine("muted");
                     break;
                 case "up":
                     VolumeChanger.VolumeUp();
@@ -389,4 +390,6 @@ class VolumeChanger
         keybd_event(VK_VOLUME_MUTE, MapVirtualKey(VK_VOLUME_MUTE, 0), KEYEVENTF_EXTENDEDKEY, 0);
         keybd_event(VK_VOLUME_MUTE, MapVirtualKey(VK_VOLUME_MUTE, 0), KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
     }
+
+
 }

@@ -12,7 +12,8 @@
 		android:layout_width="match_parent"
 		android:layout_height="61.5dp"
 		android:id="@+id/textBoxIP"
-		android:contentDescription="Adres IP do polaczenia"  />
+		android:contentDescription="Adres IP do polaczenia"
+		android:hint="Wpisz IP hosta" />
 	<Button
 		android:text="Connect"
 		android:layout_width="match_parent"
@@ -36,25 +37,12 @@
 	<EditText
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:id="@+id/textBoxMessageInput" />
+		android:id="@+id/textBoxMessageInput"
+		android:hint="Wyślij swoją wiadomość" />
 	<Button
 		android:text="Send message"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:id="@+id/buttonSend" />
-	<GridLayout
-		android:minWidth="25px"
-		android:minHeight="25px"
-		android:layout_width="match_parent"
-		android:layout_height="59.0dp"
-		android:id="@+id/gridLayout1">
-		<Button
-			android:text="Up"
-			android:id="@+id/buttonVolumeUp" />
-		<Button
-			android:text="Down"
-			android:id="@+id/buttonVolumeDown" />
-		<ToggleButton
-			android:id="@+id/toggleButtonMute" />
-	</GridLayout>
+
 </LinearLayout>
