@@ -8,15 +8,44 @@ using Android.Content;
 using Android.OS;
 using Android.Runtime;
 using Android.Support.V7.App;
+using Android.Util;
 using Android.Views;
 using Android.Widget;
 using TCPSender;
 
 namespace D2DUIv3
 {
+
     [Activity(Label = "Volume", Theme = "@style/AppTheme")]
     public class VolumeActivity : AppCompatActivity
     {
+        public class Slider2 : SeekBar
+        {
+            public int MASTER_ID;
+
+            public Slider2(Context context) : base(context)
+            {
+            }
+
+            public Slider2(Context context, IAttributeSet attrs) : base(context, attrs)
+            {
+            }
+
+            public Slider2(Context context, IAttributeSet attrs, int defStyleAttr) : base(context, attrs, defStyleAttr)
+            {
+            }
+
+            public Slider2(Context context, IAttributeSet attrs, int defStyleAttr, int defStyleRes) : base(context, attrs, defStyleAttr, defStyleRes)
+            {
+            }
+
+            protected Slider2(IntPtr javaReference, JniHandleOwnership transfer) : base(javaReference, transfer)
+            {
+            }
+
+
+        }
+
 
         public CommClient client;
 
@@ -25,31 +54,56 @@ namespace D2DUIv3
             base.OnCreate(savedInstanceState);
 
             client = ClientHolder.Client;
+            client.volumeReady = false;
+            client.InstantiateVolumeClient();
+            
+            while(client.volumeReady == false)
+            {
+
+            }
 
             SetContentView(Resource.Layout.volume_submenu);
 
-            var buttonVolumeUp = FindViewById<Button>(Resource.Id.buttonVolumeUp2);
-            var buttonVolumeDown = FindViewById<Button>(Resource.Id.buttonVolumeDown2);
-            var buttonToggleMute = FindViewById<Button>(Resource.Id.toggleButtonMute2);
 
-            buttonVolumeDown.Click += (o, e) =>
-            {
-                client.SendVolume("down");
-            };
+            var linearLayoutVolume = FindViewById<LinearLayout>(Resource.Id.linearLayoutVolume);
 
-            buttonVolumeUp.Click += (o, e) =>
+            foreach (VolumeAndroid volume in client.VolumeArrayForAndroid)
             {
-                client.SendVolume("up");
-            };
+                TextView textView = new TextView(this);
+                LinearLayout.LayoutParams paramss = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MatchParent, 100);
+                textView.LayoutParameters = paramss;
+                if (volume.DisplayName != "null" && volume.DisplayName != "")
+                {
+                    textView.Text = volume.DisplayName;
+                }
+                else if (volume.ProcessName != "null")
+                {
+                    textView.Text = volume.ProcessName;
+                }
+                else textView.Text = "unknown process";
+                textView.Text += " " + volume.ProcessID;
 
-            buttonToggleMute.Click += (o, e) =>
-            {
-                client.SendVolume("mute");
-            };
+                linearLayoutVolume.AddView(textView);
+
+                Slider2 slider = new Slider2(this);
+                slider.MASTER_ID = volume.ProcessID;
+                slider.Progress = (int)volume.Volume;
+
+                slider.ProgressChanged += (o, e) =>
+                {
+                    client.ChangeVolumeClient(slider.MASTER_ID, (float)slider.Progress);
+                };
+
+                linearLayoutVolume.AddView(slider); 
+            }
 
 
         }
 
+        private void Slider_ProgressChanged(object sender, SeekBar.ProgressChangedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
 
         public override bool OnCreateOptionsMenu(IMenu menu)
         {
@@ -64,6 +118,7 @@ namespace D2DUIv3
         {
             if (item.ItemId == Android.Resource.Id.Home)
             {
+                client.volumeReady = false;
                 this.Finish();
                 return true;
             }

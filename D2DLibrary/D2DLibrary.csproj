@@ -73,6 +73,7 @@
     <Compile Include="CommClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Test.cs" />
+    <Compile Include="VolumeMixer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

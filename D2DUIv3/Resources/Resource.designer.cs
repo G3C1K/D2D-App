@@ -2444,12 +2444,6 @@ namespace D2DUIv3
 			// aapt resource value: 0x7f0800a1
 			public const int buttonVolume = 2131230881;
 			
-			// aapt resource value: 0x7f0800b9
-			public const int buttonVolumeDown2 = 2131230905;
-			
-			// aapt resource value: 0x7f0800b8
-			public const int buttonVolumeUp2 = 2131230904;
-			
 			// aapt resource value: 0x7f0800a7
 			public const int cancel_action = 2131230887;
 			
@@ -2558,9 +2552,6 @@ namespace D2DUIv3
 			// aapt resource value: 0x7f08000a
 			public const int ghost_view = 2131230730;
 			
-			// aapt resource value: 0x7f0800b7
-			public const int gridLayout12 = 2131230903;
-			
 			// aapt resource value: 0x7f080005
 			public const int home = 2131230725;
 			
@@ -2600,23 +2591,26 @@ namespace D2DUIv3
 			// aapt resource value: 0x7f080018
 			public const int line3 = 2131230744;
 			
+			// aapt resource value: 0x7f0800b8
+			public const int linearLayoutVolume = 2131230904;
+			
 			// aapt resource value: 0x7f08001d
 			public const int listMode = 2131230749;
 			
 			// aapt resource value: 0x7f080061
 			public const int list_item = 2131230817;
 			
-			// aapt resource value: 0x7f0800bc
-			public const int masked = 2131230908;
+			// aapt resource value: 0x7f0800ba
+			public const int masked = 2131230906;
 			
 			// aapt resource value: 0x7f0800a9
 			public const int media_actions = 2131230889;
 			
-			// aapt resource value: 0x7f0800be
-			public const int menu_disconnect = 2131230910;
+			// aapt resource value: 0x7f0800bc
+			public const int menu_disconnect = 2131230908;
 			
-			// aapt resource value: 0x7f0800bd
-			public const int menu_settings = 2131230909;
+			// aapt resource value: 0x7f0800bb
+			public const int menu_settings = 2131230907;
 			
 			// aapt resource value: 0x7f0800b6
 			public const int message = 2131230902;
@@ -2707,6 +2701,9 @@ namespace D2DUIv3
 			
 			// aapt resource value: 0x7f08008d
 			public const int scrollView1 = 2131230861;
+			
+			// aapt resource value: 0x7f0800b7
+			public const int scrollViewVolume = 2131230903;
 			
 			// aapt resource value: 0x7f080055
 			public const int scrollable = 2131230805;
@@ -2849,9 +2846,6 @@ namespace D2DUIv3
 			// aapt resource value: 0x7f08006f
 			public const int title_template = 2131230831;
 			
-			// aapt resource value: 0x7f0800ba
-			public const int toggleButtonMute2 = 2131230906;
-			
 			// aapt resource value: 0x7f08003e
 			public const int top = 2131230782;
 			
@@ -2888,8 +2882,8 @@ namespace D2DUIv3
 			// aapt resource value: 0x7f080016
 			public const int view_offset_helper = 2131230742;
 			
-			// aapt resource value: 0x7f0800bb
-			public const int visible = 2131230907;
+			// aapt resource value: 0x7f0800b9
+			public const int visible = 2131230905;
 			
 			// aapt resource value: 0x7f08003c
 			public const int withText = 2131230780;

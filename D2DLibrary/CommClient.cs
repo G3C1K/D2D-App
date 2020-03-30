@@ -47,6 +47,11 @@ namespace TCPSender
         bool stillSend = false;
         public BlockingCollection<byte[]> queueXOR { get; internal set; }
 
+
+        VolumeMaster volumeMaster;
+        public VolumeAndroid[] VolumeArrayForAndroid { get; internal set; }
+        public bool volumeReady = false;
+
         public CommClient(IPAddress _adresIP, ConnectionType isServer, Action<string> _funkcjaDoPrzekazaniaMessagy) //serwer = listen, client = connect
         {
             cIP = _adresIP;
@@ -121,16 +126,26 @@ namespace TCPSender
                     Thread rec = new Thread(() => ReceiveFile(input));
                     rec.Start();
                 }
-                else if (input == "v")
-                {
-                    input = reader.ReadString();
-                    SetVolume(input);
-                }
                 else if (input == "i")
                 {
                     input = reader.ReadString();
                     imageXORThreadRec = new Thread(() => ReceiveImageXOR(input));
                     imageXORThreadRec.Start();
+                }
+                else if (input == "vIC")
+                {
+                    input = reader.ReadString();
+                    InstantiateVolumeServer();
+                }
+                else if (input == "vIS")
+                {
+                    ReadVolumeClient(reader);
+                }
+                else if (input == "vIR")
+                {
+                    int id = int.Parse(reader.ReadString());
+                    float volume = float.Parse(reader.ReadString());
+                    ChangeVolumeServer(id, volume);
                 }
             }
             Close_Self();
@@ -223,6 +238,10 @@ namespace TCPSender
             fileThread.Start();
         }
 
+        //--------------------------------------------------
+        //IMAGES START
+        //--------------------------------------------------
+
         public void SendImageXOR()
         {
             queueXOR = new BlockingCollection<byte[]>();
@@ -303,30 +322,96 @@ namespace TCPSender
             }
         }
 
+        //--------------------------------------------------
+        //IMAGES END
+        //--------------------------------------------------
 
-        public void SendVolume(string _mode)
+
+        //--------------------------------------------------
+        //VOLUME START
+        //--------------------------------------------------
+
+        public void InstantiateVolumeClient()
         {
-            writer.Write("v");
-            writer.Write(_mode);
+            writer.Write("vIC");
+            writer.Write("hi. placeholder for flags and options");
         }
 
-        public void SetVolume(string _mode)
+        private void InstantiateVolumeServer()
         {
-            switch (_mode)
+            volumeMaster = new VolumeMaster();
+            writer.Write("vIS");
+
+            writer.Write(volumeMaster.Sessions.Count.ToString());
+
+            for (int i = 0; i < volumeMaster.Sessions.Count; i++)
             {
-                case "mute":
-                    VolumeChanger.Mute();
-                    //Console.WriteLine("muted");
-                    break;
-                case "up":
-                    VolumeChanger.VolumeUp();
-                    break;
-                case "down":
-                    VolumeChanger.VolumeDown();
-                    break;
+                if(volumeMaster.Sessions[i].DisplayName == null || volumeMaster.Sessions[i].DisplayName != "")
+                {
+                    writer.Write(volumeMaster.Sessions[i].DisplayName);
+                }
+                else
+                {
+                    writer.Write("null");
+                }
+
+                if (volumeMaster.Sessions[i].Process!= null)
+                {
+                    writer.Write(volumeMaster.Sessions[i].Process.ProcessName);
+                }
+                else
+                {
+                    writer.Write("null");
+                }
+
+                writer.Write(volumeMaster.Sessions[i].Mute.ToString());
+                writer.Write(volumeMaster.Sessions[i].Volume.ToString());
+
+                if (volumeMaster.Sessions[i].Process != null)
+                {
+                    writer.Write(volumeMaster.Sessions[i].Process.Id.ToString()); 
+                }
+                else
+                {
+                    writer.Write("0");
+                }
+            }
+        }
+
+        private void ReadVolumeClient(BinaryReader reader)
+        {
+            int procCount = int.Parse(reader.ReadString());
+            VolumeArrayForAndroid = new VolumeAndroid[procCount];
+
+            for (int i = 0; i < procCount; i++)
+            {
+                string displayName = reader.ReadString();
+                string processName = reader.ReadString();
+                bool mute = bool.Parse(reader.ReadString());
+                double volume = double.Parse(reader.ReadString());
+                int processID = int.Parse(reader.ReadString());
+                VolumeArrayForAndroid[i] = new VolumeAndroid(displayName, processName, mute, volume, processID);
             }
 
+            volumeReady = true;  
         }
+
+        public void ChangeVolumeClient(int _id, float _volume)
+        {
+            writer.Write("vIR");
+            writer.Write(_id.ToString());
+            writer.Write(_volume.ToString());
+        }
+
+        private void ChangeVolumeServer(int _id, float _volume)
+        {
+            AudioSession session = volumeMaster.GetSessionByProcessID(_id);
+            if (session != null)
+            {
+                session.Volume = _volume;
+            }
+        }
+
 
         public void Close()
         {
@@ -355,41 +440,24 @@ namespace TCPSender
 
     }
 
-   
+   public class VolumeAndroid
+    {
+        public string DisplayName { get; }
+        public string ProcessName { get; }
+        public bool Mute { get; }
+        public double Volume { get; }
+        public int ProcessID { get; }
+
+        public VolumeAndroid(string _displayName, string _processName, bool _mute, double _volume, int _processID)
+        {
+            DisplayName = _displayName;
+            ProcessName = _processName;
+            Mute = _mute;
+            Volume = _volume;
+            ProcessID = _processID;
+        }
+    }
 
 }
 
-class VolumeChanger
-{
-    private const byte VK_VOLUME_MUTE = 0xAD;
-    private const byte VK_VOLUME_DOWN = 0xAE;
-    private const byte VK_VOLUME_UP = 0xAF;
-    private const UInt32 KEYEVENTF_EXTENDEDKEY = 0x0001;
-    private const UInt32 KEYEVENTF_KEYUP = 0x0002;
 
-    [DllImport("user32.dll")]
-    static extern void keybd_event(byte bVk, byte bScan, UInt32 dwFlags, UInt32 dwExtraInfo);
-
-    [DllImport("user32.dll")]
-    static extern Byte MapVirtualKey(UInt32 uCode, UInt32 uMapType);
-
-    public static void VolumeUp()
-    {
-        keybd_event(VK_VOLUME_UP, MapVirtualKey(VK_VOLUME_UP, 0), KEYEVENTF_EXTENDEDKEY, 0);
-        keybd_event(VK_VOLUME_UP, MapVirtualKey(VK_VOLUME_UP, 0), KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
-    }
-
-    public static void VolumeDown()
-    {
-        keybd_event(VK_VOLUME_DOWN, MapVirtualKey(VK_VOLUME_DOWN, 0), KEYEVENTF_EXTENDEDKEY, 0);
-        keybd_event(VK_VOLUME_DOWN, MapVirtualKey(VK_VOLUME_DOWN, 0), KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
-    }
-
-    public static void Mute()
-    {
-        keybd_event(VK_VOLUME_MUTE, MapVirtualKey(VK_VOLUME_MUTE, 0), KEYEVENTF_EXTENDEDKEY, 0);
-        keybd_event(VK_VOLUME_MUTE, MapVirtualKey(VK_VOLUME_MUTE, 0), KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
-    }
-
-
-}
