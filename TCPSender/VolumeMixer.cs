@@ -8,16 +8,109 @@ using System.Threading.Tasks;
 
 namespace TCPSender
 {
+    public sealed class VolumeMaster
+    {
+        public List<AudioSession> Sessions { get; }
+
+        public VolumeMaster()
+        {
+            // get the speakers (1st render + multimedia) device
+            List<AudioSession> list = new List<AudioSession>();
+            IMMDeviceEnumerator deviceEnumerator = (IMMDeviceEnumerator)new MMDeviceEnumerator();
+            IMMDevice speakers;
+            deviceEnumerator.GetDefaultAudioEndpoint(EDataFlow.eRender, ERole.eMultimedia, out speakers);
+
+            Guid GUID_IAudioSessionManager2 = typeof(IAudioSessionManager2).GUID;
+            object o;
+            speakers.Activate(ref GUID_IAudioSessionManager2, 0, IntPtr.Zero, out o);
+            IAudioSessionManager2 mgr = (IAudioSessionManager2)o;
+
+            if (mgr == null)
+            {
+                Sessions = list;
+                return;
+            }
+               
+            IAudioSessionEnumerator sessionEnumerator;
+            mgr.GetSessionEnumerator(out sessionEnumerator);
+
+            int count;
+            sessionEnumerator.GetCount(out count);
+
+            for (int i = 0; i < count; i++)
+            {
+                IAudioSessionControl ctl;
+                sessionEnumerator.GetSession(i, out ctl);
+                if (ctl == null)
+                    continue;
+
+                IAudioSessionControl2 ctl2 = ctl as IAudioSessionControl2;
+                if (ctl2 != null)
+                {
+                    list.Add(new AudioSession(ctl2));
+                }
+            }
+            Marshal.ReleaseComObject(speakers);
+            Marshal.ReleaseComObject(deviceEnumerator);
+            Marshal.ReleaseComObject(sessionEnumerator);
+            Marshal.ReleaseComObject(mgr);
+
+            Sessions = list;
+        }
+
+        public AudioSession GetSessionByDisplayName(string name)
+        {
+            foreach(AudioSession session in Sessions)
+            {
+                if(name == session.DisplayName)
+                {
+                    return session;
+                }
+            }
+            return null;
+        }
+
+        public AudioSession GetSessionByProcessName(string name)
+        {
+            foreach (AudioSession session in Sessions)
+            {
+                if (session.Process != null)
+                {
+                    if(name == session.Process.ProcessName)
+                    {
+                        return session;
+                    }
+                }
+            }
+            return null;
+        }
+
+        public AudioSession GetSessionByProcessID(int id)
+        {
+            foreach (AudioSession session in Sessions)
+            {
+                if (session.Process != null)
+                {
+                    if (id == session.Process.Id)
+                    {
+                        return session;
+                    }
+                }
+            }
+            return null;
+        }
+    }
+
     public sealed class AudioSession : IDisposable
     {
         private IAudioSessionControl2 _ctl;
         private Process _process;
+        private int ID;
 
         internal AudioSession(IAudioSessionControl2 ctl)
         {
             _ctl = ctl;
         }
-
 
         public float? Volume
         {
@@ -221,7 +314,7 @@ namespace TCPSender
 
 
 
-        public static IList<AudioSession> GetAllSessions2()
+        public static List<AudioSession> GetAllSessions2()
         {
             // get the speakers (1st render + multimedia) device
             List<AudioSession> list = new List<AudioSession>();

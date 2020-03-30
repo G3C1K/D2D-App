@@ -16,23 +16,18 @@ namespace TCPSender
     {
         static void Main_VolumeMixer()
         {
-            foreach (AudioSession session in AudioSession.GetAllSessions2())
+            VolumeMaster master = new VolumeMaster();
+            foreach (AudioSession session in master.Sessions)
             {
                 if (session.Process != null)
                 {
-                    // only the one associated with a defined process
                     Console.WriteLine(session.Process.ProcessName);
-                    Console.WriteLine(session.DisplayName);
-                    Console.WriteLine(session.ProcessId);
-                    Console.WriteLine(session.Volume);
-
-                    //session.Mute = true;
-                    session.Volume = 10;
-
-                    Console.WriteLine("\n");
-
-
                 }
+                Console.WriteLine(session.DisplayName);
+                Console.WriteLine(session.Volume);
+                Console.WriteLine(session.Mute + "\n");
+
+                session.Volume = 100;
             }
 
             Console.ReadLine();
