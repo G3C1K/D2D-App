@@ -15,13 +15,16 @@ namespace TCPSender
             {
                 if (session.Process != null)
                 {
-                    Console.WriteLine(session.Process.ProcessName);
+                    Console.WriteLine("ProcessName: " + session.Process.ProcessName);
                 }
-                Console.WriteLine(session.DisplayName);
-                Console.WriteLine(session.Volume);
-                Console.WriteLine(session.Mute + "\n");
+                Console.WriteLine("DisplayName: " + session.DisplayName);
+                Console.WriteLine("Volume: " + session.Volume);
+                Console.WriteLine("Muted: " + session.Mute);
+                Console.WriteLine("State: " + session.State.ToString());
 
-                session.Volume = 100;
+                Console.WriteLine();
+
+                //session.Volume = 100;
             }
 
             Console.ReadLine();

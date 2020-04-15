@@ -29,6 +29,7 @@ namespace TCPSender
         int commandPort = 50001;        //port komend/message
         int filePort = 50002;           //port dla plikow. zasada dzialania jak w FTP
         int imageXORPort = 50003;
+        int ubaPort = 50004;
 
         TcpClient client;               //klient tcp dla komend
         IPAddress cIP;                  //adres IP. Zalezy od tego czy instancja jest klientem czy serwerem
@@ -48,8 +49,9 @@ namespace TCPSender
         public BlockingCollection<byte[]> queueXOR { get; internal set; }
 
 
-        VolumeMaster volumeMaster;
-        public VolumeAndroid[] VolumeArrayForAndroid { get; internal set; }
+        VolumeMaster volumeMaster;          //audio coreapi
+        public VolumeAndroid[] VolumeArrayForAndroid { get; internal set; } //android - tablica instancji w formie tekstowej
+        public List<VolumeAndroid> VolumeListForAndroid { get; internal set; }     //android - lista instancji w formie testowej
         public bool volumeReady = false;
 
         public CommClient(IPAddress _adresIP, ConnectionType isServer, Action<string> _funkcjaDoPrzekazaniaMessagy) //serwer = listen, client = connect
@@ -132,20 +134,40 @@ namespace TCPSender
                     imageXORThreadRec = new Thread(() => ReceiveImageXOR(input));
                     imageXORThreadRec.Start();
                 }
-                else if (input == "vIC")
+                else if (input == "vIC")    //instancja volume na PC
                 {
                     input = reader.ReadString();
                     InstantiateVolumeServer();
                 }
-                else if (input == "vIS")
+                else if (input == "vIS")    //instancja volume na androidzie
                 {
                     ReadVolumeClient(reader);
                 }
-                else if (input == "vIR")
+                else if (input == "vIR")    //zmiana volume na PC
                 {
-                    int id = int.Parse(reader.ReadString());
-                    float volume = float.Parse(reader.ReadString());
-                    ChangeVolumeServer(id, volume);
+                    string type = reader.ReadString();  //typ zmienianej sesji
+                    if(type == "id")                    //po processID
+                    {
+                        int id = int.Parse(reader.ReadString());
+                        float volume = float.Parse(reader.ReadString());
+                        ChangeVolumeServer(id, volume);
+                    }
+                    if(type == "pn")                    //po grupie processname
+                    {
+                        string processName = reader.ReadString();
+                        float volume = float.Parse(reader.ReadString());
+                        ChangeVolumeServerPN(processName, volume);
+                    }
+                    if (type == "dn")                   //po grupie displayNAme
+                    {
+                        string displayName = reader.ReadString();
+                        float volume = float.Parse(reader.ReadString());
+                        ChangeVolumeServerDN(displayName, volume);
+                    }
+                }
+                else if (input == "ubaS")
+                {
+
                 }
             }
             Close_Self();
@@ -331,78 +353,131 @@ namespace TCPSender
         //VOLUME START
         //--------------------------------------------------
 
-        public void InstantiateVolumeClient()
+        public void InstantiateVolumeClient()                   //android rozpoczyna komunikacje uzywajac InstantiateVolumeClient. nastepnie wywolywane jest InstantiateVolumeServer
         {
             writer.Write("vIC");
-            writer.Write("hi. placeholder for flags and options");
+            writer.Write("hi. placeholder for flags and options");      
         }
 
-        private void InstantiateVolumeServer()
+        private void InstantiateVolumeServer()      //uruchomienie VolumeMastera na PC
         {
             volumeMaster = new VolumeMaster();
-            writer.Write("vIS");
+            writer.Write("vIS");        //flaga oznaczajaca gotowosc do wysylania
 
-            writer.Write(volumeMaster.Sessions.Count.ToString());
+            writer.Write(volumeMaster.Sessions.Count.ToString());   //wysyla ilosc sesji NA PC. Ilosc sesji jakie zaakceptuje android bedzie inna.
 
-            for (int i = 0; i < volumeMaster.Sessions.Count; i++)
+            List<string> list = new List<string>(); //lista z nazwami procesow. uzywana do unikania duplikowania juz istniejacych sesji
+
+            for (int i = 0; i < volumeMaster.Sessions.Count; i++)   //po wszystkich sesjach
             {
-                if(volumeMaster.Sessions[i].DisplayName == null || volumeMaster.Sessions[i].DisplayName != "")
+                string displayName;
+                string processName;
+                string mute;
+                string volume;
+                string processID;
+
+                //jesli istnieje displayname procesu. niektore procesy nie maja swojego displayname
+                if (volumeMaster.Sessions[i].DisplayName != null && volumeMaster.Sessions[i].DisplayName != "")  
                 {
-                    writer.Write(volumeMaster.Sessions[i].DisplayName);
+                    displayName = volumeMaster.Sessions[i].DisplayName; 
+                    //writer.Write(volumeMaster.Sessions[i].DisplayName);
                 }
                 else
                 {
-                    writer.Write("null");
+                    displayName = "null";
                 }
 
-                if (volumeMaster.Sessions[i].Process!= null)
-                {
-                    writer.Write(volumeMaster.Sessions[i].Process.ProcessName);
-                }
-                else
-                {
-                    writer.Write("null");
-                }
-
-                writer.Write(volumeMaster.Sessions[i].Mute.ToString());
-                writer.Write(volumeMaster.Sessions[i].Volume.ToString());
-
+                //jesli istnieje proces. uslugi systemu nie musza miec instancji procesu aby korzystac z audioapi. jednak wiekszosc sesji ma swoj proces.
                 if (volumeMaster.Sessions[i].Process != null)
                 {
-                    writer.Write(volumeMaster.Sessions[i].Process.Id.ToString()); 
+                    processName = volumeMaster.Sessions[i].Process.ProcessName;
+                    processID = volumeMaster.Sessions[i].Process.Id.ToString();
+                    //writer.Write(volumeMaster.Sessions[i].Process.ProcessName);
+                    
                 }
                 else
                 {
-                    writer.Write("0");
+                    processName = "null";
+                    processID = "0";
                 }
+
+                //mutestatus - czy sesja jest zmutowana
+                mute = volumeMaster.Sessions[i].Mute.ToString();
+                //volume
+                volume = volumeMaster.Sessions[i].Volume.ToString();
+
+                //poniewaz android nie wie ile PC bedzie wysylal sesji, wie tylko ile bedzie maksymalnie wysylal, wysyla sie tag skip gdy sesja jest pomijana
+                //new lub skip
+
+                //PC nie wysyla duplikatów sesji. jest to zwiazane z tym, ze jeden program moze miec wiele wywolan audioapi. sesje sa grupowane po processname
+                if (!list.Contains(processName) || processName == "null")
+                {
+                    list.Add(processName);
+                    writer.Write("new");
+                    writer.Write(displayName);
+                    writer.Write(processName);
+                    writer.Write(mute);
+                    writer.Write(volume);
+                    writer.Write(processID);
+                }
+                else
+                {
+                    writer.Write("skip");
+                }
+
+                
             }
         }
 
+        //po fladze vIS
         private void ReadVolumeClient(BinaryReader reader)
         {
             int procCount = int.Parse(reader.ReadString());
-            VolumeArrayForAndroid = new VolumeAndroid[procCount];
-
+            //VolumeArrayForAndroid = new VolumeAndroid[procCount];
+            VolumeListForAndroid = new List<VolumeAndroid>(); 
             for (int i = 0; i < procCount; i++)
             {
-                string displayName = reader.ReadString();
-                string processName = reader.ReadString();
-                bool mute = bool.Parse(reader.ReadString());
-                double volume = double.Parse(reader.ReadString());
-                int processID = int.Parse(reader.ReadString());
-                VolumeArrayForAndroid[i] = new VolumeAndroid(displayName, processName, mute, volume, processID);
+                string status = reader.ReadString();
+                if(status == "new")
+                {
+                    string displayName = reader.ReadString();
+                    string processName = reader.ReadString();
+                    bool mute = bool.Parse(reader.ReadString());
+                    double volume = double.Parse(reader.ReadString());
+                    int processID = int.Parse(reader.ReadString());
+                    VolumeListForAndroid.Add(new VolumeAndroid(displayName, processName, mute, volume, processID));
+                }
             }
 
-            volumeReady = true;  
+            volumeReady = true;  //flaga do czekania az wszystkie sesje zostana zaladowane.
         }
 
+        //volume na androidzie sa grupowane
         public void ChangeVolumeClient(int _id, float _volume)
         {
             writer.Write("vIR");
+            writer.Write("id");
             writer.Write(_id.ToString());
             writer.Write(_volume.ToString());
         }
 
+        public void ChangeVolumeClientPN(string _processName, float _volume)
+        {
+            writer.Write("vIR");
+            writer.Write("pn");
+            writer.Write(_processName);
+            writer.Write(_volume.ToString());
+        }
+
+        public void ChangeVolumeClientDN(string _displayName, float _volume)
+        {
+            writer.Write("vIR");
+            writer.Write("dn");
+            writer.Write(_displayName);
+            writer.Write(_volume.ToString());
+        }
+
+        //zmienia volume jednego procesu oznaczonego przez ID
         private void ChangeVolumeServer(int _id, float _volume)
         {
             AudioSession session = volumeMaster.GetSessionByProcessID(_id);
@@ -412,6 +487,52 @@ namespace TCPSender
             }
         }
 
+        //zmienia volume wszystkich sesji z jednym processname
+        private void ChangeVolumeServerPN(string _processName, float _volume)
+        {
+            List<AudioSession> list = volumeMaster.GetSessionByProcessName2(_processName);
+            foreach (var session in list)
+            {
+                session.Volume = _volume;
+            }
+        }
+
+        //zmienia volume wszystkich sesji z jednym displayname
+        private void ChangeVolumeServerDN(string _displayName, float _volume)
+        {
+            List<AudioSession> list = volumeMaster.GetSessionByDisplayName2(_displayName);
+            foreach (var session in list)
+            {
+                session.Volume = _volume;
+            }
+        }
+
+        //--------------------------------------------------
+        //VOLUME END
+        //--------------------------------------------------
+
+        //--------------------------------------------------
+        //UBA START
+        //--------------------------------------------------
+
+        public void SendSmallUBA(byte[] uba)
+        {
+            writer.Write("ubaS");
+            writer.Write(uba.Length.ToString());
+            writer.Write(uba, 0, uba.Length);
+        }
+
+        private byte[] ReadSmallUBA(BinaryReader reader)
+        {
+            int length = int.Parse(reader.ReadString());
+            byte[] ret;
+            ret = reader.ReadBytes(length);
+            return ret;
+        }
+
+        //--------------------------------------------------
+        //UBA END
+        //--------------------------------------------------
 
         public void Close()
         {

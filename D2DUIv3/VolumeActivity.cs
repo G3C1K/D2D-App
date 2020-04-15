@@ -22,6 +22,8 @@ namespace D2DUIv3
         public class Slider2 : SeekBar
         {
             public int MASTER_ID;
+            public string PROCESS_NAME = "null";
+            public string DISPLAY_NAME = "null";
 
             public Slider2(Context context) : base(context)
             {
@@ -67,11 +69,14 @@ namespace D2DUIv3
 
             var linearLayoutVolume = FindViewById<LinearLayout>(Resource.Id.linearLayoutVolume);
 
-            foreach (VolumeAndroid volume in client.VolumeArrayForAndroid)
+            foreach (VolumeAndroid volume in client.VolumeListForAndroid)
             {
                 TextView textView = new TextView(this);
                 LinearLayout.LayoutParams paramss = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MatchParent, 100);
                 textView.LayoutParameters = paramss;
+
+                Slider2 slider = new Slider2(this);
+
                 if (volume.DisplayName != "null" && volume.DisplayName != "")
                 {
                     textView.Text = volume.DisplayName;
@@ -85,13 +90,25 @@ namespace D2DUIv3
 
                 linearLayoutVolume.AddView(textView);
 
-                Slider2 slider = new Slider2(this);
                 slider.MASTER_ID = volume.ProcessID;
+                slider.PROCESS_NAME = volume.ProcessName;
+                slider.DISPLAY_NAME = volume.DisplayName;
                 slider.Progress = (int)volume.Volume;
 
                 slider.ProgressChanged += (o, e) =>
                 {
-                    client.ChangeVolumeClient(slider.MASTER_ID, (float)slider.Progress);
+                    if (slider.PROCESS_NAME != "null")
+                    {
+                        client.ChangeVolumeClientPN(slider.PROCESS_NAME, (float)slider.Progress);
+                    }
+                    else if (slider.DISPLAY_NAME != "null")
+                    {
+                        client.ChangeVolumeClientDN(slider.DISPLAY_NAME, (float)slider.Progress);
+                    }
+                    else
+                    {
+                        client.ChangeVolumeClient(slider.MASTER_ID, (float)slider.Progress);
+                    }
                 };
 
                 linearLayoutVolume.AddView(slider); 

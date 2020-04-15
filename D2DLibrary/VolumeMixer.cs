@@ -70,6 +70,19 @@ namespace TCPSender
             return null;
         }
 
+        public List<AudioSession> GetSessionByDisplayName2(string name)
+        {
+            List<AudioSession> list = new List<AudioSession>();
+            foreach (AudioSession session in Sessions)
+            {
+                if (name == session.DisplayName)
+                {
+                    list.Add(session);
+                }
+            }
+            return list;
+        }
+
         public AudioSession GetSessionByProcessName(string name)
         {
             foreach (AudioSession session in Sessions)
@@ -83,6 +96,23 @@ namespace TCPSender
                 }
             }
             return null;
+        }
+
+        public List<AudioSession> GetSessionByProcessName2(string name)
+        {
+            List<AudioSession> list = new List<AudioSession>();
+
+            foreach (AudioSession session in Sessions)
+            {
+                if (session.Process != null)
+                {
+                    if (name == session.Process.ProcessName)
+                    {
+                        list.Add(session);
+                    }
+                }
+            }
+            return list;
         }
 
         public AudioSession GetSessionByProcessID(int id)
