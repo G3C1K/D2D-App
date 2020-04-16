@@ -19,7 +19,7 @@ namespace TCPSender
         static int Main(string[] args)
         {
 
-            Test.CommClient_Test();
+            VolumeHandling.MainHandler();
             
             return 0;
         }
