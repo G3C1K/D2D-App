@@ -52,19 +52,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommClientPC.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Test.cs" />
     <Compile Include="VolumeHandling.cs" />
+    <Compile Include="VolumeMixer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\D2DLibrary\D2DLibrary.csproj">
-      <Project>{95254150-ec16-479d-8186-abaff63ab98b}</Project>
-      <Name>D2DLibrary</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ScreenCaptureLibrary\ScreenCaptureLibrary.csproj">
       <Project>{6437b61c-93b1-46de-8cc4-c5bcc4ef484e}</Project>
       <Name>ScreenCaptureLibrary</Name>

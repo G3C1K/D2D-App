@@ -18,8 +18,8 @@ namespace TCPSender
 
         static int Main(string[] args)
         {
-
-            Test.CommClient_Test();
+            //Test.CommClient_Test();
+            Test_internal.CommClientPC_Test();
             
             return 0;
         }

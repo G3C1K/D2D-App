@@ -3,7 +3,6 @@ using Android.OS;
 using Android.Support.V7.App;
 using Android.Runtime;
 using Android.Widget;
-using TCPSender;
 using System.Net;
 using System;
 using Android.Views;
@@ -17,7 +16,7 @@ namespace D2DUIv3
     public class MainActivity : AppCompatActivity
     {
         TextView textNumber;
-        CommClient client;
+        CommClientAndroid client;
         EditText textOutput;
 
         public void SetText2(string _message)
@@ -41,7 +40,7 @@ namespace D2DUIv3
 
                 try
                 {
-                    client = new CommClient(iPAddress, ConnectionType.Connect, SetText2);
+                    client = new CommClientAndroid(iPAddress, SetText2);
                     ClientHolder.Client = client;
                 }
                 catch (Exception ex)

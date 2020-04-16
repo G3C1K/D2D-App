@@ -1,22 +1,22 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
+using Android.App;
+using Android.Content;
+using Android.OS;
+using Android.Runtime;
+using Android.Views;
+using Android.Widget;
 
-namespace TCPSender
+namespace D2DUIv3
 {
-
-    public enum ConnectionType { Connect, Listen };
-
-    public class CommClient
+    public class CommClientAndroid
     {
         //KODY KOMEND (na razie)
         //m = message
@@ -49,36 +49,21 @@ namespace TCPSender
         public BlockingCollection<byte[]> queueXOR { get; internal set; }
 
 
-        VolumeMaster volumeMaster;          //audio coreapi
-        private VolumeAndroid[] VolumeArrayForAndroid { get;  set; } //android - tablica instancji w formie tekstowej
-        private List<VolumeAndroid> VolumeListForAndroid { get;  set; }     //android - lista instancji w formie testowej
+        public VolumeAndroid[] VolumeArrayForAndroid { get; internal set; } //android - tablica instancji w formie tekstowej
+        public List<VolumeAndroid> VolumeListForAndroid { get; internal set; }     //android - lista instancji w formie testowej
         public bool volumeReady = false;
 
-        public CommClient(IPAddress _adresIP, ConnectionType isServer, Action<string> _funkcjaDoPrzekazaniaMessagy) //serwer = listen, client = connect
+        public CommClientAndroid(IPAddress _adresIP, Action<string> _funkcjaDoPrzekazaniaMessagy) //serwer = listen, client = connect
         {
             cIP = _adresIP;
-            if (isServer == ConnectionType.Listen)
-            {
-                Listen(_adresIP);
-            }
-            else
-            {
-                Connect(_adresIP);
-            }
+
+            Connect(_adresIP);  //connect only
             OpenCommandLine();
             outputFunc = _funkcjaDoPrzekazaniaMessagy;
             IsConnected = true;
             SendMessage("Connected!");
         }
 
-        private bool Listen(IPAddress _adresInterfejsuNasluchu) //W serwerze, nasluchuje na polaczenie
-        {
-            TcpListener listener = new TcpListener(_adresInterfejsuNasluchu, commandPort);
-            listener.Start();
-            client = listener.AcceptTcpClient();
-            listener.Stop();
-            return true;
-        }
 
         private bool Connect(IPAddress _adresIPHosta)       //Ustanawia polaczenie
         {
@@ -104,12 +89,13 @@ namespace TCPSender
         private void ListenForCommands(Action<string> _outputFunc)            //Uruchamia watek nasluchiwania na wiadomosci. Do przerobienia z uwzglednieniem Action
         {
             BinaryReader reader = new BinaryReader(client.GetStream());
-            string input = null;
-            while (input != "x")
+            int input = -1;
+            string nextInput = null;
+            while (input != (int)ClientFlags.Close)
             {
                 try
                 {
-                    input = reader.ReadString();
+                    input = reader.ReadInt32();
                 }
                 catch
                 {
@@ -117,58 +103,27 @@ namespace TCPSender
                     return;
                 }
 
-                if (input == "m")
+                if (input == (int)ClientFlags.Command)
                 {
-                    input = reader.ReadString();
-                    outputFunc(input);
+                    nextInput = reader.ReadString();
+                    outputFunc(nextInput);
                 }
-                else if (input == "f")
+                else if (input == (int)ClientFlags.File)
                 {
-                    input = reader.ReadString();
-                    Thread rec = new Thread(() => ReceiveFile(input));
+                    nextInput = reader.ReadString();
+                    Thread rec = new Thread(() => ReceiveFile(nextInput));
                     rec.Start();
                 }
-                else if (input == "i")
+                else if (input == (int)ClientFlags.XOR)
                 {
-                    input = reader.ReadString();
-                    imageXORThreadRec = new Thread(() => ReceiveImageXOR(input));
-                    imageXORThreadRec.Start();
+                    //input = reader.ReadString();
+                    //imageXORThreadRec = new Thread(() => ReceiveImageXOR(input));
+                    //imageXORThreadRec.Start();
                 }
-                else if (input == "vIC")    //instancja volume na PC
-                {
-                    input = reader.ReadString();
-                    InstantiateVolumeServer();
-                }
-                else if (input == "vIS")    //instancja volume na androidzie
+                else if (input == (int)ClientFlags.Volume_ServerReady)    //instancja volume na androidzie
                 {
                     ReadVolumeClient(reader);
-                }
-                else if (input == "vIR")    //zmiana volume na PC
-                {
-                    string type = reader.ReadString();  //typ zmienianej sesji
-                    if (type == "id")                    //po processID
-                    {
-                        int id = int.Parse(reader.ReadString());
-                        float volume = float.Parse(reader.ReadString());
-                        ChangeVolumeServer(id, volume);
-                    }
-                    if (type == "pn")                    //po grupie processname
-                    {
-                        string processName = reader.ReadString();
-                        float volume = float.Parse(reader.ReadString());
-                        ChangeVolumeServerPN(processName, volume);
-                    }
-                    if (type == "dn")                   //po grupie displayNAme
-                    {
-                        string displayName = reader.ReadString();
-                        float volume = float.Parse(reader.ReadString());
-                        ChangeVolumeServerDN(displayName, volume);
-                    }
-                }
-                else if (input == "ubaS")
-                {
-
-                }
+                } 
             }
             Close_Self();
         }
@@ -181,7 +136,7 @@ namespace TCPSender
             IPAddress ownIPAddress = GetLocalIPAddress();
             TcpListener fileListener = new TcpListener(ownIPAddress, filePort);
             fileListener.Start();
-            writer.Write("f");
+            writer.Write((int)ClientFlags.File);
             writer.Write(ownIPAddress.ToString());
             fileClient = fileListener.AcceptTcpClient();
             fileListener.Stop();
@@ -250,7 +205,7 @@ namespace TCPSender
 
         public void SendMessage(string _message)    //Wysyla message (type 1) do odbiorcy
         {
-            writer.Write("m");
+            writer.Write((int)ClientFlags.Command);
             writer.Write(_message);
         }
 
@@ -264,85 +219,85 @@ namespace TCPSender
         //IMAGES START
         //--------------------------------------------------
 
-        public void SendImageXOR()
-        {
-            queueXOR = new BlockingCollection<byte[]>();
-            stillSend = true;
-            Console.WriteLine("send image xor");
-            imageXORThreadSend = new Thread(() => SendImageXOR_T());
-            imageXORThreadSend.Start();
-        }
+        //public void SendImageXOR()
+        //{
+        //    queueXOR = new BlockingCollection<byte[]>();
+        //    stillSend = true;
+        //    Console.WriteLine("send image xor");
+        //    imageXORThreadSend = new Thread(() => SendImageXOR_T());
+        //    imageXORThreadSend.Start();
+        //}
 
-        public void StopImageXOR()
-        {
-            stillSend = false;
-            if (imageXORThreadSend != null)
-            {
-                imageXORThreadSend.Abort();
-            }
-            if (imageXORThreadRec != null)
-            {
-                imageXORThreadRec.Abort();
-            }
-        }
+        //public void StopImageXOR()
+        //{
+        //    stillSend = false;
+        //    if (imageXORThreadSend != null)
+        //    {
+        //        imageXORThreadSend.Abort();
+        //    }
+        //    if (imageXORThreadRec != null)
+        //    {
+        //        imageXORThreadRec.Abort();
+        //    }
+        //}
 
-        private void SendImageXOR_T()
-        {
-            Console.WriteLine("send image xor T");
-            TcpClient imageClient = new TcpClient();
-            IPAddress ownIPAddress = GetLocalIPAddress();
-            TcpListener imageListener = new TcpListener(ownIPAddress, imageXORPort);
-            imageListener.Start();
-            writer.Write("i");
-            Console.WriteLine("listening for connection reply");
-            writer.Write(ownIPAddress.ToString());
-            imageClient = imageListener.AcceptTcpClient();
-            imageListener.Stop();
+        //private void SendImageXOR_T()
+        //{
+        //    Console.WriteLine("send image xor T");
+        //    TcpClient imageClient = new TcpClient();
+        //    IPAddress ownIPAddress = GetLocalIPAddress();
+        //    TcpListener imageListener = new TcpListener(ownIPAddress, imageXORPort);
+        //    imageListener.Start();
+        //    writer.Write("i");
+        //    Console.WriteLine("listening for connection reply");
+        //    writer.Write(ownIPAddress.ToString());
+        //    imageClient = imageListener.AcceptTcpClient();
+        //    imageListener.Stop();
 
-            BinaryWriter imageWriter = new BinaryWriter(imageClient.GetStream());
+        //    BinaryWriter imageWriter = new BinaryWriter(imageClient.GetStream());
 
-            while (stillSend == true)
-            {
-                byte[] data = null;
+        //    while (stillSend == true)
+        //    {
+        //        byte[] data = null;
 
-                try
-                {
-                    data = queueXOR.Take();
-                }
-                catch (InvalidOperationException) { }
+        //        try
+        //        {
+        //            data = queueXOR.Take();
+        //        }
+        //        catch (InvalidOperationException) { }
 
-                if (data != null)
-                {
-                    int datasize = data.Length;
-                    imageWriter.Write(datasize.ToString());
-                    imageWriter.Write(data, 0, datasize);
-                }
-            }
-        }
-
-
-        private void ReceiveImageXOR(string _targetIPAddress)
-        {
-            TcpClient imageClient = new TcpClient();
-            imageClient.Connect(IPAddress.Parse(_targetIPAddress), imageXORPort);
-            Console.WriteLine("connected image");
-            BinaryReader imageReader = new BinaryReader(imageClient.GetStream());
-
-            stillSend = true;
-
-            int datasize;
-
-            while (stillSend == true)
-            {
-                datasize = int.Parse(imageReader.ReadString());
-                byte[] data = new byte[datasize];
-                data = imageReader.ReadBytes(datasize);
+        //        if (data != null)
+        //        {
+        //            int datasize = data.Length;
+        //            imageWriter.Write(datasize.ToString());
+        //            imageWriter.Write(data, 0, datasize);
+        //        }
+        //    }
+        //}
 
 
-                Console.WriteLine("image got " + data.Length.ToString());
-                //function_PassByteArrayTo(data);
-            }
-        }
+        //private void ReceiveImageXOR(string _targetIPAddress)
+        //{
+        //    TcpClient imageClient = new TcpClient();
+        //    imageClient.Connect(IPAddress.Parse(_targetIPAddress), imageXORPort);
+        //    Console.WriteLine("connected image");
+        //    BinaryReader imageReader = new BinaryReader(imageClient.GetStream());
+
+        //    stillSend = true;
+
+        //    int datasize;
+
+        //    while (stillSend == true)
+        //    {
+        //        datasize = int.Parse(imageReader.ReadString());
+        //        byte[] data = new byte[datasize];
+        //        data = imageReader.ReadBytes(datasize);
+
+
+        //        Console.WriteLine("image got " + data.Length.ToString());
+        //        //function_PassByteArrayTo(data);
+        //    }
+        //}
 
         //--------------------------------------------------
         //IMAGES END
@@ -355,79 +310,9 @@ namespace TCPSender
 
         public void InstantiateVolumeClient()                   //android rozpoczyna komunikacje uzywajac InstantiateVolumeClient. nastepnie wywolywane jest InstantiateVolumeServer
         {
-            writer.Write("vIC");
+            writer.Write((int)ClientFlags.Volume_RequestConnection);
             writer.Write("hi. placeholder for flags and options");
-        }
-
-        private void InstantiateVolumeServer()      //uruchomienie VolumeMastera na PC
-        {
-            volumeMaster = new VolumeMaster();
-            writer.Write("vIS");        //flaga oznaczajaca gotowosc do wysylania
-
-            writer.Write(volumeMaster.Sessions.Count.ToString());   //wysyla ilosc sesji NA PC. Ilosc sesji jakie zaakceptuje android bedzie inna.
-
-            List<string> list = new List<string>(); //lista z nazwami procesow. uzywana do unikania duplikowania juz istniejacych sesji
-
-            for (int i = 0; i < volumeMaster.Sessions.Count; i++)   //po wszystkich sesjach
-            {
-                string displayName;
-                string processName;
-                string mute;
-                string volume;
-                string processID;
-
-                //jesli istnieje displayname procesu. niektore procesy nie maja swojego displayname
-                if (volumeMaster.Sessions[i].DisplayName != null && volumeMaster.Sessions[i].DisplayName != "")
-                {
-                    displayName = volumeMaster.Sessions[i].DisplayName;
-                    //writer.Write(volumeMaster.Sessions[i].DisplayName);
-                }
-                else
-                {
-                    displayName = "null";
-                }
-
-                //jesli istnieje proces. uslugi systemu nie musza miec instancji procesu aby korzystac z audioapi. jednak wiekszosc sesji ma swoj proces.
-                if (volumeMaster.Sessions[i].Process != null)
-                {
-                    processName = volumeMaster.Sessions[i].Process.ProcessName;
-                    processID = volumeMaster.Sessions[i].Process.Id.ToString();
-                    //writer.Write(volumeMaster.Sessions[i].Process.ProcessName);
-
-                }
-                else
-                {
-                    processName = "null";
-                    processID = "0";
-                }
-
-                //mutestatus - czy sesja jest zmutowana
-                mute = volumeMaster.Sessions[i].Mute.ToString();
-                //volume
-                volume = volumeMaster.Sessions[i].Volume.ToString();
-
-                //poniewaz android nie wie ile PC bedzie wysylal sesji, wie tylko ile bedzie maksymalnie wysylal, wysyla sie tag skip gdy sesja jest pomijana
-                //new lub skip
-
-                //PC nie wysyla duplikatów sesji. jest to zwiazane z tym, ze jeden program moze miec wiele wywolan audioapi. sesje sa grupowane po processname
-                if (!list.Contains(processName) || processName == "null")
-                {
-                    list.Add(processName);
-                    writer.Write("new");
-                    writer.Write(displayName);
-                    writer.Write(processName);
-                    writer.Write(mute);
-                    writer.Write(volume);
-                    writer.Write(processID);
-                }
-                else
-                {
-                    writer.Write("skip");
-                }
-
-
-            }
-        }
+        }       
 
         //po fladze vIS
         private void ReadVolumeClient(BinaryReader reader)
@@ -455,57 +340,28 @@ namespace TCPSender
         //volume na androidzie sa grupowane
         public void ChangeVolumeClient(int _id, float _volume)
         {
-            writer.Write("vIR");
-            writer.Write("id");
+            writer.Write((int)ClientFlags.Volume_ChangeVolume);
+            writer.Write((int)ClientFlags.Volume_ProcessID);
             writer.Write(_id.ToString());
             writer.Write(_volume.ToString());
         }
 
         public void ChangeVolumeClientPN(string _processName, float _volume)
         {
-            writer.Write("vIR");
-            writer.Write("pn");
+            writer.Write((int)ClientFlags.Volume_ChangeVolume);
+            writer.Write((int)ClientFlags.Volume_ProcessName);
             writer.Write(_processName);
             writer.Write(_volume.ToString());
         }
 
         public void ChangeVolumeClientDN(string _displayName, float _volume)
         {
-            writer.Write("vIR");
-            writer.Write("dn");
+            writer.Write((int)ClientFlags.Volume_ChangeVolume);
+            writer.Write((int)ClientFlags.Volume_DisplayName);
             writer.Write(_displayName);
             writer.Write(_volume.ToString());
         }
 
-        //zmienia volume jednego procesu oznaczonego przez ID
-        private void ChangeVolumeServer(int _id, float _volume)
-        {
-            AudioSession session = volumeMaster.GetSessionByProcessID(_id);
-            if (session != null)
-            {
-                session.Volume = _volume;
-            }
-        }
-
-        //zmienia volume wszystkich sesji z jednym processname
-        private void ChangeVolumeServerPN(string _processName, float _volume)
-        {
-            List<AudioSession> list = volumeMaster.GetSessionByProcessName2(_processName);
-            foreach (var session in list)
-            {
-                session.Volume = _volume;
-            }
-        }
-
-        //zmienia volume wszystkich sesji z jednym displayname
-        private void ChangeVolumeServerDN(string _displayName, float _volume)
-        {
-            List<AudioSession> list = volumeMaster.GetSessionByDisplayName2(_displayName);
-            foreach (var session in list)
-            {
-                session.Volume = _volume;
-            }
-        }
 
         //--------------------------------------------------
         //VOLUME END
@@ -514,13 +370,6 @@ namespace TCPSender
         //--------------------------------------------------
         //UBA START
         //--------------------------------------------------
-
-        public void SendSmallUBA(byte[] uba)
-        {
-            writer.Write("ubaS");
-            writer.Write(uba.Length.ToString());
-            writer.Write(uba, 0, uba.Length);
-        }
 
         private byte[] ReadSmallUBA(BinaryReader reader)
         {
@@ -561,7 +410,7 @@ namespace TCPSender
 
     }
 
-    internal class VolumeAndroid
+    public class VolumeAndroid
     {
         public string DisplayName { get; }
         public string ProcessName { get; }
@@ -579,7 +428,17 @@ namespace TCPSender
         }
     }
 
-
+    public enum ClientFlags
+    {
+        Close,
+        Command,
+        File,
+        XOR,
+        Volume_RequestConnection,
+        Volume_ServerReady,
+        Volume_ChangeVolume,
+        Volume_ProcessID,
+        Volume_ProcessName,
+        Volume_DisplayName,
+    }
 }
-
-

@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ClientHolder.cs" />
+    <Compile Include="CommClientAndroid.cs" />
     <Compile Include="ImageViewActivity.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="MainMenuActivity.cs" />
@@ -82,12 +83,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Xamarin.Android.Support.Design" Version="27.0.2.1" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\D2DLibrary\D2DLibrary.csproj">
-      <Project>{95254150-ec16-479d-8186-abaff63ab98b}</Project>
-      <Name>D2DLibrary</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_action_content_create.png" />

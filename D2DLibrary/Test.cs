@@ -1,100 +1,100 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using System.Net;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+﻿//using System;
+//using System.Collections.Generic;
+//using System.Diagnostics;
+//using System.Drawing;
+//using System.Linq;
+//using System.Net;
+//using System.Net.Sockets;
+//using System.Text;
+//using System.Threading;
+//using System.Threading.Tasks;
 
-namespace TCPSender
-{
-    public static class Test
-    {
-        public static void CommClient_Test()
-        {
+//namespace TCPSender
+//{
+//    public static class Test
+//    {
+//        public static void CommClient_Test()
+//        {
 
-            CommClient client = null;
+//            CommClient client = null;
 
-            Console.WriteLine("listen/connect");
-            string listenConnect = Console.ReadLine();
-            if (listenConnect == "listen")
-            {
-                IPAddress adresInterfejsuDoNasluchu = CommClient.GetLocalIPAddress();
-                Console.WriteLine("Nasluchiwanie na adresie: " + adresInterfejsuDoNasluchu.ToString());
+//            Console.WriteLine("listen/connect");
+//            string listenConnect = Console.ReadLine();
+//            if (listenConnect == "listen")
+//            {
+//                IPAddress adresInterfejsuDoNasluchu = CommClient.GetLocalIPAddress();
+//                Console.WriteLine("Nasluchiwanie na adresie: " + adresInterfejsuDoNasluchu.ToString());
                 
-                client = new CommClient(adresInterfejsuDoNasluchu, ConnectionType.Listen, Console.WriteLine);
-            }
-            if (listenConnect == "connect")
-            {
-                Console.WriteLine("Adres hosta do polaczenia: ");
-                IPAddress adresInterfejsuDoPolaczenia = IPAddress.Parse(Console.ReadLine());  //adres IP interfejsu
-                client = new CommClient(adresInterfejsuDoPolaczenia, ConnectionType.Connect, Console.WriteLine);
-            }
+//                client = new CommClient(adresInterfejsuDoNasluchu, ConnectionType.Listen, Console.WriteLine);
+//            }
+//            if (listenConnect == "connect")
+//            {
+//                Console.WriteLine("Adres hosta do polaczenia: ");
+//                IPAddress adresInterfejsuDoPolaczenia = IPAddress.Parse(Console.ReadLine());  //adres IP interfejsu
+//                client = new CommClient(adresInterfejsuDoPolaczenia, ConnectionType.Connect, Console.WriteLine);
+//            }
 
 
-            string input = null;
-            while (client.IsConnected == true)
-            {
-                input = Console.ReadLine();
-                if(client.IsConnected == true)
-                {
-                    if (input == "plik")
-                    {
-                        Console.WriteLine("path");
-                        client.SendFile(Console.ReadLine());
-                    }
-                    else
-                    {
-                        client.SendMessage(input);
-                    }
-                    if (input == "x")
-                    {
-                        client.Close();
-                    }
-                }
-            }
-            Console.ReadLine();
-        }
+//            string input = null;
+//            while (client.IsConnected == true)
+//            {
+//                input = Console.ReadLine();
+//                if(client.IsConnected == true)
+//                {
+//                    if (input == "plik")
+//                    {
+//                        Console.WriteLine("path");
+//                        client.SendFile(Console.ReadLine());
+//                    }
+//                    else
+//                    {
+//                        client.SendMessage(input);
+//                    }
+//                    if (input == "x")
+//                    {
+//                        client.Close();
+//                    }
+//                }
+//            }
+//            Console.ReadLine();
+//        }
 
 
 
-        public static void AutoConfig_Test()
-        {
+//        public static void AutoConfig_Test()
+//        {
 
-            AutoConfig auto = new AutoConfig();
+//            AutoConfig auto = new AutoConfig();
 
 
-            string input = Console.ReadLine();
-            if (input == "send")
-            {
-                auto.Send(100); 
-            }
-            if(input == "listen")
-            {
-                auto.Listen();
-            }
+//            string input = Console.ReadLine();
+//            if (input == "send")
+//            {
+//                auto.Send(100); 
+//            }
+//            if(input == "listen")
+//            {
+//                auto.Listen();
+//            }
 
             
 
-            while(input != "x")
-            {
-                input = Console.ReadLine();
-            }
-            auto.Close();
+//            while(input != "x")
+//            {
+//                input = Console.ReadLine();
+//            }
+//            auto.Close();
 
-            IPAddress[] tab = auto.GetIPAddresses();
-            foreach (IPAddress address in tab)
-            {
-                Console.WriteLine("adres: " + address);
-            }
+//            IPAddress[] tab = auto.GetIPAddresses();
+//            foreach (IPAddress address in tab)
+//            {
+//                Console.WriteLine("adres: " + address);
+//            }
 
-            Console.WriteLine("done");
-            Console.ReadLine();
+//            Console.WriteLine("done");
+//            Console.ReadLine();
 
-        }
+//        }
 
-    }
-}
+//    }
+//}

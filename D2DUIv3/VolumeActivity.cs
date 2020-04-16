@@ -11,7 +11,6 @@ using Android.Support.V7.App;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
-using TCPSender;
 
 namespace D2DUIv3
 {
@@ -49,7 +48,7 @@ namespace D2DUIv3
         }
 
 
-        public CommClient client;
+        public CommClientAndroid client;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {

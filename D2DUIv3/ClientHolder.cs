@@ -9,12 +9,11 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
-using TCPSender;
 
 namespace D2DUIv3
 {
     public class ClientHolder
     {
-        public static CommClient Client { get; set; }
+        public static CommClientAndroid Client { get; set; }
     }
 }
