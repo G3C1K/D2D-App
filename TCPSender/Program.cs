@@ -18,10 +18,18 @@ namespace TCPSender
 
         static int Main(string[] args)
         {
-            //Test.CommClient_Test();
-            Test_internal.CommClientPC_Test();
+            VolumeHandling.MainHandler();
+            //Test_internal.CommClientPC_Test();
             
             return 0;
+
+            //do zrobienia:
+            //refresh volume
+            //autorefresh?
+            //dll as systemsounds
+            //styl
+            //pc ui
+            //autoconfig
         }
     }
 }

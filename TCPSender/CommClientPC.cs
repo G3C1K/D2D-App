@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -332,6 +333,10 @@ namespace TCPSender
             writer.Write(volumeMaster.Sessions.Count.ToString());   //wysyla ilosc sesji NA PC. Ilosc sesji jakie zaakceptuje android bedzie inna.
 
             List<string> list = new List<string>(); //lista z nazwami procesow. uzywana do unikania duplikowania juz istniejacych sesji
+            Icon icon;  //ikona do wyslana;
+            Bitmap bitmap; //bitmapa ikony
+            byte[] bitmapBytes;
+            MemoryStream ms;
 
             for (int i = 0; i < volumeMaster.Sessions.Count; i++)   //po wszystkich sesjach
             {
@@ -384,14 +389,24 @@ namespace TCPSender
                     writer.Write(mute);
                     writer.Write(volume);
                     writer.Write(processID);
+
+                    ms = new MemoryStream();
+                    icon = volumeMaster.Sessions[i].GetIcon32x32();
+                    bitmap = icon.ToBitmap();
+                    bitmap.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+                    bitmapBytes = ms.ToArray();
+                    
+
+                    writer.Write(bitmapBytes.Length);
+                    writer.Write(bitmapBytes, 0, bitmapBytes.Length);
                 }
                 else
                 {
                     writer.Write("skip");
                 }
-
-
             }
+
+
         }
 
 
@@ -435,7 +450,6 @@ namespace TCPSender
 
         public void SendSmallUBA(byte[] uba)
         {
-            writer.Write("ubaS");
             writer.Write(uba.Length.ToString());
             writer.Write(uba, 0, uba.Length);
         }
@@ -482,5 +496,6 @@ namespace TCPSender
         Volume_ProcessID,
         Volume_ProcessName,
         Volume_DisplayName,
+        ByteArray
     }
 }

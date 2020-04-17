@@ -5,6 +5,7 @@ using System.Text;
 
 using Android.App;
 using Android.Content;
+using Android.Graphics;
 using Android.OS;
 using Android.Runtime;
 using Android.Support.V7.App;
@@ -69,14 +70,25 @@ namespace D2DUIv3
             var linearLayoutVolume = FindViewById<LinearLayout>(Resource.Id.linearLayoutVolume);
 
             foreach (VolumeAndroid volume in client.VolumeListForAndroid)
-            {
-                TextView textView = new TextView(this);
-                LinearLayout.LayoutParams paramss = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MatchParent, 100);
+            {            
+                LinearLayout layout2 = new LinearLayout(this);          //horizontal layout = ikona + text
+                LinearLayout.LayoutParams layout2Params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MatchParent, 100);
+                layout2.LayoutParameters = layout2Params;
+                layout2.Orientation = Orientation.Horizontal;
+
+                ImageView iv = new ImageView(this);                     //imageView ikony
+                iv.LayoutParameters = new LinearLayout.LayoutParams(100, 100);
+
+                Bitmap bmp = BitmapFactory.DecodeByteArray(volume.IconByteArray, 0, volume.IconByteArray.Length);
+                iv.SetImageBitmap(bmp);                                 //wbijanie ikony do imageview
+
+                TextView textView = new TextView(this);                 //opis sesji
+                LinearLayout.LayoutParams paramss = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WrapContent, 100);
                 textView.LayoutParameters = paramss;
 
                 Slider2 slider = new Slider2(this);
 
-                if (volume.DisplayName != "null" && volume.DisplayName != "")
+                if (volume.DisplayName != "null" && volume.DisplayName != "")   //ustalanie ktory name bedzie wybrany do opisu sesji
                 {
                     textView.Text = volume.DisplayName;
                 }
@@ -87,14 +99,17 @@ namespace D2DUIv3
                 else textView.Text = "unknown process";
                 textView.Text += " " + volume.ProcessID;
 
-                linearLayoutVolume.AddView(textView);
+                //linearLayoutVolume.AddView(textView);
+                linearLayoutVolume.AddView(layout2);        //inner horizontal layout
+                layout2.AddView(iv);
+                layout2.AddView(textView);
 
-                slider.MASTER_ID = volume.ProcessID;
+                slider.MASTER_ID = volume.ProcessID;        //slider insta
                 slider.PROCESS_NAME = volume.ProcessName;
                 slider.DISPLAY_NAME = volume.DisplayName;
                 slider.Progress = (int)volume.Volume;
 
-                slider.ProgressChanged += (o, e) =>
+                slider.ProgressChanged += (o, e) =>         //slider event
                 {
                     if (slider.PROCESS_NAME != "null")
                     {
@@ -110,7 +125,8 @@ namespace D2DUIv3
                     }
                 };
 
-                linearLayoutVolume.AddView(slider); 
+                linearLayoutVolume.AddView(slider);         //slider po layout2
+                
             }
 
 

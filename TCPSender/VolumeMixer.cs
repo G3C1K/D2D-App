@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -299,8 +300,13 @@ namespace TCPSender
             get
             {
                 CheckDisposed();
-                string s;
-                _ctl.GetIconPath(out s);
+                string s = "";               
+                //return s;
+
+                if (Process != null)
+                {
+                    s = Process.MainModule.FileName;
+                }
                 return s;
             }
             set
@@ -313,6 +319,28 @@ namespace TCPSender
                     _ctl.SetIconPath(value, Guid.Empty);
                 }
             }
+        }
+
+        public Icon GetIcon32x32()
+        {
+            int readIconCount = 0;
+            IntPtr[] hDummy = new IntPtr[1] { IntPtr.Zero };
+            IntPtr[] hIconEx = new IntPtr[1] { IntPtr.Zero };
+
+
+            readIconCount = ExtractIconExW(IconPath, 0, hIconEx, hDummy, 1);
+
+            Icon extracted = null;
+            try
+            {
+                extracted = (Icon)Icon.FromHandle(hIconEx[0]).Clone();
+            }
+            catch
+            {
+                extracted = (Icon)SystemIcons.Application.Clone();
+            }
+
+            return extracted;
         }
 
         private void CheckDisposed()
@@ -385,6 +413,14 @@ namespace TCPSender
             Marshal.ReleaseComObject(mgr);
             return list;
         }
+
+        [DllImport("Shell32", CharSet = CharSet.Auto)]
+        private static extern int ExtractIconExW(
+        string lpszFile,
+        int nIconIndex,
+        IntPtr[] phIconLarge,
+        IntPtr[] phIconSmall,
+        int nIcons);
     }
 
 
@@ -656,6 +692,7 @@ namespace TCPSender
         [PreserveSig]
         int UnregisterAudioSessionNotification(IAudioSessionEvents NewNotifications);
     }
+
 
     [Guid("24918ACC-64B3-37C1-8CA9-74A66E9957A8"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IAudioSessionEvents

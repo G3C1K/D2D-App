@@ -124,6 +124,10 @@ namespace D2DUIv3
                 {
                     ReadVolumeClient(reader);
                 } 
+                else if (input == (int)ClientFlags.ByteArray)
+                {
+                    //temporaryImageHolder = ReadSmallUBA(reader);
+                }
             }
             Close_Self();
         }
@@ -330,7 +334,9 @@ namespace D2DUIv3
                     bool mute = bool.Parse(reader.ReadString());
                     double volume = double.Parse(reader.ReadString());
                     int processID = int.Parse(reader.ReadString());
-                    VolumeListForAndroid.Add(new VolumeAndroid(displayName, processName, mute, volume, processID));
+                    int bitmapBytesLength = reader.ReadInt32();
+                    byte[] bitmapBytes = reader.ReadBytes(bitmapBytesLength);
+                    VolumeListForAndroid.Add(new VolumeAndroid(displayName, processName, mute, volume, processID, bitmapBytes));
                 }
             }
 
@@ -417,14 +423,17 @@ namespace D2DUIv3
         public bool Mute { get; }
         public double Volume { get; }
         public int ProcessID { get; }
+        public byte[] IconByteArray { get; }
 
-        public VolumeAndroid(string _displayName, string _processName, bool _mute, double _volume, int _processID)
+        public VolumeAndroid(string _displayName, string _processName, bool _mute, double _volume, int _processID, byte[] _iconByteArray)
         {
             DisplayName = _displayName;
             ProcessName = _processName;
             Mute = _mute;
             Volume = _volume;
             ProcessID = _processID;
+            IconByteArray = new byte[_iconByteArray.Length];
+            Array.Copy(_iconByteArray, IconByteArray, _iconByteArray.Length);
         }
     }
 
@@ -440,5 +449,6 @@ namespace D2DUIv3
         Volume_ProcessID,
         Volume_ProcessName,
         Volume_DisplayName,
+        ByteArray
     }
 }
