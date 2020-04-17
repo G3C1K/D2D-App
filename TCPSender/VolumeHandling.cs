@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AudioSwitcher.AudioApi.CoreAudio;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -22,7 +23,6 @@ namespace TCPSender
                 if (session.Process != null)
                 {
                     Console.WriteLine("ProcessName: " + session.Process.ProcessName);
-                    string filename = session.Process.MainModule.FileName;
                     Console.WriteLine("AudioSession IconPath: " + session.IconPath);
                     Icon icon = session.GetIcon32x32();
                    
@@ -36,6 +36,17 @@ namespace TCPSender
 
                 //session.Volume = 100;
             }
+
+            Console.WriteLine(" ");
+            Console.WriteLine(" ");
+            Console.WriteLine(" ");
+            Console.WriteLine(" ");
+
+            Console.WriteLine("begin coreaudio testing");
+            Console.WriteLine(master.MasterAudioLevel.ToString());
+            master.MasterAudioLevel = 35;
+            Console.WriteLine(master.MasterAudioLevel.ToString());
+
 
             Console.ReadLine();
         }

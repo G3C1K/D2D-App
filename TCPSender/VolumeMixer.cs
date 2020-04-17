@@ -12,6 +12,7 @@ namespace TCPSender
     public sealed class VolumeMaster
     {
         public List<AudioSession> Sessions { get; }
+        private IAudioEndpointVolume audioEndpointVolume;
 
         public VolumeMaster()
         {
@@ -19,12 +20,20 @@ namespace TCPSender
             List<AudioSession> list = new List<AudioSession>();
             IMMDeviceEnumerator deviceEnumerator = (IMMDeviceEnumerator)new MMDeviceEnumerator();
             IMMDevice speakers;
+            IMMDevice SPDIF;
+
             deviceEnumerator.GetDefaultAudioEndpoint(EDataFlow.eRender, ERole.eMultimedia, out speakers);
+            deviceEnumerator.GetDefaultAudioEndpoint(EDataFlow.eRender, ERole.eMultimedia, out SPDIF);
 
             Guid GUID_IAudioSessionManager2 = typeof(IAudioSessionManager2).GUID;
+            Guid GUID_IAudioEndpointVolume = typeof(IAudioEndpointVolume).GUID;
             object o;
-            speakers.Activate(ref GUID_IAudioSessionManager2, 0, IntPtr.Zero, out o);
+            object o2;
+            int i1 = speakers.Activate(ref GUID_IAudioSessionManager2, 0, IntPtr.Zero, out o);
+            int i2 = SPDIF.Activate(ref GUID_IAudioEndpointVolume, 0, IntPtr.Zero, out o2);
             IAudioSessionManager2 mgr = (IAudioSessionManager2)o;
+            audioEndpointVolume = (IAudioEndpointVolume)o2;
+
 
             if (mgr == null)
             {
@@ -57,6 +66,27 @@ namespace TCPSender
             Marshal.ReleaseComObject(mgr);
 
             Sessions = list;
+        }
+
+        public float MasterAudioLevel
+        {
+            get
+            {
+                float ret = -1;
+                audioEndpointVolume.GetMasterVolumeLevelScalar(out ret);
+                return ret * 100;
+            }
+            set
+            {
+                try
+                {
+                    audioEndpointVolume.SetMasterVolumeLevelScalar(value / 100, Guid.Empty);
+                }
+                catch
+                {
+
+                }
+            }
         }
 
         public AudioSession GetSessionByDisplayName(string name)
@@ -305,19 +335,17 @@ namespace TCPSender
 
                 if (Process != null)
                 {
-                    s = Process.MainModule.FileName;
+                    try
+                    {
+                        s = Process.MainModule.FileName;
+
+                    }
+                    catch
+                    {
+                        return "";
+                    }
                 }
                 return s;
-            }
-            set
-            {
-                CheckDisposed();
-                string s;
-                _ctl.GetIconPath(out s);
-                if (s != value)
-                {
-                    _ctl.SetIconPath(value, Guid.Empty);
-                }
             }
         }
 
@@ -327,17 +355,28 @@ namespace TCPSender
             IntPtr[] hDummy = new IntPtr[1] { IntPtr.Zero };
             IntPtr[] hIconEx = new IntPtr[1] { IntPtr.Zero };
 
+            Icon extracted = null;
+            bool exceptionCaught = false;
+
+            
+            string iconPath = IconPath;
+            if(iconPath == "")
+            {
+                exceptionCaught = true;
+            }
 
             readIconCount = ExtractIconExW(IconPath, 0, hIconEx, hDummy, 1);
 
-            Icon extracted = null;
-            try
+            if (exceptionCaught == false)
             {
-                extracted = (Icon)Icon.FromHandle(hIconEx[0]).Clone();
-            }
-            catch
-            {
-                extracted = (Icon)SystemIcons.Application.Clone();
+                try
+                {
+                    extracted = (Icon)Icon.FromHandle(hIconEx[0]).Clone();
+                }
+                catch
+                {
+                    extracted = (Icon)SystemIcons.Application.Clone();
+                } 
             }
 
             return extracted;
@@ -383,6 +422,7 @@ namespace TCPSender
             Guid GUID_IAudioSessionManager2 = typeof(IAudioSessionManager2).GUID;
             object o;
             speakers.Activate(ref GUID_IAudioSessionManager2, 0, IntPtr.Zero, out o);
+            
             IAudioSessionManager2 mgr = (IAudioSessionManager2)o;
 
             if (mgr == null)
@@ -691,6 +731,55 @@ namespace TCPSender
 
         [PreserveSig]
         int UnregisterAudioSessionNotification(IAudioSessionEvents NewNotifications);
+    }
+
+    [Guid("657804FA-D6AD-4496-8A60-352752AF4F89"),
+     InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    internal interface IAudioEndpointVolumeCallback
+    {
+        [PreserveSig]
+        int OnNotify(IntPtr pNotifyData);
+    }
+
+    [Guid("5CDF2C82-841E-4546-9722-0CF74078229A"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    internal interface IAudioEndpointVolume
+    {
+        [PreserveSig]
+        int RegisterControlChangeNotify(IAudioEndpointVolumeCallback pNotify);
+        [PreserveSig]
+        int UnregisterControlChangeNotify(IAudioEndpointVolumeCallback pNotify);
+        [PreserveSig]
+        int GetChannelCount(out int pnChannelCount);
+        [PreserveSig]
+        int SetMasterVolumeLevel(float fLevelDB, Guid pguidEventContext);
+        [PreserveSig]
+        int SetMasterVolumeLevelScalar(float fLevel, Guid pguidEventContext);
+        [PreserveSig]
+        int GetMasterVolumeLevel(out float pfLevelDB);
+        [PreserveSig]
+        int GetMasterVolumeLevelScalar(out float pfLevel);
+        [PreserveSig]
+        int SetChannelVolumeLevel(uint nChannel, float fLevelDB, Guid pguidEventContext);
+        [PreserveSig]
+        int SetChannelVolumeLevelScalar(uint nChannel, float fLevel, Guid pguidEventContext);
+        [PreserveSig]
+        int GetChannelVolumeLevel(uint nChannel, out float pfLevelDB);
+        [PreserveSig]
+        int GetChannelVolumeLevelScalar(uint nChannel, out float pfLevel);
+        [PreserveSig]
+        int SetMute([MarshalAs(UnmanagedType.Bool)] Boolean bMute, Guid pguidEventContext);
+        [PreserveSig]
+        int GetMute(out bool pbMute);
+        [PreserveSig]
+        int GetVolumeStepInfo(out uint pnStep, out uint pnStepCount);
+        [PreserveSig]
+        int VolumeStepUp(Guid pguidEventContext);
+        [PreserveSig]
+        int VolumeStepDown(Guid pguidEventContext);
+        [PreserveSig]
+        int QueryHardwareSupport(out uint pdwHardwareSupportMask);
+        [PreserveSig]
+        int GetVolumeRange(out float pflVolumeMindB, out float pflVolumeMaxdB, out float pflVolumeIncrementdB);
     }
 
 

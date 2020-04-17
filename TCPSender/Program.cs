@@ -24,12 +24,14 @@ namespace TCPSender
             return 0;
 
             //do zrobienia:
+            //globalvolume
             //refresh volume
             //autorefresh?
             //dll as systemsounds
             //styl
             //pc ui
             //autoconfig
+
         }
     }
 }
