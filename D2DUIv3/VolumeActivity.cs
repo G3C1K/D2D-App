@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
+using System.Threading;
+using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
 using Android.Graphics;
@@ -61,7 +62,7 @@ namespace D2DUIv3
             
             while(client.volumeReady == false)
             {
-
+                Thread.Sleep(10);
             }
 
             SetContentView(Resource.Layout.volume_submenu);
@@ -139,7 +140,7 @@ namespace D2DUIv3
 
         public override bool OnCreateOptionsMenu(IMenu menu)
         {
-            MenuInflater.Inflate(Resource.Menu.basic_submenu_toolbar, menu);
+            MenuInflater.Inflate(Resource.Menu.volume_toolbar, menu);
             SupportActionBar.SetDisplayHomeAsUpEnabled(true);
             SupportActionBar.SetDisplayShowHomeEnabled(true);
             return base.OnCreateOptionsMenu(menu);
