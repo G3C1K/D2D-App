@@ -26,12 +26,15 @@ namespace TCPSender
                     Console.WriteLine("AudioSession IconPath: " + session.IconPath);
                     Icon icon = session.GetIcon32x32();
                    
+
                 }
                 Console.WriteLine("DisplayName: " + session.DisplayName);
                 Console.WriteLine("Volume: " + session.Volume);
                 Console.WriteLine("Muted: " + session.Mute);
                 Console.WriteLine("State: " + session.State.ToString());
+
                 Console.WriteLine("AudioSession IconPath: " + session.IconPath);
+
                 Console.WriteLine();
 
                 //session.Volume = 100;
