@@ -10,7 +10,6 @@ using Android.Runtime;
 using Android.Support.V7.App;
 using Android.Views;
 using Android.Widget;
-using TCPSender;
 
 
 namespace D2DUIv3
@@ -19,7 +18,7 @@ namespace D2DUIv3
     public class ImageViewActivity : AppCompatActivity
     {
 
-        public CommClient client;
+        public CommClientAndroid client;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
