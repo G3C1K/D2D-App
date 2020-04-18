@@ -30,6 +30,7 @@ namespace D2DUIv3
         IPAddress cIP;                  //adres IP. Zalezy od tego czy instancja jest klientem czy serwerem
         Action<string> outputFunc;      //funkcja ktora jest wywolywana gdy pojawi sie message od hosta
         public bool IsConnected { get; internal set; }
+        public Action<string> DisconnectAction { internal get; set; }//USTAWIAC DELEGATY
 
         BinaryWriter writer;            //writer dla SendMessage, tutaj zeby nie tworzyc caly czas nowego. na porcie 50001
         int BUFFER_SIZE = 10000;                       //rozmiar bufora dla danych pliku w bajtach
@@ -57,6 +58,7 @@ namespace D2DUIv3
             Connect(_adresIP);  //connect only
             OpenCommandLine();
             outputFunc = _funkcjaDoPrzekazaniaMessagy;
+            DisconnectAction = null;
             IsConnected = true;
             SendMessage("Connected!");
         }
@@ -96,7 +98,7 @@ namespace D2DUIv3
                 }
                 catch
                 {
-                    Close_Self();
+                    Close();
                     return;
                 }
 
@@ -403,7 +405,12 @@ namespace D2DUIv3
         public void Close()
         {
             // writer.Write("x");
-            Close_Self();
+            if(IsConnected == true)
+            {
+                DisconnectAction?.Invoke("Disconnect happened");
+
+                Close_Self();
+            }
         }
 
         private void Close_Self()

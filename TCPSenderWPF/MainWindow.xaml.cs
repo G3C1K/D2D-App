@@ -41,11 +41,12 @@ namespace TCPSenderWPF
             textBlock_debugLog.Text += "\n";
             button_listen.Content = "Listening";
             client = new CommClientPC(adresInterfejsuDoNasluchu, OutputDelegate);
+            client.DisconnectAction = DisconnectDelegate;
         }
 
         public void OutputDelegate(string input)
         {
-            textBlock_debugLog.Dispatcher.BeginInvoke(
+            textBlock_debugLog.Dispatcher.Invoke(
                 (Action)(() => 
                 {
                     textBlock_debugLog.Text += input + "\n";
@@ -54,9 +55,15 @@ namespace TCPSenderWPF
                 );
         }
 
-        public void DisconnectDelegate()
+        public void DisconnectDelegate(string output)
         {
-
+            textBlock_debugLog.Dispatcher.Invoke(
+                (Action)(() =>
+                {
+                    textBlock_debugLog.Text += output + "\n";
+                    button_listen.Content = "Listen";
+                })
+                );
         }
 
         private void Button_listen_Click(object sender, RoutedEventArgs e)

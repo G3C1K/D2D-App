@@ -26,6 +26,7 @@ namespace TCPSender
         IPAddress cIP;                  //adres IP. Zalezy od tego czy instancja jest klientem czy serwerem
         Action<string> outputFunc;      //funkcja ktora jest wywolywana gdy pojawi sie message od hosta
         public bool IsConnected { get; internal set; }
+        public Action<string> DisconnectAction { internal get; set; }//USTAWIAC DELEGATY!!!
 
         BinaryWriter writer;            //writer dla SendMessage, tutaj zeby nie tworzyc caly czas nowego. na porcie 50001
         int BUFFER_SIZE = 10000;                       //rozmiar bufora dla danych pliku w bajtach
@@ -39,8 +40,7 @@ namespace TCPSender
         bool stillSend = false;
         public BlockingCollection<byte[]> queueXOR { get; internal set; }
 
-        
-
+  
 
         VolumeMaster volumeMaster;          //audio coreapi
 
@@ -87,7 +87,7 @@ namespace TCPSender
                 }
                 catch
                 {
-                    Close_Self();
+                    Close();
                     return;
                 }
 
@@ -489,6 +489,7 @@ namespace TCPSender
             // writer.Write("x");
             if (IsConnected == true)
             {
+                DisconnectAction("inner disconnect delegate");
                 Close_Self();
             }
             else outputFunc("already disconnected!");
@@ -496,7 +497,6 @@ namespace TCPSender
 
         private void Close_Self()
         {
-            outputFunc("disconnected!");
             writer.Close();
             client.Close();
             IsConnected = false;
