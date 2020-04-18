@@ -109,6 +109,11 @@ namespace D2DUIv3
                 else textView.Text = "unknown process";
                 textView.Text += " " + volume.ProcessID;
 
+                if(textView.Text.Contains("AudioSrv", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    textView.Text = "System sounds";
+                }
+
                 //linearLayoutVolume.AddView(textView);
                 linearLayoutVolume.AddView(layout2);        //inner horizontal layout
                 layout2.AddView(iv);
@@ -116,7 +121,9 @@ namespace D2DUIv3
 
                 slider.MASTER_ID = volume.ProcessID;        //slider insta
                 slider.PROCESS_NAME = volume.ProcessName;
+
                 slider.DISPLAY_NAME = volume.DisplayName;
+
                 slider.Progress = (int)volume.Volume;
 
                 slider.ProgressChanged += Slider_ProgressChanged;      //slider event
@@ -169,6 +176,15 @@ namespace D2DUIv3
                 client.volumeReady = false;
                 this.Finish();
                 return true;
+            }
+
+            if(item.ItemId == Resource.Id.volume_refresh)
+            {
+                client.volumeReady = false;
+                this.Finish();
+                OverridePendingTransition(0, 0);
+                this.StartActivity(this.Intent);
+                OverridePendingTransition(0, 0);
             }
 
 

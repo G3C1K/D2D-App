@@ -1,0 +1,28 @@
+﻿
+
+
+
+do zrobienia:
+
+autorefresh?
+fast refresh
+na pc: co jakis czas sprawdzanie czy nie ma zmian?
+
+translator popularnych programow z processname na hardcodedname
+
+styl
+material design
+wybor koloru glownego aplikacji
+ogarnac style
+
+autoconfig
+
+connecting in separate thread
+cancel connecting?
+zmiana przycisku connect
+
+usunac sendmessage na dole
+
+zapisywanie domyslnych polaczen
+
+string jako statyczne pola zalezne od globalnej opcji wyboru jezyka

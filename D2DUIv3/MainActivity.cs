@@ -21,7 +21,8 @@ namespace D2DUIv3
 
         public void SetText2(string _message)
         {
-            RunOnUiThread(() => textNumber.Text += _message + "\n");
+            textNumber.Post(() => textNumber.Text += _message + "\n"); //????
+            //RunOnUiThread(() => textNumber.Text += _message + "\n");
         }
 
         protected override void OnCreate(Bundle savedInstanceState)
