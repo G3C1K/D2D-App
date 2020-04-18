@@ -321,9 +321,17 @@ namespace D2DUIv3
         //po fladze vIS
         private void ReadVolumeClient(BinaryReader reader)
         {
-            int procCount = int.Parse(reader.ReadString());
             //VolumeArrayForAndroid = new VolumeAndroid[procCount];
             VolumeListForAndroid = new List<VolumeAndroid>();
+
+            float systemVolume = float.Parse(reader.ReadString());
+            int systemVolumeIconLen = reader.ReadInt32();
+            byte[] systemVolumeIconBytes = reader.ReadBytes(systemVolumeIconLen);
+            VolumeListForAndroid.Add(new VolumeAndroid("System Volume", "System Volume", false, systemVolume, int.MaxValue, systemVolumeIconBytes));
+
+            int procCount = int.Parse(reader.ReadString());
+
+
             for (int i = 0; i < procCount; i++)
             {
                 string status = reader.ReadString();
@@ -365,6 +373,12 @@ namespace D2DUIv3
             writer.Write((int)ClientFlags.Volume_ChangeVolume);
             writer.Write((int)ClientFlags.Volume_DisplayName);
             writer.Write(_displayName);
+            writer.Write(_volume.ToString());
+        }
+
+        public void ChangeVolumeMaster(float _volume)
+        {
+            writer.Write((int)ClientFlags.Volume_ChangeMasterVolume);
             writer.Write(_volume.ToString());
         }
 
@@ -446,6 +460,7 @@ namespace D2DUIv3
         Volume_RequestConnection,
         Volume_ServerReady,
         Volume_ChangeVolume,
+        Volume_ChangeMasterVolume,
         Volume_ProcessID,
         Volume_ProcessName,
         Volume_DisplayName,

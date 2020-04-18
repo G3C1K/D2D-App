@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
 using Android.Graphics;
+using Android.Graphics.Drawables;
 using Android.OS;
 using Android.Runtime;
 using Android.Support.V7.App;
@@ -20,7 +21,7 @@ namespace D2DUIv3
     [Activity(Label = "Volume", Theme = "@style/AppTheme")]
     public class VolumeActivity : AppCompatActivity
     {
-        public class Slider2 : SeekBar
+        public class Slider2 : SeekBar      //niepoprawne rozwiązanie
         {
             public int MASTER_ID;
             public string PROCESS_NAME = "null";
@@ -80,8 +81,16 @@ namespace D2DUIv3
                 ImageView iv = new ImageView(this);                     //imageView ikony
                 iv.LayoutParameters = new LinearLayout.LayoutParams(100, 100);
 
-                Bitmap bmp = BitmapFactory.DecodeByteArray(volume.IconByteArray, 0, volume.IconByteArray.Length);
-                iv.SetImageBitmap(bmp);                                 //wbijanie ikony do imageview
+                if(volume.ProcessName!="System Volume")
+                {
+                    Bitmap bmp = BitmapFactory.DecodeByteArray(volume.IconByteArray, 0, volume.IconByteArray.Length);
+                    iv.SetImageBitmap(bmp);                                 //wbijanie ikony do imageview
+                }
+                else
+                {
+                    Drawable drawable = GetDrawable(Resource.Drawable.baseline_volume_up_white_48);
+                    iv.SetImageDrawable(drawable);
+                }
 
                 TextView textView = new TextView(this);                 //opis sesji
                 LinearLayout.LayoutParams paramss = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WrapContent, 100);
@@ -110,21 +119,7 @@ namespace D2DUIv3
                 slider.DISPLAY_NAME = volume.DisplayName;
                 slider.Progress = (int)volume.Volume;
 
-                slider.ProgressChanged += (o, e) =>         //slider event
-                {
-                    if (slider.PROCESS_NAME != "null")
-                    {
-                        client.ChangeVolumeClientPN(slider.PROCESS_NAME, (float)slider.Progress);
-                    }
-                    else if (slider.DISPLAY_NAME != "null")
-                    {
-                        client.ChangeVolumeClientDN(slider.DISPLAY_NAME, (float)slider.Progress);
-                    }
-                    else
-                    {
-                        client.ChangeVolumeClient(slider.MASTER_ID, (float)slider.Progress);
-                    }
-                };
+                slider.ProgressChanged += Slider_ProgressChanged;      //slider event
 
                 linearLayoutVolume.AddView(slider);         //slider po layout2
                 
@@ -135,7 +130,27 @@ namespace D2DUIv3
 
         private void Slider_ProgressChanged(object sender, SeekBar.ProgressChangedEventArgs e)
         {
-            throw new NotImplementedException();
+            Slider2 slider = sender as Slider2;
+            if(slider != null)
+            {
+                if (slider.PROCESS_NAME != "null")
+                {
+                    if(slider.PROCESS_NAME == "System Volume")
+                    {
+                        client.ChangeVolumeMaster((float)slider.Progress);
+                    }
+                    else client.ChangeVolumeClientPN(slider.PROCESS_NAME, (float)slider.Progress);
+
+                }
+                else if (slider.DISPLAY_NAME != "null")
+                {
+                    client.ChangeVolumeClientDN(slider.DISPLAY_NAME, (float)slider.Progress);
+                }
+                else
+                {
+                    client.ChangeVolumeClient(slider.MASTER_ID, (float)slider.Progress);
+                }
+            }
         }
 
         public override bool OnCreateOptionsMenu(IMenu menu)

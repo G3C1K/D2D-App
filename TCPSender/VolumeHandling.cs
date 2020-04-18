@@ -43,9 +43,9 @@ namespace TCPSender
             Console.WriteLine(" ");
 
             Console.WriteLine("begin coreaudio testing");
-            Console.WriteLine(master.MasterAudioLevel.ToString());
-            master.MasterAudioLevel = 35;
-            Console.WriteLine(master.MasterAudioLevel.ToString());
+            Console.WriteLine(master.MasterVolumeLevel.ToString());
+            master.MasterVolumeLevel = 35;
+            Console.WriteLine(master.MasterVolumeLevel.ToString());
 
 
             Console.ReadLine();

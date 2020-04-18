@@ -134,6 +134,11 @@ namespace TCPSender
                         SetVolumeByDN(displayName, volume);
                     }
                 }
+                else if (input == (int)ClientFlags.Volume_ChangeMasterVolume)
+                {
+                    float volume = float.Parse(reader.ReadString());
+                    SetMasterVolume(volume);
+                }
             }
             Close_Self();
         }
@@ -328,15 +333,30 @@ namespace TCPSender
         private void InstantiateVolumeServer()      //uruchomienie VolumeMastera na PC
         {
             volumeMaster = new VolumeMaster();
-            writer.Write((int)ClientFlags.Volume_ServerReady);        //flaga oznaczajaca gotowosc do wysylania
-
-            writer.Write(volumeMaster.Sessions.Count.ToString());   //wysyla ilosc sesji NA PC. Ilosc sesji jakie zaakceptuje android bedzie inna.
 
             List<string> list = new List<string>(); //lista z nazwami procesow. uzywana do unikania duplikowania juz istniejacych sesji
             Icon icon;  //ikona do wyslana;
             Bitmap bitmap; //bitmapa ikony
             byte[] bitmapBytes;
             MemoryStream ms;
+
+            writer.Write((int)ClientFlags.Volume_ServerReady);        //flaga oznaczajaca gotowosc do wysylania
+
+            writer.Write(volumeMaster.MasterVolumeLevel.ToString());    //najpierw wysyla gloscnosc systemu. klient wie, ze to jest glosnosc systemowa i
+            //nie potrzebuje reszty danych
+            icon = SystemIcons.Shield;
+            ms = new MemoryStream();
+            bitmap = icon.ToBitmap();
+            bitmap.Save(ms, System.Drawing.Imaging.ImageFormat.Png);        //wysylanie ikonki systemowej. placeholder, wlasciwa ikonak bedzie juz na androidzie
+            bitmapBytes = ms.ToArray();
+
+            writer.Write(bitmapBytes.Length);
+            writer.Write(bitmapBytes, 0, bitmapBytes.Length);
+
+
+            writer.Write(volumeMaster.Sessions.Count.ToString());   //wysyla ilosc sesji NA PC. Ilosc sesji jakie zaakceptuje android bedzie inna.
+
+            
 
             for (int i = 0; i < volumeMaster.Sessions.Count; i++)   //po wszystkich sesjach
             {
@@ -440,6 +460,11 @@ namespace TCPSender
             }
         }
 
+        private void SetMasterVolume(float _volume)
+        {
+            volumeMaster.MasterVolumeLevel = _volume;
+        }
+
         //--------------------------------------------------
         //VOLUME END
         //--------------------------------------------------
@@ -493,6 +518,7 @@ namespace TCPSender
         Volume_RequestConnection,
         Volume_ServerReady,
         Volume_ChangeVolume,
+        Volume_ChangeMasterVolume,
         Volume_ProcessID,
         Volume_ProcessName,
         Volume_DisplayName,

@@ -68,7 +68,7 @@ namespace TCPSender
             Sessions = list;
         }
 
-        public float MasterAudioLevel
+        public float MasterVolumeLevel
         {
             get
             {
@@ -330,7 +330,7 @@ namespace TCPSender
             get
             {
                 CheckDisposed();
-                string s = "";               
+                string s = null;               
                 //return s;
 
                 if (Process != null)
@@ -338,11 +338,10 @@ namespace TCPSender
                     try
                     {
                         s = Process.MainModule.FileName;
-
                     }
                     catch
                     {
-                        return "";
+                        return null;
                     }
                 }
                 return s;
@@ -356,28 +355,25 @@ namespace TCPSender
             IntPtr[] hIconEx = new IntPtr[1] { IntPtr.Zero };
 
             Icon extracted = null;
-            bool exceptionCaught = false;
 
             
             string iconPath = IconPath;
-            if(iconPath == "")
-            {
-                exceptionCaught = true;
-            }
 
-            readIconCount = ExtractIconExW(IconPath, 0, hIconEx, hDummy, 1);
 
-            if (exceptionCaught == false)
+            if (iconPath!=null)
             {
                 try
                 {
+                    readIconCount = ExtractIconExW(IconPath, 0, hIconEx, hDummy, 1);
                     extracted = (Icon)Icon.FromHandle(hIconEx[0]).Clone();
                 }
                 catch
                 {
                     extracted = (Icon)SystemIcons.Application.Clone();
-                } 
+                }  
             }
+            else extracted = (Icon)SystemIcons.Application.Clone();
+
 
             return extracted;
         }
