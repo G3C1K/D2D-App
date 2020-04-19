@@ -25,6 +25,20 @@ namespace D2DUIv3
             //RunOnUiThread(() => textNumber.Text += _message + "\n");
         }
 
+        public void DisconnectDelegate(string we)
+        {
+            textNumber.Post(() =>
+                {
+                    client.volumeReady = false;
+                    client.Close();
+                    Toast.MakeText(this, "Disconnected",
+                    ToastLength.Short).Show();
+                    Intent rtrn = new Intent(this.ApplicationContext, typeof(MainActivity));
+                    StartActivity(rtrn);
+                }               
+            );         
+        }
+
         protected override void OnCreate(Bundle savedInstanceState)
         {
 
@@ -42,6 +56,7 @@ namespace D2DUIv3
                 try
                 {
                     client = new CommClientAndroid(iPAddress, SetText2);
+                    client.DisconnectAction = DisconnectDelegate;
                     ClientHolder.Client = client;
                 }
                 catch (Exception ex)

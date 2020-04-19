@@ -174,7 +174,9 @@ namespace D2DUIv3
             if (item.ItemId == Android.Resource.Id.Home)
             {
                 client.volumeReady = false;
+                //NavigateUpTo(new Intent(this.ApplicationContext, typeof(MainActivity)));
                 this.Finish();
+
                 return true;
             }
 
