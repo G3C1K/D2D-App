@@ -39,7 +39,7 @@ namespace PerfMetrics
             hardwares = pc.Hardware;
         }
 
-        ~HWUsage()
+        public void Close()
         {
             pc.Close();
         }
