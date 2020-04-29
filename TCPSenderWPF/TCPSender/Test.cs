@@ -14,39 +14,39 @@ namespace TCPSender
     public static class Test_internal
     {
         
-        public static void CommClientPC_Test()
-        {
-            CommClientPC client = null;
+        //public static void CommClientPC_Test()
+        //{
+        //    CommClientPC client = null;
 
-            IPAddress adresInterfejsuDoNasluchu = CommClientPC.GetLocalIPAddress();
-            Console.WriteLine("Nasluchiwanie na adresie: " + adresInterfejsuDoNasluchu.ToString());
+        //    IPAddress adresInterfejsuDoNasluchu = CommClientPC.GetLocalIPAddress();
+        //    Console.WriteLine("Nasluchiwanie na adresie: " + adresInterfejsuDoNasluchu.ToString());
 
-            client = new CommClientPC(adresInterfejsuDoNasluchu, Console.WriteLine);
+        //    client = new CommClientPC(adresInterfejsuDoNasluchu, Console.WriteLine);
 
 
-            string input = null;
-            while (client.IsConnected == true)
-            {
-                input = Console.ReadLine();
-                if (client.IsConnected == true)
-                {
-                    if (input == "plik")
-                    {
-                        Console.WriteLine("path");
-                        client.SendFile(Console.ReadLine());
-                    }
-                    else
-                    {
-                        client.SendMessage(input);
-                    }
-                    if (input == "x")
-                    {
-                        client.Close();
-                    }
-                }
-            }
-            Console.ReadLine();
-        }
+        //    string input = null;
+        //    while (client.IsConnected == true)
+        //    {
+        //        input = Console.ReadLine();
+        //        if (client.IsConnected == true)
+        //        {
+        //            if (input == "plik")
+        //            {
+        //                Console.WriteLine("path");
+        //                client.SendFile(Console.ReadLine());
+        //            }
+        //            else
+        //            {
+        //                client.SendMessage(input);
+        //            }
+        //            if (input == "x")
+        //            {
+        //                client.Close();
+        //            }
+        //        }
+        //    }
+        //    Console.ReadLine();
+        //}
 
 
 

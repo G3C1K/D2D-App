@@ -40,7 +40,7 @@ namespace TCPSenderWPF
             textBlock_debugLog.Text += "Nasluchiwanie na adresie: " + adresInterfejsuDoNasluchu.ToString();
             textBlock_debugLog.Text += "\n";
             button_listen.Content = "Listening";
-            client = new CommClientPC(adresInterfejsuDoNasluchu, OutputDelegate);
+            client = new CommClientPC(adresInterfejsuDoNasluchu, OutputDelegate, ConnectedDelegate);
             client.DisconnectAction = DisconnectDelegate;
         }
 
@@ -50,6 +50,16 @@ namespace TCPSenderWPF
                 (Action)(() => 
                 {
                     textBlock_debugLog.Text += input + "\n";
+                })
+                );
+        }
+
+        public void ConnectedDelegate(string input)
+        {
+            textBlock_debugLog.Dispatcher.Invoke(
+                (Action)(() =>
+                {
+                    textBlock_debugLog.Text += input + " ConnectedDelegate \n";
                     button_listen.Content = "Disconnect";
                 })
                 );

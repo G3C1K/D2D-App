@@ -44,11 +44,13 @@ namespace TCPSender
 
         VolumeMaster volumeMaster;          //audio coreapi
 
-        public CommClientPC(IPAddress _adresIP, Action<string> _funkcjaDoPrzekazaniaMessagy) //serwer = listen, client = connect
+        
+
+        public CommClientPC(IPAddress _adresIP, Action<string> _funkcjaDoPrzekazaniaMessagy, Action<string> _connectedDelegate) //serwer = listen, client = connect
         {
             cIP = _adresIP;
             mainThread = new Thread(() => {
-                Listen(_adresIP);
+                Listen(_adresIP, _connectedDelegate);
                 OpenCommandLine();
                 outputFunc = _funkcjaDoPrzekazaniaMessagy;
                 IsConnected = true;
@@ -57,12 +59,13 @@ namespace TCPSender
             mainThread.Start();
         }
 
-        private bool Listen(IPAddress _adresInterfejsuNasluchu) //W serwerze, nasluchuje na polaczenie
+        private bool Listen(IPAddress _adresInterfejsuNasluchu, Action<string> _connectedDelegate) //W serwerze, nasluchuje na polaczenie
         {
             TcpListener listener = new TcpListener(_adresInterfejsuNasluchu, commandPort);
             listener.Start();
             client = listener.AcceptTcpClient();
             listener.Stop();
+            _connectedDelegate("Connected!");
             return true;
         }
 

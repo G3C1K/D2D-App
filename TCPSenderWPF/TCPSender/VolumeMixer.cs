@@ -255,27 +255,6 @@ namespace TCPSender
             }
         }
 
-        public string Identifier
-        {
-            get
-            {
-                CheckDisposed();
-                string s;
-                _ctl.GetSessionIdentifier(out s);
-                return s;
-            }
-        }
-
-        public string InstanceIdentifier
-        {
-            get
-            {
-                CheckDisposed();
-                string s;
-                _ctl.GetSessionInstanceIdentifier(out s);
-                return s;
-            }
-        }
 
         public AudioSessionState State
         {
