@@ -57,6 +57,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="TCPSender\AutoConfig.cs" />
+    <Compile Include="TCPSender\AutoConfigPC.cs" />
     <Compile Include="TCPSender\CommClientPC.cs" />
     <Compile Include="TCPSender\Program.cs" />
     <Compile Include="TCPSender\Test.cs" />

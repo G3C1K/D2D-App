@@ -25,6 +25,9 @@ namespace TCPSenderWPF
         CommClientPC client = null;
         IPAddress adresInterfejsuDoNasluchu;
 
+        AutoConfigPC autoConfigClient;
+        bool sendFlag;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -35,6 +38,7 @@ namespace TCPSenderWPF
 
         public void InitializeClient()
         {
+            //init kleinta
             adresInterfejsuDoNasluchu = CommClientPC.GetLocalIPAddress();
             textBlock_debugLog.Text = "";
             textBlock_debugLog.Text += "Nasluchiwanie na adresie: " + adresInterfejsuDoNasluchu.ToString();
@@ -60,6 +64,7 @@ namespace TCPSenderWPF
                 (Action)(() =>
                 {
                     textBlock_debugLog.Text += input + " ConnectedDelegate \n";
+                    button_advertise.IsEnabled = false;
                     button_listen.Content = "Disconnect";
                 })
                 );
@@ -82,6 +87,8 @@ namespace TCPSenderWPF
             if ((string)button_listen.Content == "Listen")
             {
                 InitializeClient();
+                autoConfigClient = new AutoConfigPC(StillSend);
+                button_advertise.IsEnabled = true;
             }
             else if((string)button_listen.Content == "Listening")
             {
@@ -92,6 +99,39 @@ namespace TCPSenderWPF
                 client.Close();
                 button_listen.Content = "Listen";
             }
+        }
+
+        private void Button_advertise_Click(object sender, RoutedEventArgs e)
+        {
+            sendFlag = true;
+            autoConfigClient = new AutoConfigPC(StillSend);
+            autoConfigClient.EndingEvent = () =>
+            {
+                button_advertise.Dispatcher.Invoke(
+                    () => { button_advertise.IsEnabled = true; }
+                    );
+            };
+            autoConfigClient.Advertise();
+            button_stop_advertising.IsEnabled = true;
+            button_advertise.IsEnabled = false;
+        }
+
+        private bool StillSend(string we)
+        {
+            textBlock_debugLog.Dispatcher.Invoke(
+                (Action)(() =>
+                {
+                    textBlock_debugLog.Text += we + "\n";
+                })
+                );
+            return sendFlag;
+        }
+
+        private void Button_stop_advertising_Click(object sender, RoutedEventArgs e)
+        {
+            sendFlag = false;
+            button_stop_advertising.IsEnabled = false;
+            //button_advertise.IsEnabled = true;
         }
     }
 }
