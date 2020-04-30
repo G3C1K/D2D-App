@@ -12,6 +12,10 @@ using System.Timers;
 using System.Security.Cryptography.X509Certificates;
 using System.Runtime.Remoting.Messaging;
 using System.Reflection;
+using Microsoft.VisualBasic;
+using System.Management;
+using System.Management.Instrumentation;
+using System.Text.RegularExpressions;
 
 namespace PerfMetrics
 {
@@ -47,25 +51,25 @@ namespace PerfMetrics
         public string? CPUName { get; internal set; }
         public string? MOBOName { get; internal set; }
         public string? RAMName { get; internal set; }
-        public string? HDDName { get; internal set; }
         public string? GPUATIName { get; internal set; }
         public string? GPUNVName { get; internal set; }
         public double RAMUsed { get; internal set; }
         public double RAMLeft { get; internal set; }
         public double RAMTotal { get; internal set; }
-
-        private List<string> cpuSensors = new List<string>();
-        private List<string> moboSensors = new List<string>();
-        private List<string> ramSensors = new List<string>();
-        private List<string> gpuatiSensors = new List<string>();
-        private List<string> gpunvSensors = new List<string>();
-        private List<string> hddSensors = new List<string>();
-        public List<string> CPUSensors { get { return cpuSensors; } internal set { cpuSensors = value; } }
-        public List<string> MOBOSensors { get { return moboSensors; } internal set { moboSensors = value; } }
-        public List<string> RAMSensors { get { return ramSensors; } internal set { ramSensors = value; } }
-        public List<string> GPUATISensors { get { return gpuatiSensors; } internal set { gpuatiSensors = value; } }
-        public List<string> GPUNVSensors { get { return gpunvSensors; } internal set { gpunvSensors = value; } }
-        public List<string> HDDSensors { get { return hddSensors; } internal set { hddSensors = value; } }
+        public List<string> CPUSensors { get; internal set; } = new List<string>();
+        public List<string> MOBOSensors { get; internal set; } = new List<string>();
+        public List<string> RAMSensors { get; internal set; } = new List<string>();
+        public List<string> GPUATISensors { get; internal set; } = new List<string>();
+        public List<string> GPUNVSensors { get; internal set; } = new List<string>();
+        public List<string> HDDNames { get; internal set; } = new List<string>();
+        public List<ulong> HDDSizes { get; internal set; } = new List<ulong>();
+        public List<string> HDDReads { get; internal set; } = new List<string>();
+        public List<string> HDDWrites { get; internal set; } = new List<string>();
+        public List<string> HDDLetters { get; internal set; } = new List<string>();
+        public List<string> HDDRegexed { get; internal set; } = new List<string>();
+        public List<PerformanceCounter> HDDReadsC { get; internal set; } = new List<PerformanceCounter>();
+        public List<PerformanceCounter> HDDWritesC { get; internal set; } = new List<PerformanceCounter>();
+        public List<Tuple<string, string>> DriveIDNames { get; internal set; } = new List<Tuple<string, string>>();
         public void GetInfo()
         {
             ClearAllLists();
@@ -78,8 +82,8 @@ namespace PerfMetrics
 
                     foreach (ISensor sensor in hardware.Sensors)
                     {
-                        if (sensor.SensorType == SensorType.Load) { CPUSensors.Add(sensor.Name + ": " + sensor.Value.GetValueOrDefault() + "%"); }
-                        if (sensor.SensorType == SensorType.Temperature && sensor.Name == "CPU Package") { CPUSensors.Add(sensor.Name + ": " + sensor.Value.GetValueOrDefault() + "°C"); }
+                        if (sensor.SensorType == SensorType.Load) { CPUSensors.Add(sensor.Name + ": " + sensor.Value.GetValueOrDefault().ToString("0.") + "%"); }
+                        if (sensor.SensorType == SensorType.Temperature && sensor.Name == "CPU Package") { CPUSensors.Add(sensor.Name + ": " + sensor.Value.GetValueOrDefault().ToString("0.") + "°C"); }
                     }
                 }
 
@@ -87,11 +91,11 @@ namespace PerfMetrics
                 {
                     MOBOName = "Motherboard: " + hardware.Name;
 
-                    foreach (ISensor sensor in hardware.Sensors)
-                    {
-                        if (sensor.SensorType == SensorType.Voltage) { MOBOSensors.Clear(); MOBOSensors.Add(sensor.Name + ": " + sensor.Value.GetValueOrDefault() + "V"); }
-                        if (sensor.SensorType == SensorType.Temperature) { MOBOSensors.Clear(); MOBOSensors.Add(sensor.Name + ": " + sensor.Value.GetValueOrDefault() + "°C"); }
-                    }
+                    //foreach (ISensor sensor in hardware.Sensors)
+                    //{
+                    //    if (sensor.SensorType == SensorType.Voltage) { MOBOSensors.Clear(); MOBOSensors.Add(sensor.Name + ": " + sensor.Value.GetValueOrDefault() + "V"); }
+                    //    if (sensor.SensorType == SensorType.Temperature) { MOBOSensors.Clear(); MOBOSensors.Add(sensor.Name + ": " + sensor.Value.GetValueOrDefault().ToString("0.") + "°C"); }
+                    //}
                 }
 
                 if (hardware.HardwareType == HardwareType.RAM)
@@ -111,13 +115,13 @@ namespace PerfMetrics
                             {
                                 RAMLeft = sensor.Value.GetValueOrDefault();
                             }
-                            RAMTotal = RAMUsed + RAMLeft;
-                            RAMUsed = Math.Round(RAMUsed, 2);
-                            RAMTotal = Math.Round(RAMTotal, 2);
+                            //RAMTotal = RAMUsed + RAMLeft;
+                            //RAMUsed = Math.Round(RAMUsed, 2);
+                           // RAMTotal = Math.Round(RAMTotal, 2);
                             
                          }
                     }
-                    ramSensors.Add("Memory Used/Memory Total " + RAMUsed + "GB/" + RAMTotal + "GB");
+                    RAMSensors.Add("Memory Used/Memory Total " + RAMUsed.ToString("0.00") + "GB/" + RAMTotal + "GB");
                 }
 
                 //if (hardware.HardwareType == HardwareType.HDD)
@@ -136,7 +140,7 @@ namespace PerfMetrics
                     GPUATIName = hardware.Name;
                     foreach (ISensor sensor in hardware.Sensors)
                     {
-                        if (sensor.SensorType == SensorType.Load) GPUATISensors.Add(sensor.Name + ": " + sensor.Value.GetValueOrDefault().ToString("0") + "%");
+                        if (sensor.SensorType == SensorType.Load) GPUATISensors.Add(sensor.Name + ": " + sensor.Value.GetValueOrDefault().ToString("0.") + "%");
                         if (sensor.SensorType == SensorType.Temperature && (!sensor.Name.Contains("VRM") && (!sensor.Name.Contains("Hot Spot")))) GPUATISensors.Add(sensor.Name + ": " + sensor.Value.GetValueOrDefault() + "°C");
                     }
                 }
@@ -155,9 +159,9 @@ namespace PerfMetrics
 
         public void Update()
         {
-            while (true)
-            {
-                Thread.Sleep(1000);
+            //while (true)
+            //{
+            //    Thread.Sleep(1000);
                 foreach (IHardware hardware in hardwares)
                 {
                     hardware.Update();
@@ -165,7 +169,7 @@ namespace PerfMetrics
                 GetInfo();
                 Output();
 
-            }
+            //}
         }
 
         public void ClearAllLists()
@@ -174,12 +178,12 @@ namespace PerfMetrics
             MOBOSensors.Clear();
             GPUATISensors.Clear();
             GPUNVSensors.Clear();
-            HDDSensors.Clear();
+            //HDDNames.Clear();
             RAMSensors.Clear();
         }
         public void Output()
         {
-            Console.Clear();
+            //Console.Clear();
             Console.WriteLine(CPUName);
             CPUSensors.ForEach(Console.WriteLine);
             if (MOBOName != null) Console.WriteLine(MOBOName);
@@ -190,13 +194,86 @@ namespace PerfMetrics
             GPUATISensors.ForEach(Console.WriteLine);
             Console.WriteLine(GPUNVName);
             GPUNVSensors.ForEach(Console.WriteLine);
-            if (HDDName != null) Console.WriteLine(HDDName);
-            HDDSensors.ForEach(Console.WriteLine);
-           // Console.ReadKey();
+            GetHDDStats();
+            //HDDNames.ForEach(Console.WriteLine);
+            //HDDSizes.ForEach(Console.WriteLine);
+            // Console.ReadKey();
         }
-    }
-    public class PM
-    { 
-        
+
+        public void GetRAMSize()
+        {
+            RAMTotal = Math.Round(Convert.ToDouble(new Microsoft.VisualBasic.Devices.ComputerInfo().TotalPhysicalMemory)/1024/1024/1024, 2);
+        }
+
+        public void GetHDDInfo()
+        {
+            PerformanceCounterCategory HDDCat = new PerformanceCounterCategory("PhysicalDisk");
+            HDDReads = HDDWrites = HDDCat.GetInstanceNames().ToList();
+
+            foreach (string instance in HDDReads)
+            {
+                if (instance != "_Total" && !IsStringANumber(instance))
+                {
+                    PerformanceCounter perfcountR = new PerformanceCounter("PhysicalDisk", "Disk Read Bytes/sec", instance);
+                    HDDReadsC.Add(perfcountR);
+                    PerformanceCounter perfcountW = new PerformanceCounter("PhysicalDisk", "Disk Write Bytes/sec", instance);
+                    HDDWritesC.Add(perfcountW);
+                }
+                
+            }
+            //RegexHDDs(HDDReads);
+        }
+        public void GetHDDList()
+        {
+            foreach (ManagementObject device in new ManagementObjectSearcher(@"SELECT * FROM Win32_DiskDrive").Get())
+            {
+                HDDNames.Add(device["Model"].ToString());
+                HDDSizes.Add(Convert.ToUInt64(device["Size"]) / 1024 / 1024 / 1024);
+                HDDLetters.Add(device["Name"].ToString());
+
+                foreach (ManagementObject partition in new ManagementObjectSearcher(
+                    "ASSOCIATORS OF {Win32_DiskDrive.DeviceID='" + device.Properties["DeviceID"].Value
+                    + "'} WHERE AssocClass = Win32_DiskDriveToDiskPartition").Get())
+                {
+                    foreach (ManagementObject disk in new ManagementObjectSearcher(
+                                "ASSOCIATORS OF {Win32_DiskPartition.DeviceID='"
+                                    + partition["DeviceID"]
+                                    + "'} WHERE AssocClass = Win32_LogicalDiskToPartition").Get())
+                    {
+                            DriveIDNames.Add(new Tuple<string,string>(device.GetPropertyValue("DeviceID").ToString(), disk["Name"].ToString()));
+                    }
+                }
+            }
+        }
+        //public void RegexHDDs(List<string> listR)
+        //{
+        //    for (int i = 0; i < listR.Count; i++)
+        //    {
+        //        if (listR[i] == "_Total") listR.RemoveAt(i);
+        //        listR[i]=Regex.Replace(listR[i], "[0-9] ", string.Empty);
+        //    }
+            
+        //}
+
+        public bool IsStringANumber(string str)
+        {
+            return int.TryParse(str, out int n);
+        }
+
+        public void GetHDDStats()
+        {
+            //while (true)
+            //{
+               // Console.Clear();
+                for (int i = 0; i < HDDReadsC.Count; i++)
+                {
+                    Console.WriteLine(HDDNames[i] + " Size: " + HDDSizes[i] + "GB");
+                    Console.WriteLine("Read: "  + (HDDReadsC[i].NextValue()/1024/1024).ToString("0.00") + "MB/S");
+                    Console.WriteLine("Write: " + (HDDWritesC[i].NextValue() / 1024/1024).ToString("0.00") + "MB/S");
+                }
+                //Thread.Sleep(1000);
+            //}
+            
+        }
     }
 }

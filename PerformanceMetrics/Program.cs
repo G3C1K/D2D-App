@@ -12,12 +12,18 @@ namespace PerfMetrics
         public static void Main(string[] args)
         {
             HWUsage hwusage = new HWUsage();
+            hwusage.GetRAMSize();
+            hwusage.GetHDDInfo();
+            hwusage.GetHDDList();
             while (true)
             {
+                Console.Clear();
                 hwusage.Update();
-                hwusage.Output();
+                Thread.Sleep(1000);
+              //  hwusage.Output();
+               // hwusage.GetHDDStats();
             }
-           
+
         }
     }
 }
