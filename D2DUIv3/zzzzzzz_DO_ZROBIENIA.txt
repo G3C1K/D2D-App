@@ -4,6 +4,8 @@
 
 do zrobienia:
 
+disconnect with back to main activity - proper solution
+
 autorefresh?
 fast refresh
 na pc: co jakis czas sprawdzanie czy nie ma zmian?

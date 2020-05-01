@@ -15,37 +15,33 @@
 		android:layout_height="61.5dp"
 		android:id="@+id/textBoxIP"
 		android:contentDescription="Adres IP do polaczenia"
-		android:hint="Wpisz IP hosta"
-		android:text="192.168.50.190" />
+		android:hint="Wpisz IP hosta" />
 	<Button
 		android:text="Connect"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:id="@+id/buttonConnect" />
+	<Button
+		android:text="Find open hosts"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:id="@+id/button_autoconfig" />
 	<ScrollView
 		android:minWidth="25px"
 		android:minHeight="25px"
 		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:id="@+id/scrollView1">
+		android:layout_height="match_parent"
+		android:id="@+id/scrollView_for_ips">
 		<TextView
+			android:text="192.168.50.190"
+			android:textAppearance="?android:attr/textAppearanceMedium"
 			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:id="@+id/textBoxMessageOutput"
-			android:layout_marginBottom="0.0dp"
-			android:scrollbars="vertical"
-			android:maxLines = "10"
-			android:height="100dp" />
+			android:layout_height="match_parent"
+			android:id="@+id/textView_test"
+			android:textAlignment="center"
+			android:clickable="true"
+			android:focusable="true"
+	/>
 	</ScrollView>
-	<EditText
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:id="@+id/textBoxMessageInput"
-		android:hint="Wyślij swoją wiadomość" />
-	<Button
-		android:text="Send message"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:id="@+id/buttonSend" />
 
 </LinearLayout>

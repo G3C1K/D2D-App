@@ -37,7 +37,7 @@ namespace TCPSender
             UdpClient client = new UdpClient(localNICEndPoint);
             byte[] sendBytes = Encoding.UTF8.GetBytes(localIPAddress.ToString());
             client.EnableBroadcast = true;
-            client.MulticastLoopback = false;
+            client.MulticastLoopback = true;
             IPEndPoint broadcastIP = new IPEndPoint(IPAddress.Broadcast, 50000);
 
             while (StillSend("udp ping on IP:" + localIPAddress.ToString()) == true)
