@@ -20,6 +20,8 @@ namespace TCPSenderWPF
     /// <summary>
     /// Logika interakcji dla klasy MainWindow.xaml
     /// </summary>
+    
+    //test
     public partial class MainWindow : Window
     {
         CommClientPC client = null;
