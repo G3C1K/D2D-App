@@ -5991,13 +5991,10 @@ namespace D2DUIvX
 			public const int title_template = 2131231000;
 			
 			// aapt resource value: 0x7F080119
-			public const int toolbar = 2131231001;
+			public const int top = 2131231001;
 			
 			// aapt resource value: 0x7F08011A
-			public const int top = 2131231002;
-			
-			// aapt resource value: 0x7F08011B
-			public const int topPanel = 2131231003;
+			public const int topPanel = 2131231002;
 			
 			// aapt resource value: 0x7F080008
 			public const int TOP_END = 2131230728;
@@ -6005,56 +6002,56 @@ namespace D2DUIvX
 			// aapt resource value: 0x7F080009
 			public const int TOP_START = 2131230729;
 			
+			// aapt resource value: 0x7F08011B
+			public const int touch_outside = 2131231003;
+			
 			// aapt resource value: 0x7F08011C
-			public const int touch_outside = 2131231004;
+			public const int transition_current_scene = 2131231004;
 			
 			// aapt resource value: 0x7F08011D
-			public const int transition_current_scene = 2131231005;
+			public const int transition_layout_save = 2131231005;
 			
 			// aapt resource value: 0x7F08011E
-			public const int transition_layout_save = 2131231006;
+			public const int transition_position = 2131231006;
 			
 			// aapt resource value: 0x7F08011F
-			public const int transition_position = 2131231007;
+			public const int transition_scene_layoutid_cache = 2131231007;
 			
 			// aapt resource value: 0x7F080120
-			public const int transition_scene_layoutid_cache = 2131231008;
+			public const int transition_transform = 2131231008;
 			
 			// aapt resource value: 0x7F080121
-			public const int transition_transform = 2131231009;
+			public const int @unchecked = 2131231009;
 			
 			// aapt resource value: 0x7F080122
-			public const int @unchecked = 2131231010;
+			public const int uniform = 2131231010;
 			
 			// aapt resource value: 0x7F080123
-			public const int uniform = 2131231011;
+			public const int unlabeled = 2131231011;
 			
 			// aapt resource value: 0x7F080124
-			public const int unlabeled = 2131231012;
+			public const int up = 2131231012;
 			
 			// aapt resource value: 0x7F080125
-			public const int up = 2131231013;
+			public const int useLogo = 2131231013;
 			
 			// aapt resource value: 0x7F080126
-			public const int useLogo = 2131231014;
+			public const int view_offset_helper = 2131231014;
 			
 			// aapt resource value: 0x7F080127
-			public const int view_offset_helper = 2131231015;
+			public const int visible = 2131231015;
 			
 			// aapt resource value: 0x7F080128
-			public const int visible = 2131231016;
+			public const int visible_removing_fragment_view_tag = 2131231016;
 			
 			// aapt resource value: 0x7F080129
-			public const int visible_removing_fragment_view_tag = 2131231017;
+			public const int volume_refresh = 2131231017;
 			
 			// aapt resource value: 0x7F08012A
-			public const int volume_refresh = 2131231018;
+			public const int withText = 2131231018;
 			
 			// aapt resource value: 0x7F08012B
-			public const int withText = 2131231019;
-			
-			// aapt resource value: 0x7F08012C
-			public const int wrap_content = 2131231020;
+			public const int wrap_content = 2131231019;
 			
 			static Id()
 			{
@@ -6489,10 +6486,7 @@ namespace D2DUIvX
 			public const int text_view_with_theme_line_height = 2131427425;
 			
 			// aapt resource value: 0x7F0B0063
-			public const int toolbar = 2131427427;
-			
-			// aapt resource value: 0x7F0B0064
-			public const int volume_submenu = 2131427428;
+			public const int volume_submenu = 2131427427;
 			
 			static Layout()
 			{

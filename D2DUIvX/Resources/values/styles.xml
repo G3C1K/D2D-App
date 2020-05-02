@@ -12,9 +12,9 @@
     </style>
 
     <style name="AppThemeDark" parent="Theme.MaterialComponents">
-      <item name="colorPrimary"></item>
-      <item name="colorPrimaryDark"></item>
-      <item name="colorAccent"></item>
+      <item name="colorPrimary">@color/colorPrimary</item>
+      <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+      <item name="colorAccent">@color/colorAccent</item>
     </style>
 
   <style name="ButtonStyle" parent="android:style/Widget.Button">
