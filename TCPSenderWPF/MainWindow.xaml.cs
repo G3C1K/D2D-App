@@ -133,5 +133,13 @@ namespace TCPSenderWPF
             button_stop_advertising.IsEnabled = false;
             //button_advertise.IsEnabled = true;
         }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if(client!= null)
+            {
+                client.Close();
+            }
+        }
     }
 }

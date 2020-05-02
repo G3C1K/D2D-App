@@ -22,6 +22,7 @@ namespace TCPSender
         int filePort = 50002;           //port dla plikow. zasada dzialania jak w FTP
         int imageXORPort = 50003;
 
+        TcpListener listener;
         TcpClient client;               //klient tcp dla komend
         IPAddress cIP;                  //adres IP. Zalezy od tego czy instancja jest klientem czy serwerem
         Action<string> outputFunc;      //funkcja ktora jest wywolywana gdy pojawi sie message od hosta
@@ -40,8 +41,7 @@ namespace TCPSender
         bool stillSend = false;
         public BlockingCollection<byte[]> queueXOR { get; internal set; }
 
-  
-
+ 
         VolumeMaster volumeMaster;          //audio coreapi
 
         
@@ -61,7 +61,7 @@ namespace TCPSender
 
         private bool Listen(IPAddress _adresInterfejsuNasluchu, Action<string> _connectedDelegate) //W serwerze, nasluchuje na polaczenie
         {
-            TcpListener listener = new TcpListener(_adresInterfejsuNasluchu, commandPort);
+            listener = new TcpListener(_adresInterfejsuNasluchu, commandPort);
             listener.Start();
             client = listener.AcceptTcpClient();
             listener.Stop();
@@ -489,19 +489,38 @@ namespace TCPSender
 
         public void Close()
         {
-            // writer.Write("x");
+            if (listener != null)
+            {
+                try
+                {
+                    listener.Stop();
+                }
+                catch (Exception e)
+                {
+                    outputFunc(e.Message);
+                }
+            }
+
             if (IsConnected == true)
             {
                 DisconnectAction("inner disconnect delegate");
                 Close_Self();
             }
-            else outputFunc("already disconnected!");
+            else DisconnectAction("already disconnected!");
         }
 
         private void Close_Self()
         {
-            writer.Close();
-            client.Close();
+            try
+            {
+                listener.Stop();
+                writer.Close();
+                client.Close();
+            }
+            catch (Exception e)
+            {
+                outputFunc(e.Message);
+            }
             IsConnected = false;
         }
 
