@@ -15,7 +15,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "D2DLibrary", "D2DLibrary\D2
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PerformanceMetrics", "PerformanceMetrics\PerformanceMetrics.csproj", "{055B1E6A-7104-4E99-A7B0-AFE276B285CE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "D2DUIvX", "..\..\D2DUIvX\D2DUIvX.csproj", "{935F2B04-E166-4AF8-BEB9-42F8818391B7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "D2DUIvX", "D2DUIvX\D2DUIvX.csproj", "{935F2B04-E166-4AF8-BEB9-42F8818391B7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
