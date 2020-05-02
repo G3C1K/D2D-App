@@ -1,0 +1,26 @@
+﻿<Window x:Class="TCPSenderWPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TCPSenderWPF"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800"
+        Closing="Window_Closing">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="2*"/>
+        </Grid.ColumnDefinitions>
+
+        <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+            <TextBlock x:Name="textBlock_debugLog" TextWrapping="Wrap"/>
+        </ScrollViewer>
+        <Button Content="Listen" Grid.Column="1" HorizontalAlignment="Left" Margin="5,10,0,0" VerticalAlignment="Top" Width="75" x:Name="button_listen" Click="Button_listen_Click"/>
+        <Button Content="Advertise IP" Grid.Column="1" HorizontalAlignment="Left" Margin="10,61,0,0" VerticalAlignment="Top" Width="75" x:Name="button_advertise" Click="Button_advertise_Click" IsEnabled="False"/>
+        <Button Content="Stop Advertising" Grid.Column="1" HorizontalAlignment="Left" Margin="90,61,0,0" VerticalAlignment="Top" Width="97" x:Name="button_stop_advertising" Click="Button_stop_advertising_Click" IsEnabled="False"/>
+
+
+    </Grid>
+
+</Window>

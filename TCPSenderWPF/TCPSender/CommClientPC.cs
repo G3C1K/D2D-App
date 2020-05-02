@@ -1,36 +1,33 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
+using System.Threading.Tasks;
 
-namespace D2DUIv3
+namespace TCPSender
 {
-    public class CommClientAndroid
+    public class CommClientPC
     {
+       
         Thread mainThread;
 
         //porty polaczen
         int commandPort = 50001;        //port komend/message
         int filePort = 50002;           //port dla plikow. zasada dzialania jak w FTP
         int imageXORPort = 50003;
-        int ubaPort = 50004;
 
+        TcpListener listener;
         TcpClient client;               //klient tcp dla komend
         IPAddress cIP;                  //adres IP. Zalezy od tego czy instancja jest klientem czy serwerem
         Action<string> outputFunc;      //funkcja ktora jest wywolywana gdy pojawi sie message od hosta
         public bool IsConnected { get; internal set; }
-        public Action<string> DisconnectAction { internal get; set; }//USTAWIAC DELEGATY
+        public Action<string> DisconnectAction { internal get; set; }//USTAWIAC DELEGATY!!!
 
         BinaryWriter writer;            //writer dla SendMessage, tutaj zeby nie tworzyc caly czas nowego. na porcie 50001
         int BUFFER_SIZE = 10000;                       //rozmiar bufora dla danych pliku w bajtach
@@ -44,37 +41,31 @@ namespace D2DUIv3
         bool stillSend = false;
         public BlockingCollection<byte[]> queueXOR { get; internal set; }
 
+ 
+        VolumeMaster volumeMaster;          //audio coreapi
 
-        public VolumeAndroid[] VolumeArrayForAndroid { get; internal set; } //android - tablica instancji w formie tekstowej
-        public List<VolumeAndroid> VolumeListForAndroid { get; internal set; }     //android - lista instancji w formie testowej
-        public bool volumeReady = false;
+        
 
-
-
-        public CommClientAndroid(IPAddress _adresIP, Action<string> _funkcjaDoPrzekazaniaMessagy) //serwer = listen, client = connect
+        public CommClientPC(IPAddress _adresIP, Action<string> _funkcjaDoPrzekazaniaMessagy, Action<string> _connectedDelegate) //serwer = listen, client = connect
         {
             cIP = _adresIP;
-
-            Connect(_adresIP);  //connect only
-            OpenCommandLine();
-            outputFunc = _funkcjaDoPrzekazaniaMessagy;
-            DisconnectAction = null;
-            IsConnected = true;
-            SendMessage("Connected!");
+            mainThread = new Thread(() => {
+                Listen(_adresIP, _connectedDelegate);
+                OpenCommandLine();
+                outputFunc = _funkcjaDoPrzekazaniaMessagy;
+                IsConnected = true;
+                SendMessage("Connected!");
+            });
+            mainThread.Start();
         }
 
-
-        private bool Connect(IPAddress _adresIPHosta)       //Ustanawia polaczenie
+        private bool Listen(IPAddress _adresInterfejsuNasluchu, Action<string> _connectedDelegate) //W serwerze, nasluchuje na polaczenie
         {
-            client = new TcpClient();   //tworzenie klienta
-            try
-            {
-                client.Connect(_adresIPHosta, commandPort); //tworzenie polaczenia
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
+            listener = new TcpListener(_adresInterfejsuNasluchu, commandPort);
+            listener.Start();
+            client = listener.AcceptTcpClient();
+            listener.Stop();
+            _connectedDelegate("Connected!");
             return true;
         }
 
@@ -89,6 +80,7 @@ namespace D2DUIv3
         {
             BinaryReader reader = new BinaryReader(client.GetStream());
             int input = -1;
+            //string input = null;
             string nextInput = null;
             while (input != (int)ClientFlags.Close)
             {
@@ -119,20 +111,44 @@ namespace D2DUIv3
                     //imageXORThreadRec = new Thread(() => ReceiveImageXOR(input));
                     //imageXORThreadRec.Start();
                 }
-                else if (input == (int)ClientFlags.Volume_ServerReady)    //instancja volume na androidzie
+                else if (input == (int)ClientFlags.Volume_RequestConnection)    //instancja volume na PC
                 {
-                    ReadVolumeClient(reader);
-                } 
-                else if (input == (int)ClientFlags.ByteArray)
+                    nextInput = reader.ReadString();
+                    InstantiateVolumeServer();
+                }
+                else if (input == (int)ClientFlags.Volume_ChangeVolume)    //zmiana volume na PC
                 {
-                    //temporaryImageHolder = ReadSmallUBA(reader);
+                    int type = reader.ReadInt32();  //typ zmienianej sesji
+                    if (type == (int)ClientFlags.Volume_ProcessID)                    //po processID
+                    {
+                        int id = int.Parse(reader.ReadString());
+                        float volume = float.Parse(reader.ReadString());
+                        SetVolumeByID(id, volume);
+                    }
+                    if (type == (int)ClientFlags.Volume_ProcessName)                    //po grupie processname
+                    {
+                        string processName = reader.ReadString();
+                        float volume = float.Parse(reader.ReadString());
+                        SetVolumeByPN(processName, volume);
+                    }
+                    if (type == (int)ClientFlags.Volume_DisplayName)                   //po grupie displayNAme
+                    {
+                        string displayName = reader.ReadString();
+                        float volume = float.Parse(reader.ReadString());
+                        SetVolumeByDN(displayName, volume);
+                    }
+                }
+                else if (input == (int)ClientFlags.Volume_ChangeMasterVolume)
+                {
+                    float volume = float.Parse(reader.ReadString());
+                    SetMasterVolume(volume);
                 }
             }
             Close_Self();
         }
 
 
-        private void SendFile_T(string _path)
+        private void SendFile_T(string _path)   //deprecated
         {
             //ustanawianie polaczenia na porcie 50002
             TcpClient fileClient = new TcpClient();
@@ -174,7 +190,7 @@ namespace D2DUIv3
             fileClient.Close();
         }
 
-        private void ReceiveFile(string _targetIPAddress)
+        private void ReceiveFile(string _targetIPAddress)   //deprecated
         {
             //ustanawianie polaczenia na porcie 50002
             TcpClient fileClient = new TcpClient();
@@ -212,14 +228,20 @@ namespace D2DUIv3
             writer.Write(_message);
         }
 
-        public void SendFile(string _path)
+        /// <summary>
+        /// deprecated
+        /// </summary>
+        /// <param name="_path">
+        /// sciezka do pliku
+        /// </param>
+        public void SendFile(string _path)  
         {
             Thread fileThread = new Thread(() => SendFile_T(_path));
             fileThread.Start();
         }
 
         //--------------------------------------------------
-        //IMAGES START
+        //IMAGES START  (do przerobienia)
         //--------------------------------------------------
 
         //public void SendImageXOR()
@@ -311,76 +333,141 @@ namespace D2DUIv3
         //VOLUME START
         //--------------------------------------------------
 
-        public void InstantiateVolumeClient()                   //android rozpoczyna komunikacje uzywajac InstantiateVolumeClient. nastepnie wywolywane jest InstantiateVolumeServer
+
+        private void InstantiateVolumeServer()      //uruchomienie VolumeMastera na PC
         {
-            writer.Write((int)ClientFlags.Volume_RequestConnection);
-            writer.Write("hi. placeholder for flags and options");
-        }       
+            volumeMaster = new VolumeMaster();
 
-        //po fladze vIS
-        private void ReadVolumeClient(BinaryReader reader)
-        {
-            //VolumeArrayForAndroid = new VolumeAndroid[procCount];
-            VolumeListForAndroid = new List<VolumeAndroid>();
+            List<string> list = new List<string>(); //lista z nazwami procesow. uzywana do unikania duplikowania juz istniejacych sesji
+            Icon icon;  //ikona do wyslana;
+            Bitmap bitmap; //bitmapa ikony
+            byte[] bitmapBytes;
+            MemoryStream ms;
 
-            float systemVolume = float.Parse(reader.ReadString());
-            int systemVolumeIconLen = reader.ReadInt32();
-            byte[] systemVolumeIconBytes = reader.ReadBytes(systemVolumeIconLen);
-            VolumeListForAndroid.Add(new VolumeAndroid("System Volume", "System Volume", false, systemVolume, int.MaxValue, systemVolumeIconBytes));
+            writer.Write((int)ClientFlags.Volume_ServerReady);        //flaga oznaczajaca gotowosc do wysylania
 
-            int procCount = int.Parse(reader.ReadString());
+            writer.Write(volumeMaster.MasterVolumeLevel.ToString());    //najpierw wysyla gloscnosc systemu. klient wie, ze to jest glosnosc systemowa i
+            //nie potrzebuje reszty danych
+            icon = SystemIcons.Shield;
+            ms = new MemoryStream();
+            bitmap = icon.ToBitmap();
+            bitmap.Save(ms, System.Drawing.Imaging.ImageFormat.Png);        //wysylanie ikonki systemowej. placeholder, wlasciwa ikonak bedzie juz na androidzie
+            bitmapBytes = ms.ToArray();
+
+            writer.Write(bitmapBytes.Length);
+            writer.Write(bitmapBytes, 0, bitmapBytes.Length);
 
 
-            for (int i = 0; i < procCount; i++)
+            writer.Write(volumeMaster.Sessions.Count.ToString());   //wysyla ilosc sesji NA PC. Ilosc sesji jakie zaakceptuje android bedzie inna.
+
+            
+
+            for (int i = 0; i < volumeMaster.Sessions.Count; i++)   //po wszystkich sesjach
             {
-                string status = reader.ReadString();
-                if (status == "new")
+                string displayName;
+                string processName;
+                string mute;
+                string volume;
+                string processID;
+
+                //jesli istnieje displayname procesu. niektore procesy nie maja swojego displayname
+                if (volumeMaster.Sessions[i].DisplayName != null && volumeMaster.Sessions[i].DisplayName != "")
                 {
-                    string displayName = reader.ReadString();
-                    string processName = reader.ReadString();
-                    bool mute = bool.Parse(reader.ReadString());
-                    double volume = double.Parse(reader.ReadString());
-                    int processID = int.Parse(reader.ReadString());
-                    int bitmapBytesLength = reader.ReadInt32();
-                    byte[] bitmapBytes = reader.ReadBytes(bitmapBytesLength);
-                    VolumeListForAndroid.Add(new VolumeAndroid(displayName, processName, mute, volume, processID, bitmapBytes));
+                    displayName = volumeMaster.Sessions[i].DisplayName;
+                    //writer.Write(volumeMaster.Sessions[i].DisplayName);
+                }
+                else
+                {
+                    displayName = "null";
+                }
+
+                //jesli istnieje proces. uslugi systemu nie musza miec instancji procesu aby korzystac z audioapi. jednak wiekszosc sesji ma swoj proces.
+                if (volumeMaster.Sessions[i].Process != null)
+                {
+                    processName = volumeMaster.Sessions[i].Process.ProcessName;
+                    processID = volumeMaster.Sessions[i].Process.Id.ToString();
+                    //writer.Write(volumeMaster.Sessions[i].Process.ProcessName);
+
+                }
+                else
+                {
+                    processName = "null";
+                    processID = "0";
+                }
+
+                //mutestatus - czy sesja jest zmutowana
+                mute = volumeMaster.Sessions[i].Mute.ToString();
+                //volume
+                volume = volumeMaster.Sessions[i].Volume.ToString();
+
+                //poniewaz android nie wie ile PC bedzie wysylal sesji, wie tylko ile bedzie maksymalnie wysylal, wysyla sie tag skip gdy sesja jest pomijana
+                //new lub skip
+
+                //PC nie wysyla duplikatów sesji. jest to zwiazane z tym, ze jeden program moze miec wiele wywolan audioapi. sesje sa grupowane po processname
+                if (!list.Contains(processName) || processName == "null")
+                {
+                    list.Add(processName);
+                    writer.Write("new");
+                    writer.Write(displayName);
+                    writer.Write(processName);
+                    writer.Write(mute);
+                    writer.Write(volume);
+                    writer.Write(processID);
+
+                    ms = new MemoryStream();
+                    icon = volumeMaster.Sessions[i].GetIcon32x32();
+                    bitmap = icon.ToBitmap();
+                    bitmap.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+                    bitmapBytes = ms.ToArray();
+                    
+
+                    writer.Write(bitmapBytes.Length);
+                    writer.Write(bitmapBytes, 0, bitmapBytes.Length);
+                }
+                else
+                {
+                    writer.Write("skip");
                 }
             }
 
-            volumeReady = true;  //flaga do czekania az wszystkie sesje zostana zaladowane.
+
         }
 
-        //volume na androidzie sa grupowane
-        public void ChangeVolumeClient(int _id, float _volume)
+
+        //zmienia volume jednego procesu oznaczonego przez ID
+        private void SetVolumeByID(int _id, float _volume)
         {
-            writer.Write((int)ClientFlags.Volume_ChangeVolume);
-            writer.Write((int)ClientFlags.Volume_ProcessID);
-            writer.Write(_id.ToString());
-            writer.Write(_volume.ToString());
+            AudioSession session = volumeMaster.GetSessionByProcessID(_id);
+            if (session != null)
+            {
+                session.Volume = _volume;
+            }
         }
 
-        public void ChangeVolumeClientPN(string _processName, float _volume)
+        //zmienia volume wszystkich sesji z jednym processname
+        private void SetVolumeByPN(string _processName, float _volume)
         {
-            writer.Write((int)ClientFlags.Volume_ChangeVolume);
-            writer.Write((int)ClientFlags.Volume_ProcessName);
-            writer.Write(_processName);
-            writer.Write(_volume.ToString());
+            List<AudioSession> list = volumeMaster.GetSessionByProcessName2(_processName);
+            foreach (var session in list)
+            {
+                session.Volume = _volume;
+            }
         }
 
-        public void ChangeVolumeClientDN(string _displayName, float _volume)
+        //zmienia volume wszystkich sesji z jednym displayname
+        private void SetVolumeByDN(string _displayName, float _volume)
         {
-            writer.Write((int)ClientFlags.Volume_ChangeVolume);
-            writer.Write((int)ClientFlags.Volume_DisplayName);
-            writer.Write(_displayName);
-            writer.Write(_volume.ToString());
+            List<AudioSession> list = volumeMaster.GetSessionByDisplayName2(_displayName);
+            foreach (var session in list)
+            {
+                session.Volume = _volume;
+            }
         }
 
-        public void ChangeVolumeMaster(float _volume)
+        private void SetMasterVolume(float _volume)
         {
-            writer.Write((int)ClientFlags.Volume_ChangeMasterVolume);
-            writer.Write(_volume.ToString());
+            volumeMaster.MasterVolumeLevel = _volume;
         }
-
 
         //--------------------------------------------------
         //VOLUME END
@@ -390,12 +477,10 @@ namespace D2DUIv3
         //UBA START
         //--------------------------------------------------
 
-        private byte[] ReadSmallUBA(BinaryReader reader)
+        public void SendSmallUBA(byte[] uba)
         {
-            int length = int.Parse(reader.ReadString());
-            byte[] ret;
-            ret = reader.ReadBytes(length);
-            return ret;
+            writer.Write(uba.Length.ToString());
+            writer.Write(uba, 0, uba.Length);
         }
 
         //--------------------------------------------------
@@ -404,19 +489,38 @@ namespace D2DUIv3
 
         public void Close()
         {
-            // writer.Write("x");
-            if(IsConnected == true)
+            if (listener != null)
             {
-                DisconnectAction?.Invoke("Disconnect happened");
+                try
+                {
+                    listener.Stop();
+                }
+                catch (Exception e)
+                {
+                    outputFunc(e.Message);
+                }
+            }
 
+            if (IsConnected == true)
+            {
+                DisconnectAction("inner disconnect delegate");
                 Close_Self();
             }
+            else DisconnectAction("already disconnected!");
         }
 
         private void Close_Self()
         {
-            writer.Close();
-            client.Close();
+            try
+            {
+                listener.Stop();
+                writer.Close();
+                client.Close();
+            }
+            catch (Exception e)
+            {
+                outputFunc(e.Message);
+            }
             IsConnected = false;
         }
 
@@ -430,28 +534,6 @@ namespace D2DUIv3
                 localIP = endPoint.Address;
             }
             return localIP;
-        }
-
-    }
-
-    public class VolumeAndroid
-    {
-        public string DisplayName { get; }
-        public string ProcessName { get; }
-        public bool Mute { get; }
-        public double Volume { get; }
-        public int ProcessID { get; }
-        public byte[] IconByteArray { get; }
-
-        public VolumeAndroid(string _displayName, string _processName, bool _mute, double _volume, int _processID, byte[] _iconByteArray)
-        {
-            DisplayName = _displayName;
-            ProcessName = _processName;
-            Mute = _mute;
-            Volume = _volume;
-            ProcessID = _processID;
-            IconByteArray = new byte[_iconByteArray.Length];
-            Array.Copy(_iconByteArray, IconByteArray, _iconByteArray.Length);
         }
     }
 

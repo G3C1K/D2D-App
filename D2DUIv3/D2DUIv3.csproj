@@ -56,6 +56,7 @@
     <Reference Include="Mono.Android" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AutoConfigAndroid.cs" />
     <Compile Include="ClientHolder.cs" />
     <Compile Include="CommClientAndroid.cs" />
     <Compile Include="ImageViewActivity.cs" />
@@ -250,6 +251,9 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\baseline_volume_up_white_48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="zzzzzzz_DO_ZROBIENIA.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
