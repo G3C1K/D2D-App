@@ -1,14 +1,14 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto"
       >
   <item
-       android:id="@+id/menu_disconnect"
-       android:icon="@mipmap/ic_action_content_save"
-       app:showAsAction="always"
-       android:title="Disconnect" />
-  <item
        android:id="@+id/menu_settings"
        app:showAsAction="never"
        android:title="Settings" />
+  <item
+     android:id="@+id/volume_refresh"
+     android:icon="@mipmap/baseline_refresh_white_48"
+     app:showAsAction="always"
+     android:title="Refresh" />
 </menu>

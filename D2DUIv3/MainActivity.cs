@@ -3,10 +3,12 @@ using Android.OS;
 using Android.Support.V7.App;
 using Android.Runtime;
 using Android.Widget;
-using TCPSender;
 using System.Net;
 using System;
 using Android.Views;
+using Android.Graphics;
+using Android.Content;
+using System.Collections.Generic;
 
 namespace D2DUIv3
 {
@@ -14,13 +16,45 @@ namespace D2DUIv3
     [Activity(Label = "@string/app_name", Theme = "@style/AppTheme", MainLauncher = true)]
     public class MainActivity : AppCompatActivity
     {
-        TextView textNumber;
-        CommClient client;
-        EditText textOutput;
+        CommClientAndroid client;
+        AutoConfigAndroid autoConfigClient;
+        bool listeningFlag = false;
+
 
         public void SetText2(string _message)
         {
-            RunOnUiThread(() => textNumber.Text += _message + "\n");
+            //textNumber.Post(() => textNumber.Text += _message + "\n"); //????
+            //RunOnUiThread(() => textNumber.Text += _message + "\n");
+        }
+
+        public void DisconnectDelegate(string we)
+        {
+            Button button = FindViewById<Button>(Resource.Id.buttonConnect);
+            button.Post(() =>
+                {
+                    client.volumeReady = false;
+                    client.Close();
+                    Toast.MakeText(this, "Disconnected", ToastLength.Short).Show();
+                    Intent rtrn = new Intent(this.ApplicationContext, typeof(MainActivity));
+                    StartActivity(rtrn);
+                }               
+            );         
+        }
+
+        public void AutoConfigFinished(List<string> outputLista)
+        {
+            string final = "";
+            foreach(string item in outputLista)
+            {
+                final += item + " ";
+            }
+            final += "finished";
+            TextView textViewForIPS = FindViewById<TextView>(Resource.Id.textView_test);
+            textViewForIPS.Post(() =>
+            {
+                textViewForIPS.Text = final;
+            });
+
         }
 
         protected override void OnCreate(Bundle savedInstanceState)
@@ -30,60 +64,63 @@ namespace D2DUIv3
             // Set our view from the "main" layout resource
             SetContentView(Resource.Layout.activity_main);
 
-            textNumber = FindViewById<TextView>(Resource.Id.textBoxMessageOutput);
+            TextView testView = FindViewById<TextView>(Resource.Id.textView_test);
+            EditText textBoxIP = FindViewById<EditText>(Resource.Id.textBoxIP);
+            Button buttonAutoConfig = FindViewById<Button>(Resource.Id.button_autoconfig);
+
+            
+
+            testView.Click += (o, e) =>
+            {
+                textBoxIP.Text = testView.Text;
+            };
 
             FindViewById<Button>(Resource.Id.buttonConnect).Click += (o, e) =>
             {
+                bool isConnected = true;
+                IPAddress iPAddress = IPAddress.Parse(FindViewById<EditText>(Resource.Id.textBoxIP).Text);
+
                 try
                 {
-                    client = new CommClient(IPAddress.Parse(FindViewById<EditText>(Resource.Id.textBoxIP).Text), ConnectionType.Connect, SetText2);
+                    if(listeningFlag == false)
+                    {
+                        client = new CommClientAndroid(iPAddress, SetText2);
+                        client.DisconnectAction = DisconnectDelegate;
+                        ClientHolder.Client = client;
+                    }
+                    else
+                    {
+                        Toast.MakeText(this, "Listening for hosts...", ToastLength.Short).Show();
+
+                    }
                 }
                 catch (Exception ex)
                 {
-                    textNumber.Text =
-                    "Exception caught: \n" +
-                    "Message: " + ex.Message + "\n" +
-                    "Source: " + ex.Source + "\n" +
-                    "TargetSite: " + ex.TargetSite + "\n";
+                    Toast.MakeText(this, ex.Message, ToastLength.Long).Show();
+                }
+                finally
+                {
+                    if (isConnected)
+                    {
+                        Intent nextActivity = new Intent(this, typeof(MainMenuActivity));
+                        nextActivity.PutExtra("IP", iPAddress.ToString());
+                        StartActivity(nextActivity);
+                    }
                 }
             };
 
-            FindViewById<Button>(Resource.Id.buttonSend).Click += (o, e) =>
+            buttonAutoConfig.Click += (o, e) =>
             {
-                textOutput = FindViewById<EditText>(Resource.Id.textBoxMessageInput);
-                client.SendMessage(textOutput.Text);
-                textOutput.Text = "";
+                autoConfigClient = new AutoConfigAndroid();
+                autoConfigClient.FinishAction = AutoConfigFinished;
+                autoConfigClient.Listen();
             };
-
-            FindViewById<Button>(Resource.Id.toggleButtonMute).Click += (o, e) =>
-            {
-                client.SendVolume("mute");
-            };
-
-            FindViewById<Button>(Resource.Id.buttonVolumeDown).Click += (o, e) =>
-            {
-                client.SendVolume("down");
-            };
-
-            FindViewById<Button>(Resource.Id.buttonVolumeUp).Click += (o, e) =>
-            {
-                client.SendVolume("up");
-            };
-
-
-            //do zrobienia:
-            //lepsze ui
-            //usiniecie/dezaktywacja connectButton po podlaczeniu sie, lub zamiana go na disconnectButton
-            //w zakladkach mam kod jak dostac volume poszczegolnych aplikacji
-            //moze remote mute mikra
-            //
-            //moze zaczac wysylanie plikow
 
         }
 
         public override bool OnCreateOptionsMenu(IMenu menu)
         {
-            MenuInflater.Inflate(Resource.Menu.top_menus, menu);
+            MenuInflater.Inflate(Resource.Menu.intro_toolbar, menu);
             return base.OnCreateOptionsMenu(menu);
         }
 
@@ -91,6 +128,7 @@ namespace D2DUIv3
         {
             Toast.MakeText(this, "Action selected: " + item.TitleFormatted,
                 ToastLength.Short).Show();
+
             return base.OnOptionsItemSelected(item);
         }
     }

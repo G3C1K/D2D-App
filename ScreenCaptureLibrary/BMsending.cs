@@ -12,6 +12,7 @@ using System.Drawing.Imaging;
 using SharpDX.DXGI;
 using SharpDX.Direct3D11;
 using SharpDX;
+using System.Collections.Concurrent;
 
 namespace TCPSender
 {
@@ -174,6 +175,37 @@ namespace TCPSender
             {
                 cur.UnlockBits(locked1);
                 prev.UnlockBits(locked2);
+
+
+            }
+        }
+
+        public void Iterate_with_queue(BlockingCollection<byte[]> queueXOR)
+        {
+
+            Capture(cur);
+
+            var locked1 = cur.LockBits(new Rectangle(0, 0, cur.Width, cur.Height), ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
+            var locked2 = prev.LockBits(new Rectangle(0, 0, prev.Width, prev.Height), ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
+
+            try
+            {
+                XOR.CountDifference(locked2, locked1, this.compressionBuffer);
+
+                compressedScreen.Data = LZ4.LZ4Codec.Encode(compressionBuffer, 0, compressionBuffer.Length);
+                compressedScreen.Size = compressedScreen.Data.Length;
+                //Console.WriteLine("compressed screen size " + compressedScreen.Size + " compressed screen data size " + compressedScreen.Data.Length);
+                queueXOR.Add(compressedScreen.Data);
+
+                var tmp = cur;
+                cur = prev;
+                prev = tmp;
+            }
+            finally
+            {
+                cur.UnlockBits(locked1);
+                prev.UnlockBits(locked2);
+
             }
         }
 
@@ -313,7 +345,7 @@ namespace TCPSender
             {
                 g.Clear(Color.Black);
             }
-            var locked1 = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
+            BitmapData locked1 = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
             XOR.ApplyDifference(locked1, input);
             bmp.UnlockBits(locked1);
             bmp.Save("image.png", ImageFormat.Png);
