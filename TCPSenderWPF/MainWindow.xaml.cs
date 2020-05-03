@@ -22,6 +22,7 @@ namespace TCPSenderWPF
     /// </summary>
     
     //test
+    //test2
     public partial class MainWindow : Window
     {
         CommClientPC client = null;
