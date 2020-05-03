@@ -50,11 +50,14 @@ namespace TCPSender
         {
             cIP = _adresIP;
             mainThread = new Thread(() => {
-                Listen(_adresIP, _connectedDelegate);
-                OpenCommandLine();
-                outputFunc = _funkcjaDoPrzekazaniaMessagy;
-                IsConnected = true;
-                SendMessage("Connected!");
+                bool success = Listen(_adresIP, _connectedDelegate);
+                if (success)
+                {
+                    OpenCommandLine();
+                    outputFunc = _funkcjaDoPrzekazaniaMessagy;
+                    IsConnected = true;
+                    SendMessage("Connected!"); 
+                }
             });
             mainThread.Start();
         }
@@ -63,7 +66,15 @@ namespace TCPSender
         {
             listener = new TcpListener(_adresInterfejsuNasluchu, commandPort);
             listener.Start();
-            client = listener.AcceptTcpClient();
+            try
+            {
+                client = listener.AcceptTcpClient();
+            }
+            catch
+            {
+                Close();
+                return false;
+            }
             listener.Stop();
             _connectedDelegate("Connected!");
             return true;
