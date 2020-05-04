@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<resources>
+    <string name="app_name">D2DUIvX</string>
+    <string name="action_settings">Ustawienia</string>
+    <string name="find_open_hosts">Znajdź dostępnych hostów</string>
+    <string name="connect">Połącz</string>
+    <string name="enter_IP">Wprowadź adres IP</string>
+    <string name="needed_IP">Adres IP potrzebny do połączenia</string>
+</resources>
