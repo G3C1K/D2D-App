@@ -253,6 +253,7 @@
     <AndroidResource Include="Resources\drawable\baseline_volume_up_white_48.png" />
   </ItemGroup>
   <ItemGroup>
+    <AndroidResource Include="Resources\drawable\ACTextViewBackground.xml" />
     <Content Include="zzzzzzz_DO_ZROBIENIA.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />

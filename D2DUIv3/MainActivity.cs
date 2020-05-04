@@ -12,7 +12,7 @@ using System.Collections.Generic;
 
 namespace D2DUIv3
 {
-    
+
     [Activity(Label = "@string/app_name", Theme = "@style/AppTheme", MainLauncher = true)]
     public class MainActivity : AppCompatActivity
     {
@@ -37,22 +37,73 @@ namespace D2DUIv3
                     Toast.MakeText(this, "Disconnected", ToastLength.Short).Show();
                     Intent rtrn = new Intent(this.ApplicationContext, typeof(MainActivity));
                     StartActivity(rtrn);
-                }               
-            );         
+                }
+            );
         }
 
         public void AutoConfigFinished(List<string> outputLista)
         {
-            string final = "";
-            foreach(string item in outputLista)
+            EditText textBoxIP = FindViewById<EditText>(Resource.Id.textBoxIP);
+            LinearLayout ACLayout = FindViewById<LinearLayout>(Resource.Id.linearLayoutAC);
+
+            if (textBoxIP.Text == "acdebug")
             {
-                final += item + " ";
+                autoConfigClient.listaWykrytychIP.Add("192.168.50.190");
+                autoConfigClient.listaWykrytychIP.Add("debug");
+                autoConfigClient.listaWykrytychIP.Add("127.0.0.1");
+                autoConfigClient.listaWykrytychIP.Add("1.2.3.4");
             }
-            final += "finished";
-            TextView textViewForIPS = FindViewById<TextView>(Resource.Id.textView_test);
-            textViewForIPS.Post(() =>
+
+            //string final = "";
+            ////foreach(string item in outputLista)
+            ////{
+            ////    //final += item + " ";
+            ////}
+            //final += "finished";
+            //TextView textViewForIPS = FindViewById<TextView>(Resource.Id.textView_test);
+
+            //textViewForIPS.Post(() =>
+            //{
+            //    textViewForIPS.Text = final;
+            //});
+
+
+            TextView ACTVItem;
+
+            ACLayout.Post(() =>
             {
-                textViewForIPS.Text = final;
+                ACLayout.RemoveAllViews();
+
+                if(outputLista.Count == 0)
+                {
+                    Toast.MakeText(this, "No clients found!", ToastLength.Short).Show();
+                }
+
+                foreach (string item in outputLista)
+                {
+
+                    ACTVItem = new TextView(this);
+                    ACTVItem.SetTextAppearance(Android.Resource.Style.TextAppearanceMedium);
+                    float factor = this.Resources.DisplayMetrics.Density;
+                    LinearLayout.LayoutParams paramss = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MatchParent, (int)(40 * factor));
+                    paramss.SetMargins(2, 2, 2, 2);
+                    ACTVItem.LayoutParameters = paramss;
+                    ACTVItem.TextAlignment = TextAlignment.Center;
+                    ACTVItem.Clickable = true;
+                    ACTVItem.Focusable = true;
+                    ACTVItem.Background = GetDrawable(Resource.Drawable.ACTextViewBackground);
+                    ACTVItem.Gravity = GravityFlags.Center;
+
+                    ACTVItem.Text = item;
+
+                    ACTVItem.Click += (o, e) =>
+                    {
+                        TextView oo = o as TextView;
+                        textBoxIP.Text = oo.Text;
+                    };
+
+                    ACLayout.AddView(ACTVItem);
+                }
             });
 
         }
@@ -78,12 +129,16 @@ namespace D2DUIv3
             FindViewById<Button>(Resource.Id.buttonConnect).Click += (o, e) =>
             {
                 bool isConnected = true;
-                IPAddress iPAddress = IPAddress.Parse(FindViewById<EditText>(Resource.Id.textBoxIP).Text);
+                EditText IPinputEditText = FindViewById<EditText>(Resource.Id.textBoxIP);
+                
+                IPAddress iPAddress = IPAddress.Parse(IPinputEditText.Text);
 
                 try
                 {
                     if(listeningFlag == false)
                     {
+                        listeningFlag = true;
+                        
                         client = new CommClientAndroid(iPAddress, SetText2);
                         client.DisconnectAction = DisconnectDelegate;
                         ClientHolder.Client = client;

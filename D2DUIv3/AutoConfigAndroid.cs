@@ -17,7 +17,7 @@ namespace D2DUIv3
     class AutoConfigAndroid
     {
         public bool StillListen { get; set; }
-        List<string> listaWykrytychIP = new List<string>();
+        public List<string> listaWykrytychIP = new List<string>();
         Thread listenThread;
         public Action<List<string>> FinishAction { internal get; set; }
 
@@ -33,7 +33,7 @@ namespace D2DUIv3
             {
                 listenThread = new Thread(() => Listen_T());
                 listenThread.Start();
-                Thread.Sleep(2000);
+                Thread.Sleep(1000);
                 StillListen = false;
                 FinishAction(listaWykrytychIP);
             });
@@ -49,7 +49,10 @@ namespace D2DUIv3
             {
                 string receivedData = Encoding.UTF8.GetString(client.Receive(ref receivePoint));
 
-                listaWykrytychIP.Add(receivedData);
+                if (!listaWykrytychIP.Contains(receivedData))
+                {
+                    listaWykrytychIP.Add(receivedData);
+                }
             }
             client.Close();
         }
