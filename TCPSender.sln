@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29911.84
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.960
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TCPSender", "TCPSender\TCPSender.csproj", "{196C87A2-2FB9-410A-A582-FE6EB719F77A}"
 EndProject
@@ -10,8 +10,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenCaptureLibrary", "ScreenCaptureLibrary\ScreenCaptureLibrary.csproj", "{6437B61C-93B1-46DE-8CC4-C5BCC4EF484E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TCPSenderWPF", "TCPSenderWPF\TCPSenderWPF.csproj", "{F52DB210-D274-483B-B215-C395BD0D3BAD}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "D2DLibrary", "D2DLibrary\D2DLibrary.csproj", "{95254150-EC16-479D-8186-ABAFF63AB98B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PerformanceMetrics", "PerformanceMetrics\PerformanceMetrics.csproj", "{055B1E6A-7104-4E99-A7B0-AFE276B285CE}"
 EndProject
@@ -61,14 +59,6 @@ Global
 		{F52DB210-D274-483B-B215-C395BD0D3BAD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F52DB210-D274-483B-B215-C395BD0D3BAD}.Release|x64.ActiveCfg = Release|Any CPU
 		{F52DB210-D274-483B-B215-C395BD0D3BAD}.Release|x64.Build.0 = Release|Any CPU
-		{95254150-EC16-479D-8186-ABAFF63AB98B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{95254150-EC16-479D-8186-ABAFF63AB98B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{95254150-EC16-479D-8186-ABAFF63AB98B}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{95254150-EC16-479D-8186-ABAFF63AB98B}.Debug|x64.Build.0 = Debug|Any CPU
-		{95254150-EC16-479D-8186-ABAFF63AB98B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{95254150-EC16-479D-8186-ABAFF63AB98B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{95254150-EC16-479D-8186-ABAFF63AB98B}.Release|x64.ActiveCfg = Release|Any CPU
-		{95254150-EC16-479D-8186-ABAFF63AB98B}.Release|x64.Build.0 = Release|Any CPU
 		{055B1E6A-7104-4E99-A7B0-AFE276B285CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{055B1E6A-7104-4E99-A7B0-AFE276B285CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{055B1E6A-7104-4E99-A7B0-AFE276B285CE}.Debug|x64.ActiveCfg = Debug|Any CPU
