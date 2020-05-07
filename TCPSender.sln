@@ -3,15 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.960
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TCPSender", "TCPSender\TCPSender.csproj", "{196C87A2-2FB9-410A-A582-FE6EB719F77A}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "D2DUIv3", "D2DUIv3\D2DUIv3.csproj", "{1F6ECA8E-AAA3-4EB1-BFA5-7EC855563130}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenCaptureLibrary", "ScreenCaptureLibrary\ScreenCaptureLibrary.csproj", "{6437B61C-93B1-46DE-8CC4-C5BCC4EF484E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TCPSenderWPF", "TCPSenderWPF\TCPSenderWPF.csproj", "{F52DB210-D274-483B-B215-C395BD0D3BAD}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PerformanceMetrics", "PerformanceMetrics\PerformanceMetrics.csproj", "{055B1E6A-7104-4E99-A7B0-AFE276B285CE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "D2DUIvX", "D2DUIvX\D2DUIvX.csproj", "{935F2B04-E166-4AF8-BEB9-42F8818391B7}"
 EndProject
@@ -23,14 +19,6 @@ Global
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{196C87A2-2FB9-410A-A582-FE6EB719F77A}.Debug|Any CPU.ActiveCfg = Debug|x64
-		{196C87A2-2FB9-410A-A582-FE6EB719F77A}.Debug|Any CPU.Build.0 = Debug|x64
-		{196C87A2-2FB9-410A-A582-FE6EB719F77A}.Debug|x64.ActiveCfg = Debug|x64
-		{196C87A2-2FB9-410A-A582-FE6EB719F77A}.Debug|x64.Build.0 = Debug|x64
-		{196C87A2-2FB9-410A-A582-FE6EB719F77A}.Release|Any CPU.ActiveCfg = Debug|x64
-		{196C87A2-2FB9-410A-A582-FE6EB719F77A}.Release|Any CPU.Build.0 = Debug|x64
-		{196C87A2-2FB9-410A-A582-FE6EB719F77A}.Release|x64.ActiveCfg = Release|x64
-		{196C87A2-2FB9-410A-A582-FE6EB719F77A}.Release|x64.Build.0 = Release|x64
 		{1F6ECA8E-AAA3-4EB1-BFA5-7EC855563130}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1F6ECA8E-AAA3-4EB1-BFA5-7EC855563130}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1F6ECA8E-AAA3-4EB1-BFA5-7EC855563130}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
@@ -59,14 +47,6 @@ Global
 		{F52DB210-D274-483B-B215-C395BD0D3BAD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F52DB210-D274-483B-B215-C395BD0D3BAD}.Release|x64.ActiveCfg = Release|Any CPU
 		{F52DB210-D274-483B-B215-C395BD0D3BAD}.Release|x64.Build.0 = Release|Any CPU
-		{055B1E6A-7104-4E99-A7B0-AFE276B285CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{055B1E6A-7104-4E99-A7B0-AFE276B285CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{055B1E6A-7104-4E99-A7B0-AFE276B285CE}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{055B1E6A-7104-4E99-A7B0-AFE276B285CE}.Debug|x64.Build.0 = Debug|Any CPU
-		{055B1E6A-7104-4E99-A7B0-AFE276B285CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{055B1E6A-7104-4E99-A7B0-AFE276B285CE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{055B1E6A-7104-4E99-A7B0-AFE276B285CE}.Release|x64.ActiveCfg = Release|Any CPU
-		{055B1E6A-7104-4E99-A7B0-AFE276B285CE}.Release|x64.Build.0 = Release|Any CPU
 		{935F2B04-E166-4AF8-BEB9-42F8818391B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{935F2B04-E166-4AF8-BEB9-42F8818391B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{935F2B04-E166-4AF8-BEB9-42F8818391B7}.Debug|Any CPU.Deploy.0 = Debug|Any CPU

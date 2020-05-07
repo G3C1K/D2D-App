@@ -35,9 +35,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="OpenHardwareMonitorLib">
+      <HintPath>..\PerformanceMetrics\OpenHardwareMonitorLib.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -59,6 +64,7 @@
     <Compile Include="TCPSender\AutoConfig.cs" />
     <Compile Include="TCPSender\AutoConfigPC.cs" />
     <Compile Include="TCPSender\CommClientPC.cs" />
+    <Compile Include="TCPSender\PM.cs" />
     <Compile Include="TCPSender\Program.cs" />
     <Compile Include="TCPSender\Test.cs" />
     <Compile Include="TCPSender\VolumeHandling.cs" />

@@ -50,6 +50,9 @@ namespace D2DUIv3
         public bool volumeReady = false;
 
 
+        public Action<string> PMReadyAction { internal get; set; }
+        public Action<string> PMDataReceivedAction { internal get; set; }
+
 
         public CommClientAndroid(IPAddress _adresIP, Action<string> _funkcjaDoPrzekazaniaMessagy) //serwer = listen, client = connect
         {
@@ -126,6 +129,16 @@ namespace D2DUIv3
                 else if (input == (int)ClientFlags.ByteArray)
                 {
                     //temporaryImageHolder = ReadSmallUBA(reader);
+                }
+                else if (input == (int)ClientFlags.PM_Ready)
+                {
+                    nextInput = reader.ReadString();
+                    PMReadyAction(nextInput);
+                }
+                else if (input == (int)ClientFlags.PM_Data)
+                {
+                    nextInput = reader.ReadString();
+                    PMDataReceivedAction(nextInput);
                 }
             }
             Close_Self();
@@ -402,6 +415,29 @@ namespace D2DUIv3
         //UBA END
         //--------------------------------------------------
 
+        //--------------------------------------------------
+        //METRICS START
+        //--------------------------------------------------
+
+        public void InstantiatePMClient()
+        {
+            writer.Write((int)ClientFlags.PM_Instantiate);
+        }
+
+        public void AskForPM()
+        {
+            writer.Write((int)ClientFlags.PM_Request);
+        }
+
+        public void ClosePM()
+        {
+            writer.Write((int)ClientFlags.PM_Close);
+        }
+
+        //--------------------------------------------------
+        //METRICS END
+        //--------------------------------------------------
+
         public void Close()
         {
             // writer.Write("x");
@@ -468,6 +504,11 @@ namespace D2DUIv3
         Volume_ProcessID,
         Volume_ProcessName,
         Volume_DisplayName,
-        ByteArray
+        ByteArray,
+        PM_Instantiate,
+        PM_Ready,
+        PM_Request,
+        PM_Data,
+        PM_Close
     }
 }

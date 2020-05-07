@@ -44,6 +44,9 @@ namespace TCPSender
  
         VolumeMaster volumeMaster;          //audio coreapi
 
+
+        //pmetrics
+        HWUsage pMetricsClient = null;
         
 
         public CommClientPC(IPAddress _adresIP, Action<string> _funkcjaDoPrzekazaniaMessagy, Action<string> _connectedDelegate) //serwer = listen, client = connect
@@ -153,6 +156,18 @@ namespace TCPSender
                 {
                     float volume = float.Parse(reader.ReadString());
                     SetMasterVolume(volume);
+                }
+                else if (input == (int)ClientFlags.PM_Instantiate)
+                {
+                    InstantiatePMServer();
+                }
+                else if (input == (int)ClientFlags.PM_Request)
+                {
+                    SendPMData();
+                }
+                else if (input == (int)ClientFlags.PM_Close)
+                {
+                    ClosePM();
                 }
             }
             Close_Self();
@@ -498,6 +513,58 @@ namespace TCPSender
         //UBA END
         //--------------------------------------------------
 
+        //--------------------------------------------------
+        //METRICS START
+        //--------------------------------------------------
+
+        private void HWUsageDelegate(string we)
+        {
+            //placeholder
+        }
+
+        private void InstantiatePMServer()
+        {
+            //Thread externalThreadForConst = new Thread(() =>
+            //{
+            //    pMetricsClient = new HWUsage(HWUsageDelegate);
+            //    while (pMetricsClient.ReadyFlag == false)
+            //    {
+            //        Thread.Sleep(25);
+            //    }
+            //    writer.Write((int)ClientFlags.PM_Ready);
+            //    writer.Write("ready");
+            //});
+            //externalThreadForConst.Start();
+
+            pMetricsClient = new HWUsage(HWUsageDelegate);
+            while (pMetricsClient.ReadyFlag == false)
+            {
+                Thread.Sleep(25);
+            }
+            writer.Write((int)ClientFlags.PM_Ready);
+            writer.Write("ready");
+        }
+
+        private void SendPMData()
+        {
+            pMetricsClient.Update();
+            string outputwe = pMetricsClient.OutputString();
+            writer.Write((int)ClientFlags.PM_Data);
+            writer.Write(outputwe);
+        }
+
+        private void ClosePM()
+        {
+            if (pMetricsClient != null)
+            {
+                pMetricsClient.Close();
+            }
+        }
+
+        //--------------------------------------------------
+        //METRICS END
+        //--------------------------------------------------
+
         public void Close()
         {
             if (listener != null)
@@ -525,6 +592,10 @@ namespace TCPSender
             try
             {
                 listener.Stop();
+                if(pMetricsClient != null)
+                {
+                    pMetricsClient.Close();
+                }
                 writer.Close();
                 client.Close();
             }
@@ -561,6 +632,11 @@ namespace TCPSender
         Volume_ProcessID,
         Volume_ProcessName,
         Volume_DisplayName,
-        ByteArray
+        ByteArray,
+        PM_Instantiate,
+        PM_Ready,
+        PM_Request,
+        PM_Data,
+        PM_Close
     }
 }

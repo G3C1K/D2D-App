@@ -14,10 +14,9 @@ using System.Runtime.Remoting.Messaging;
 using System.Reflection;
 using Microsoft.VisualBasic;
 using System.Management;
-using System.Management.Instrumentation;
 using System.Text.RegularExpressions;
 
-namespace PerfMetrics
+namespace TCPSender
 {
     //klasa
     //kazde property jako wlasnosc klasy
@@ -31,7 +30,10 @@ namespace PerfMetrics
     {
         public IHardware[] hardwares;
         public Computer pc;
-        public HWUsage()
+
+        public bool ReadyFlag { get; internal set; } = false;
+
+        public HWUsage(Action<string> ReadyDelegate)
         {
             pc = new Computer();
             pc.CPUEnabled = true;
@@ -41,12 +43,17 @@ namespace PerfMetrics
             pc.GPUEnabled = true;
             pc.Open();
             hardwares = pc.Hardware;
+            ReadyDelegate("ready");
+            GetRAMSize();
+            GetHDDInfo();
+            GetHDDList();
+            Update();
+            ReadyFlag = true;
         }
 
         public void Close()
         {
             pc.Close();
-            pc = null;
         }
 
         public string CPUName { get; internal set; } = null;
@@ -71,6 +78,7 @@ namespace PerfMetrics
         public List<PerformanceCounter> HDDReadsC { get; internal set; } = new List<PerformanceCounter>();
         public List<PerformanceCounter> HDDWritesC { get; internal set; } = new List<PerformanceCounter>();
         public List<Tuple<string, string>> DriveIDNames { get; internal set; } = new List<Tuple<string, string>>();
+
         public void GetInfo()
         {
             ClearAllLists();
@@ -101,7 +109,7 @@ namespace PerfMetrics
 
                 if (hardware.HardwareType == HardwareType.RAM)
                 {
-                   // RAMName = hardware.Name;
+                    // RAMName = hardware.Name;
                     foreach (ISensor sensor in hardware.Sensors)
                     {
                         //if (sensor.SensorType == SensorType.Load) { RAMSensors.Add(sensor.Name + ": " + sensor.Value.GetValueOrDefault() + "%"); }
@@ -118,9 +126,9 @@ namespace PerfMetrics
                             }
                             //RAMTotal = RAMUsed + RAMLeft;
                             //RAMUsed = Math.Round(RAMUsed, 2);
-                           // RAMTotal = Math.Round(RAMTotal, 2);
-                            
-                         }
+                            // RAMTotal = Math.Round(RAMTotal, 2);
+
+                        }
                     }
                     RAMSensors.Add("Memory Used/Memory Total " + RAMUsed.ToString("0.00") + "GB/" + RAMTotal + "GB");
                 }
@@ -163,13 +171,12 @@ namespace PerfMetrics
             //while (true)
             //{
             //    Thread.Sleep(1000);
-                foreach (IHardware hardware in hardwares)
-                {
-                    hardware.Update();
-                }
-                GetInfo();
-
-            Console.WriteLine(OutputString());
+            foreach (IHardware hardware in hardwares)
+            {
+                hardware.Update();
+            }
+            GetInfo();
+            //Output();
 
             //}
         }
@@ -207,6 +214,7 @@ namespace PerfMetrics
             // Console.ReadKey();
         }
 
+
         public string OutputString()
         {
             string ret = "";
@@ -215,25 +223,25 @@ namespace PerfMetrics
             ret += CPUName + "\n";
 
             //CPUSensors.ForEach(Console.WriteLine);
-            foreach (string item in CPUSensors)
+            foreach(string item in CPUSensors)
             {
                 ret += item + "\n";
             }
 
             //if (MOBOName != null) Console.WriteLine(MOBOName);
-            if (MOBOName != null) ret += MOBOName + "\n";
+            if(MOBOName != null) ret += MOBOName + "\n";
 
             //MOBOSensors.ForEach(Console.WriteLine);
-            foreach (string item in MOBOSensors)
+            foreach(string item in MOBOSensors)
             {
                 ret += item + "\n";
             }
 
             //if (RAMName != null) Console.WriteLine(RAMName);
-            if (RAMName != null) ret += RAMName + "\n";
+            if(RAMName != null) ret += RAMName + "\n";
 
             //RAMSensors.ForEach(Console.WriteLine);
-            foreach (string item in RAMSensors)
+            foreach(string item in RAMSensors)
             {
                 ret += item + "\n";
             }
@@ -242,7 +250,7 @@ namespace PerfMetrics
             ret += GPUATIName + "\n";
 
             //GPUATISensors.ForEach(Console.WriteLine);
-            foreach (string item in GPUATISensors)
+            foreach(string item in GPUATISensors)
             {
                 ret += item + "\n";
             }
@@ -251,7 +259,7 @@ namespace PerfMetrics
             ret += GPUNVName + "\n";
 
             //GPUNVSensors.ForEach(Console.WriteLine);
-            foreach (string item in GPUNVSensors)
+            foreach(string item in GPUNVSensors)
             {
                 ret += item + "\n";
             }
@@ -273,7 +281,7 @@ namespace PerfMetrics
 
         public void GetRAMSize()
         {
-            RAMTotal = Math.Round(Convert.ToDouble(new Microsoft.VisualBasic.Devices.ComputerInfo().TotalPhysicalMemory)/1024/1024/1024, 2);
+            RAMTotal = Math.Round(Convert.ToDouble(new Microsoft.VisualBasic.Devices.ComputerInfo().TotalPhysicalMemory) / 1024 / 1024 / 1024, 2);
         }
 
         public void GetHDDInfo()
@@ -290,7 +298,7 @@ namespace PerfMetrics
                     PerformanceCounter perfcountW = new PerformanceCounter("PhysicalDisk", "Disk Write Bytes/sec", instance);
                     HDDWritesC.Add(perfcountW);
                 }
-                
+
             }
             //RegexHDDs(HDDReads);
         }
@@ -311,7 +319,7 @@ namespace PerfMetrics
                                     + partition["DeviceID"]
                                     + "'} WHERE AssocClass = Win32_LogicalDiskToPartition").Get())
                     {
-                            DriveIDNames.Add(new Tuple<string,string>(device.GetPropertyValue("DeviceID").ToString(), disk["Name"].ToString()));
+                        DriveIDNames.Add(new Tuple<string, string>(device.GetPropertyValue("DeviceID").ToString(), disk["Name"].ToString()));
                     }
                 }
             }
@@ -323,7 +331,7 @@ namespace PerfMetrics
         //        if (listR[i] == "_Total") listR.RemoveAt(i);
         //        listR[i]=Regex.Replace(listR[i], "[0-9] ", string.Empty);
         //    }
-            
+
         //}
 
         public bool IsStringANumber(string str)
@@ -335,16 +343,16 @@ namespace PerfMetrics
         {
             //while (true)
             //{
-               // Console.Clear();
-                for (int i = 0; i < HDDReadsC.Count; i++)
-                {
-                    Console.WriteLine(HDDNames[i] + " Size: " + HDDSizes[i] + "GB");
-                    Console.WriteLine("Read: "  + (HDDReadsC[i].NextValue()/1024/1024).ToString("0.00") + "MB/S");
-                    Console.WriteLine("Write: " + (HDDWritesC[i].NextValue() / 1024/1024).ToString("0.00") + "MB/S");
-                }
-                //Thread.Sleep(1000);
+            // Console.Clear();
+            for (int i = 0; i < HDDReadsC.Count; i++)
+            {
+                Console.WriteLine(HDDNames[i] + " Size: " + HDDSizes[i] + "GB");
+                Console.WriteLine("Read: " + (HDDReadsC[i].NextValue() / 1024 / 1024).ToString("0.00") + "MB/S");
+                Console.WriteLine("Write: " + (HDDWritesC[i].NextValue() / 1024 / 1024).ToString("0.00") + "MB/S");
+            }
+            //Thread.Sleep(1000);
             //}
-            
+
         }
     }
 }
