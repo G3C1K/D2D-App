@@ -25,12 +25,16 @@ namespace D2DUIv3
         int filePort = 50002;           //port dla plikow. zasada dzialania jak w FTP
         int imageXORPort = 50003;
         int ubaPort = 50004;
+        public bool IsConnected { get; internal set; }
 
         TcpClient client;               //klient tcp dla komend
         IPAddress cIP;                  //adres IP. Zalezy od tego czy instancja jest klientem czy serwerem
-        Action<string> outputFunc;      //funkcja ktora jest wywolywana gdy pojawi sie message od hosta
-        public bool IsConnected { get; internal set; }
-        public Action<string> DisconnectAction { internal get; set; }//USTAWIAC DELEGATY
+
+        //delegaty sa potrzebne aby przekazywac infromacje miedzy watkami
+        //= (x) => { }; - po to aby ustawic domyslny delegat ktory nic nie robi oprocz unikania wyjatku
+        public Action<string> DebugLogAction { internal get; set; } = (x) => { };     //funkcja ktora jest wywolywana gdy pojawi sie message od hosta       
+        public Action<string> DisconnectAction { internal get; set; } = (x) => { };//USTAWIAC DELEGATY
+        public Action<string> ConnectedAction { internal get; set; } = (x) => { };
 
         BinaryWriter writer;            //writer dla SendMessage, tutaj zeby nie tworzyc caly czas nowego. na porcie 50001
         int BUFFER_SIZE = 10000;                       //rozmiar bufora dla danych pliku w bajtach
@@ -54,22 +58,25 @@ namespace D2DUIv3
         public Action<string> PMDataReceivedAction { internal get; set; }
 
 
-        public CommClientAndroid(IPAddress _adresIP, Action<string> _funkcjaDoPrzekazaniaMessagy) //serwer = listen, client = connect
+        public CommClientAndroid(IPAddress _adresIP, Action<string> _connectedDelegate) //serwer = listen, client = connect
         {
             cIP = _adresIP;
-
-            Connect(_adresIP);  //connect only
-            OpenCommandLine();
-            outputFunc = _funkcjaDoPrzekazaniaMessagy;
-            DisconnectAction = null;
-            IsConnected = true;
-            SendMessage("Connected!");
+            ConnectedAction = _connectedDelegate;
+            //tworzenie klienta
+            client = new TcpClient();
+            Thread connectThread = new Thread(() =>
+            {
+                Connect(_adresIP);  //connect 
+                OpenCommandLine();
+                IsConnected = true;
+                ConnectedAction("Connected!");
+            });
+            connectThread.Start();
         }
 
 
         private bool Connect(IPAddress _adresIPHosta)       //Ustanawia polaczenie
         {
-            client = new TcpClient();   //tworzenie klienta
             try
             {
                 client.Connect(_adresIPHosta, commandPort); //tworzenie polaczenia
@@ -84,7 +91,7 @@ namespace D2DUIv3
         private void OpenCommandLine()
         {
             writer = new BinaryWriter(client.GetStream());
-            commandLineThread = new Thread(() => ListenForCommands(outputFunc));
+            commandLineThread = new Thread(() => ListenForCommands(DebugLogAction));
             commandLineThread.Start();
         }
 
@@ -108,7 +115,7 @@ namespace D2DUIv3
                 if (input == (int)ClientFlags.Command)
                 {
                     nextInput = reader.ReadString();
-                    outputFunc(nextInput);
+                    DebugLogAction(nextInput);
                 }
                 else if (input == (int)ClientFlags.File)
                 {
@@ -544,7 +551,7 @@ namespace D2DUIv3
             }
 
             //zbanowane adresy
-            if(ipString == "127.0.0.1" || ipString =="0.0.0.0" || ipString == "255.255.255.255")
+            if(ipString == "127.0.0.1" || ipString == "0.0.0.0" || ipString == "255.255.255.255")
             {
                 return false;
             }

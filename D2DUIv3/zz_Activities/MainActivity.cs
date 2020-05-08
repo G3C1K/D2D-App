@@ -20,12 +20,24 @@ namespace D2DUIv3
         AutoConfigAndroid autoConfigClient;
         bool listeningFlag = false;
         bool canProceedToMainMenu = false;
+        IPAddress iPAddress;
 
 
         public void SetText2(string _message)
         {
             //textNumber.Post(() => textNumber.Text += _message + "\n"); //????
             //RunOnUiThread(() => textNumber.Text += _message + "\n");
+        }
+
+        public void ConnectedDelegate(string message)
+        {
+            Button button = FindViewById<Button>(Resource.Id.buttonConnect);
+            button.Post(() =>
+            {
+                Intent nextActivity = new Intent(this, typeof(MainMenuActivity));
+                nextActivity.PutExtra("IP", iPAddress.ToString());
+                StartActivity(nextActivity);
+            });
         }
 
         public void DisconnectDelegate(string we)
@@ -132,7 +144,6 @@ namespace D2DUIv3
             {
                 bool isConnected = false;
                 EditText IPinputEditText = FindViewById<EditText>(Resource.Id.textBoxIP);
-                IPAddress iPAddress = null;
 
                 try//sprawdzam
                 {
@@ -164,6 +175,7 @@ namespace D2DUIv3
                             client = new CommClientAndroid(iPAddress, SetText2);
                             client.DisconnectAction = DisconnectDelegate;
                             ClientHolder.Client = client;
+                            client.ConnectedAction = ConnectedDelegate;
                             isConnected = true;
                         }
                         else
@@ -179,9 +191,9 @@ namespace D2DUIv3
 
                     if (isConnected == true)    //jak jest polaczony
                     {
-                        Intent nextActivity = new Intent(this, typeof(MainMenuActivity));
-                        nextActivity.PutExtra("IP", iPAddress.ToString());      
-                        StartActivity(nextActivity);
+                        //Intent nextActivity = new Intent(this, typeof(MainMenuActivity));
+                        //nextActivity.PutExtra("IP", iPAddress.ToString());      
+                        //StartActivity(nextActivity);
                     }
                 }
             };
