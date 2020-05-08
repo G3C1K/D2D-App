@@ -62,7 +62,7 @@ namespace D2DUIv3
             SetContentView(Resource.Layout.metrics_submenu);
 
             textViewMetrics = FindViewById<TextView>(Resource.Id.textView_pms5);
-            textViewMetrics.Text += " test instancji\n";
+            //textViewMetrics.Text += " test instancji\n";
 
             client = ClientHolder.Client;
             client.PMReadyAction = PMReadyDelegate;

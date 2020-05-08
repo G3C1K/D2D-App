@@ -47,6 +47,7 @@ namespace TCPSender
 
         //pmetrics
         HWUsage pMetricsClient = null;
+        bool sendPMetrics = false;
         
 
         public CommClientPC(IPAddress _adresIP, Action<string> _funkcjaDoPrzekazaniaMessagy, Action<string> _connectedDelegate) //serwer = listen, client = connect
@@ -163,7 +164,10 @@ namespace TCPSender
                 }
                 else if (input == (int)ClientFlags.PM_Request)
                 {
-                    SendPMData();
+                    if(sendPMetrics == true)
+                    {
+                        SendPMData();
+                    }
                 }
                 else if (input == (int)ClientFlags.PM_Close)
                 {
@@ -524,33 +528,38 @@ namespace TCPSender
 
         private void InstantiatePMServer()
         {
-            //Thread externalThreadForConst = new Thread(() =>
-            //{
-            //    pMetricsClient = new HWUsage(HWUsageDelegate);
-            //    while (pMetricsClient.ReadyFlag == false)
-            //    {
-            //        Thread.Sleep(25);
-            //    }
-            //    writer.Write((int)ClientFlags.PM_Ready);
-            //    writer.Write("ready");
-            //});
-            //externalThreadForConst.Start();
-
-            pMetricsClient = new HWUsage(HWUsageDelegate);
+            pMetricsClient = new HWUsage(HWUsageDelegate);  //pmetrics jest uruchamiane na jakims? watku. do poprawienia
             while (pMetricsClient.ReadyFlag == false)
             {
                 Thread.Sleep(25);
             }
-            writer.Write((int)ClientFlags.PM_Ready);
-            writer.Write("ready");
+
+            try
+            {
+                writer.Write((int)ClientFlags.PM_Ready);    //jesli nastapi disconnect przed wyslaniem flagi ready, program sie scrashuje.
+                writer.Write("ready");
+                sendPMetrics = true;
+            }
+            catch (Exception e)
+            {
+                Close();
+            }
         }
 
         private void SendPMData()
         {
             pMetricsClient.Update();
             string outputwe = pMetricsClient.OutputString();
-            writer.Write((int)ClientFlags.PM_Data);
-            writer.Write(outputwe);
+
+            try
+            {
+                writer.Write((int)ClientFlags.PM_Data);
+                writer.Write(outputwe);
+            }
+            catch (Exception e)
+            {
+                outputFunc("tried to send PMData to nonexistent stream");
+            }
         }
 
         private void ClosePM()
@@ -567,6 +576,7 @@ namespace TCPSender
 
         public void Close()
         {
+
             if (listener != null)
             {
                 try
@@ -587,17 +597,25 @@ namespace TCPSender
             else DisconnectAction("already disconnected!");
         }
 
+
         private void Close_Self()
         {
+            sendPMetrics = false;
             try
             {
                 listener.Stop();
+                //outputFunc("listener stop");
                 if(pMetricsClient != null)
                 {
                     pMetricsClient.Close();
+                    //outputFunc("pmetrics close");
                 }
                 writer.Close();
+                //outputFunc("writer close");
+
                 client.Close();
+                //outputFunc("client close");
+
             }
             catch (Exception e)
             {

@@ -4,14 +4,19 @@
 
 do zrobienia:
 
-ogarnac performancemetrics
+czy monitor na pc powinien byc close gdy sie wychodzi z activity czy gdy sie disconnectuje?
+	proste do realizacji - nie wysylac flagi close przy wychodzeniu z activity
+	kolejna flaga do klienta android - czy metrics zostal wczesniej uruchomiony, wtedy skipnac flage inst i przejsc od razu do flagi request
+	inaczej - jesli na pc przychodzi flaga inst, pc wysyla od razu flage ready
+	opcja w menu czy wylaczac czy nie?
+
 
 translator popularnych programow z processname na hardcodedname
 
 styl
-material design
-wybor koloru glownego aplikacji
-ogarnac style
+	material design
+	wybor koloru glownego aplikacji
+	ogarnac style
 
 connecting in separate thread
 cancel connecting?

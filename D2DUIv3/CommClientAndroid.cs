@@ -426,7 +426,14 @@ namespace D2DUIv3
 
         public void AskForPM()
         {
-            writer.Write((int)ClientFlags.PM_Request);
+            try
+            {
+                writer.Write((int)ClientFlags.PM_Request);
+            }
+            catch (Exception e)
+            {
+                Close();
+            }
         }
 
         public void ClosePM()

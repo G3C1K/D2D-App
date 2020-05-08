@@ -12,7 +12,7 @@
 		android:fadeScrollbars="false"
 		android:id="@+id/scrollViewPms">
 		<TextView
-			android:text="Medium Text"
+			android:text="Waiting for performance monitor to load. Please wait a moment..."
 			android:textAppearance="?android:attr/textAppearanceMedium"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
