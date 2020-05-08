@@ -18,9 +18,13 @@ styl
 	wybor koloru glownego aplikacji
 	ogarnac style
 
-connecting in separate thread
-cancel connecting?
-zmiana przycisku connect
+
+connecting/mainactivity
+	connecting in separate thread
+	cancel connecting?
+	zmiana przycisku connect
+	help u gory mowiacy zeby wylaczyc firewalla na kommpie
+	popup do laczenia
 
 string jako statyczne pola zalezne od globalnej opcji wyboru jezyka
 

@@ -56,16 +56,16 @@
     <Reference Include="Mono.Android" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AutoConfigAndroid.cs" />
-    <Compile Include="ClientHolder.cs" />
-    <Compile Include="CommClientAndroid.cs" />
-    <Compile Include="ImageViewActivity.cs" />
-    <Compile Include="MainActivity.cs" />
-    <Compile Include="MainMenuActivity.cs" />
-    <Compile Include="MetricsActivity.cs" />
+    <Compile Include="z_Clients\AutoConfigAndroid.cs" />
+    <Compile Include="z_Clients\ClientHolder.cs" />
+    <Compile Include="z_Clients\CommClientAndroid.cs" />
+    <Compile Include="zz_Activities\ImageViewActivity.cs" />
+    <Compile Include="zz_Activities\MainActivity.cs" />
+    <Compile Include="zz_Activities\MainMenuActivity.cs" />
+    <Compile Include="zz_Activities\MetricsActivity.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="VolumeActivity.cs" />
+    <Compile Include="zz_Activities\VolumeActivity.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />

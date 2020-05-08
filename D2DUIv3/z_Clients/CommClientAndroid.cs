@@ -518,4 +518,38 @@ namespace D2DUIv3
         PM_Data,
         PM_Close
     }
+
+    public static class ClientUtilities
+    {
+        public static bool IsValidIPV4Address(string ipString)
+        {
+            IPAddress outIP;
+
+            //czy sparsuje
+            if(IPAddress.TryParse(ipString, out outIP) == false)
+            {
+                //jesli nie spelnia wymagan
+                return false;
+            }
+
+            //czy ma 4 kropki
+            int count = 0;
+            foreach(char c in ipString)
+            {
+                if (c == '.') count++;
+            }
+            if(count != 3)
+            {
+                return false;
+            }
+
+            //zbanowane adresy
+            if(ipString == "127.0.0.1" || ipString =="0.0.0.0" || ipString == "255.255.255.255")
+            {
+                return false;
+            }
+
+            return true;
+        }
+    }
 }

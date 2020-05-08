@@ -19,6 +19,7 @@ namespace D2DUIv3
         CommClientAndroid client;
         AutoConfigAndroid autoConfigClient;
         bool listeningFlag = false;
+        bool canProceedToMainMenu = false;
 
 
         public void SetText2(string _message)
@@ -120,50 +121,72 @@ namespace D2DUIv3
             Button buttonAutoConfig = FindViewById<Button>(Resource.Id.button_autoconfig);
 
             
-
+            //do szybkiego wpisywania adresu mojego kompa
             testView.Click += (o, e) =>
             {
                 textBoxIP.Text = testView.Text;
             };
 
+            //pzycisk connect
             FindViewById<Button>(Resource.Id.buttonConnect).Click += (o, e) =>
             {
-                bool isConnected = true;
+                bool isConnected = false;
                 EditText IPinputEditText = FindViewById<EditText>(Resource.Id.textBoxIP);
-                
-                IPAddress iPAddress = IPAddress.Parse(IPinputEditText.Text);
+                IPAddress iPAddress = null;
 
-                try
+                try//sprawdzam
                 {
-                    if(listeningFlag == false)
+                    if (ClientUtilities.IsValidIPV4Address(IPinputEditText.Text))   //czy adres jest valid
                     {
-                        listeningFlag = true;
-                        
-                        client = new CommClientAndroid(iPAddress, SetText2);
-                        client.DisconnectAction = DisconnectDelegate;
-                        ClientHolder.Client = client;
+                        iPAddress = IPAddress.Parse(IPinputEditText.Text);  //jak tak parsuje i daje pozwolenie na przejscie do menu
+                        canProceedToMainMenu = true; 
                     }
                     else
                     {
-                        Toast.MakeText(this, "Listening for hosts...", ToastLength.Short).Show();
-
+                        Toast.MakeText(this, "Invalid IP Address", ToastLength.Short).Show();   //jak nie wyswietlam i nie daje pozwolenia
+                        canProceedToMainMenu = false;
                     }
                 }
-                catch (Exception ex)
+                catch (Exception e2)
                 {
-                    Toast.MakeText(this, ex.Message, ToastLength.Long).Show();
+                    Toast.MakeText(this, e2.Message, ToastLength.Short).Show(); //jak sie crashnie to tez nie pozwalam, ale nie wiem czy jest w stanie sie crashnac. zostawic i tak
+                    canProceedToMainMenu = false;
                 }
-                finally
+
+                if (canProceedToMainMenu == true)   //jesli pozwalam na przejscie do menu
                 {
-                    if (isConnected)
+                    try
+                    {
+                        if (listeningFlag == false) //???
+                        {
+                            listeningFlag = true;
+
+                            client = new CommClientAndroid(iPAddress, SetText2);
+                            client.DisconnectAction = DisconnectDelegate;
+                            ClientHolder.Client = client;
+                            isConnected = true;
+                        }
+                        else
+                        {
+                            Toast.MakeText(this, "Listening for hosts...", ToastLength.Short).Show();
+                            //chyba chodzi o to, ze jak nacisnie sie drugi raz connect podczas connectowania, to nie stworzy sie kolejny klient?
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Toast.MakeText(this, ex.Message, ToastLength.Long).Show();  //jak sie nie polaczy wyswietla sie toast
+                    }
+
+                    if (isConnected == true)    //jak jest polaczony
                     {
                         Intent nextActivity = new Intent(this, typeof(MainMenuActivity));
-                        nextActivity.PutExtra("IP", iPAddress.ToString());
+                        nextActivity.PutExtra("IP", iPAddress.ToString());      
                         StartActivity(nextActivity);
                     }
                 }
             };
 
+            //do autoconfiga
             buttonAutoConfig.Click += (o, e) =>
             {
                 autoConfigClient = new AutoConfigAndroid();
