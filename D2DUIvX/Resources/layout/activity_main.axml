@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:orientation="vertical"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:minWidth="25px"
+	android:minHeight="25px"
+	android:launchMode="singleTask"
+	>
+	<EditText
+		android:layout_width="match_parent"
+		android:layout_height="61.5dp"
+		android:id="@+id/textBoxIP"
+		android:contentDescription="@string/needed_IP"
+		android:hint="@string/enter_IP"
+		android:textColor="#ffffff"/>
+    <Button
+        android:text="@string/connect"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/buttonConnect"
+        android:layout_marginBottom="5px"
+		android:textColor="#ffffff"
+		style="@style/ButtonStyle"/>
+	<Button
+		android:text="@string/find_open_hosts"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:id="@+id/button_autoconfig"
+		android:textColor="#ffffff"
+		style="@style/ButtonStyle"/>
+	<ScrollView
+		android:minWidth="25px"
+		android:minHeight="25px"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:id="@+id/scrollView_for_ips">
+		<TextView
+			android:text="@string/IP_address"
+			android:textAppearance="?android:attr/textAppearanceMedium"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:id="@+id/textView_test"
+			android:textAlignment="center"
+			android:clickable="true"
+			android:focusable="true"
+	/>
+	</ScrollView>
+	
+
+</LinearLayout>

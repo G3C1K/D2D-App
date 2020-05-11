@@ -14,7 +14,7 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 
-namespace D2DUIv3
+namespace D2DUIX
 {
     public class CommClientAndroid
     {

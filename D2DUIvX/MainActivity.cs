@@ -1,6 +1,6 @@
 ﻿using Android.App;
 using Android.OS;
-using Android.Support.V7.App;
+using AndroidX.AppCompat.App;
 using Android.Runtime;
 using Android.Widget;
 using System.Net;
@@ -8,35 +8,54 @@ using System;
 using Android.Views;
 using Android.Graphics;
 using Android.Content;
+using System.Collections.Generic;
+using D2DUIvX;
 
-namespace D2DUIv3
+namespace D2DUIX
 {
     
-    [Activity(Label = "@string/app_name", Theme = "@style/AppTheme", MainLauncher = true)]
+    [Activity(Label = "@string/app_name", Theme = "@style/AppThemeDark", MainLauncher = true)]
     public class MainActivity : AppCompatActivity
     {
-        TextView textNumber;
         CommClientAndroid client;
-        EditText textOutput;
+        AutoConfigAndroid autoConfigClient;
+        bool listeningFlag = false;
+
 
         public void SetText2(string _message)
         {
-            textNumber.Post(() => textNumber.Text += _message + "\n"); //????
+            //textNumber.Post(() => textNumber.Text += _message + "\n"); //????
             //RunOnUiThread(() => textNumber.Text += _message + "\n");
         }
 
         public void DisconnectDelegate(string we)
         {
-            textNumber.Post(() =>
+            Button button = FindViewById<Button>(Resource.Id.buttonConnect);
+            button.Post(() =>
                 {
                     client.volumeReady = false;
                     client.Close();
-                    Toast.MakeText(this, "Disconnected",
-                    ToastLength.Short).Show();
+                    Toast.MakeText(this, "Disconnected", ToastLength.Short).Show();
                     Intent rtrn = new Intent(this.ApplicationContext, typeof(MainActivity));
                     StartActivity(rtrn);
                 }               
             );         
+        }
+
+        public void AutoConfigFinished(List<string> outputLista)
+        {
+            string final = "";
+            foreach(string item in outputLista)
+            {
+                final += item + " ";
+            }
+            final += "finished";
+            TextView textViewForIPS = FindViewById<TextView>(Resource.Id.textView_test);
+            textViewForIPS.Post(() =>
+            {
+                textViewForIPS.Text = final;
+            });
+
         }
 
         protected override void OnCreate(Bundle savedInstanceState)
@@ -46,7 +65,16 @@ namespace D2DUIv3
             // Set our view from the "main" layout resource
             SetContentView(Resource.Layout.activity_main);
 
-            textNumber = FindViewById<TextView>(Resource.Id.textBoxMessageOutput);
+            TextView testView = FindViewById<TextView>(Resource.Id.textView_test);
+            EditText textBoxIP = FindViewById<EditText>(Resource.Id.textBoxIP);
+            Button buttonAutoConfig = FindViewById<Button>(Resource.Id.button_autoconfig);
+
+            
+
+            testView.Click += (o, e) =>
+            {
+                textBoxIP.Text = testView.Text;
+            };
 
             FindViewById<Button>(Resource.Id.buttonConnect).Click += (o, e) =>
             {
@@ -55,18 +83,21 @@ namespace D2DUIv3
 
                 try
                 {
-                    client = new CommClientAndroid(iPAddress, SetText2);
-                    client.DisconnectAction = DisconnectDelegate;
-                    ClientHolder.Client = client;
+                    if(listeningFlag == false)
+                    {
+                        client = new CommClientAndroid(iPAddress, SetText2);
+                        client.DisconnectAction = DisconnectDelegate;
+                        ClientHolder.Client = client;
+                    }
+                    else
+                    {
+                        Toast.MakeText(this, "Listening for hosts...", ToastLength.Short).Show();
+
+                    }
                 }
                 catch (Exception ex)
                 {
-                    textNumber.Text =
-                    "Exception caught: \n" +
-                    "Message: " + ex.Message + "\n" +
-                    "Source: " + ex.Source + "\n" +
-                    "TargetSite: " + ex.TargetSite + "\n";
-                    isConnected = false;
+                    Toast.MakeText(this, ex.Message, ToastLength.Long).Show();
                 }
                 finally
                 {
@@ -79,11 +110,11 @@ namespace D2DUIv3
                 }
             };
 
-            FindViewById<Button>(Resource.Id.buttonSend).Click += (o, e) =>
+            buttonAutoConfig.Click += (o, e) =>
             {
-                textOutput = FindViewById<EditText>(Resource.Id.textBoxMessageInput);
-                client.SendMessage(textOutput.Text);
-                textOutput.Text = "";
+                autoConfigClient = new AutoConfigAndroid();
+                autoConfigClient.FinishAction = AutoConfigFinished;
+                autoConfigClient.Listen();
             };
 
         }

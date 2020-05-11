@@ -22,6 +22,7 @@ namespace TCPSender
         int filePort = 50002;           //port dla plikow. zasada dzialania jak w FTP
         int imageXORPort = 50003;
 
+        TcpListener listener;
         TcpClient client;               //klient tcp dla komend
         IPAddress cIP;                  //adres IP. Zalezy od tego czy instancja jest klientem czy serwerem
         Action<string> outputFunc;      //funkcja ktora jest wywolywana gdy pojawi sie message od hosta
@@ -40,30 +41,44 @@ namespace TCPSender
         bool stillSend = false;
         public BlockingCollection<byte[]> queueXOR { get; internal set; }
 
-  
-
+ 
         VolumeMaster volumeMaster;          //audio coreapi
 
+
+        //pmetrics
+        HWUsage pMetricsClient = null;
+        bool sendPMetrics = false;
         
 
         public CommClientPC(IPAddress _adresIP, Action<string> _funkcjaDoPrzekazaniaMessagy, Action<string> _connectedDelegate) //serwer = listen, client = connect
         {
             cIP = _adresIP;
             mainThread = new Thread(() => {
-                Listen(_adresIP, _connectedDelegate);
-                OpenCommandLine();
-                outputFunc = _funkcjaDoPrzekazaniaMessagy;
-                IsConnected = true;
-                SendMessage("Connected!");
+                bool success = Listen(_adresIP, _connectedDelegate);
+                if (success)
+                {
+                    OpenCommandLine();
+                    outputFunc = _funkcjaDoPrzekazaniaMessagy;
+                    IsConnected = true;
+                    SendMessage("Connected!"); 
+                }
             });
             mainThread.Start();
         }
 
         private bool Listen(IPAddress _adresInterfejsuNasluchu, Action<string> _connectedDelegate) //W serwerze, nasluchuje na polaczenie
         {
-            TcpListener listener = new TcpListener(_adresInterfejsuNasluchu, commandPort);
+            listener = new TcpListener(_adresInterfejsuNasluchu, commandPort);
             listener.Start();
-            client = listener.AcceptTcpClient();
+            try
+            {
+                client = listener.AcceptTcpClient();
+            }
+            catch
+            {
+                Close();
+                return false;
+            }
             listener.Stop();
             _connectedDelegate("Connected!");
             return true;
@@ -142,6 +157,21 @@ namespace TCPSender
                 {
                     float volume = float.Parse(reader.ReadString());
                     SetMasterVolume(volume);
+                }
+                else if (input == (int)ClientFlags.PM_Instantiate)
+                {
+                    InstantiatePMServer();
+                }
+                else if (input == (int)ClientFlags.PM_Request)
+                {
+                    if(sendPMetrics == true)
+                    {
+                        SendPMData();
+                    }
+                }
+                else if (input == (int)ClientFlags.PM_Close)
+                {
+                    ClosePM();
                 }
             }
             Close_Self();
@@ -487,21 +517,110 @@ namespace TCPSender
         //UBA END
         //--------------------------------------------------
 
+        //--------------------------------------------------
+        //METRICS START
+        //--------------------------------------------------
+
+        private void HWUsageDelegate(string we)
+        {
+            //placeholder
+        }
+
+        private void InstantiatePMServer()
+        {
+            pMetricsClient = new HWUsage(HWUsageDelegate);  //pmetrics jest uruchamiane na jakims? watku. do poprawienia
+            while (pMetricsClient.ReadyFlag == false)
+            {
+                Thread.Sleep(25);
+            }
+
+            try
+            {
+                writer.Write((int)ClientFlags.PM_Ready);    //jesli nastapi disconnect przed wyslaniem flagi ready, program sie scrashuje.
+                writer.Write("ready");
+                sendPMetrics = true;
+            }
+            catch (Exception e)
+            {
+                Close();
+            }
+        }
+
+        private void SendPMData()
+        {
+            pMetricsClient.Update();
+            string outputwe = pMetricsClient.OutputString();
+
+            try
+            {
+                writer.Write((int)ClientFlags.PM_Data);
+                writer.Write(outputwe);
+            }
+            catch (Exception e)
+            {
+                outputFunc("tried to send PMData to nonexistent stream");
+            }
+        }
+
+        private void ClosePM()
+        {
+            if (pMetricsClient != null)
+            {
+                pMetricsClient.Close();
+            }
+        }
+
+        //--------------------------------------------------
+        //METRICS END
+        //--------------------------------------------------
+
         public void Close()
         {
-            // writer.Write("x");
+
+            if (listener != null)
+            {
+                try
+                {
+                    listener.Stop();
+                }
+                catch (Exception e)
+                {
+                    outputFunc(e.Message);
+                }
+            }
+
             if (IsConnected == true)
             {
                 DisconnectAction("inner disconnect delegate");
                 Close_Self();
             }
-            else outputFunc("already disconnected!");
+            else DisconnectAction("already disconnected!");
         }
+
 
         private void Close_Self()
         {
-            writer.Close();
-            client.Close();
+            sendPMetrics = false;
+            try
+            {
+                listener.Stop();
+                //outputFunc("listener stop");
+                if(pMetricsClient != null)
+                {
+                    pMetricsClient.Close();
+                    //outputFunc("pmetrics close");
+                }
+                writer.Close();
+                //outputFunc("writer close");
+
+                client.Close();
+                //outputFunc("client close");
+
+            }
+            catch (Exception e)
+            {
+                outputFunc(e.Message);
+            }
             IsConnected = false;
         }
 
@@ -531,6 +650,11 @@ namespace TCPSender
         Volume_ProcessID,
         Volume_ProcessName,
         Volume_DisplayName,
-        ByteArray
+        ByteArray,
+        PM_Instantiate,
+        PM_Ready,
+        PM_Request,
+        PM_Data,
+        PM_Close
     }
 }

@@ -17,9 +17,9 @@
 		android:layout_height="wrap_content"
 		android:id="@+id/buttonVolume" />
 	<Button
-		android:text="Imageview"
+		android:text="PMetrics"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:id="@+id/buttonImageView" />
+		android:id="@+id/buttonMetrics" />
 
 </LinearLayout>

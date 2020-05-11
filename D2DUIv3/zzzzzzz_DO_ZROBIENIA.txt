@@ -4,25 +4,27 @@
 
 do zrobienia:
 
-autorefresh?
-fast refresh
-na pc: co jakis czas sprawdzanie czy nie ma zmian?
+czy monitor na pc powinien byc close gdy sie wychodzi z activity czy gdy sie disconnectuje?
+	proste do realizacji - nie wysylac flagi close przy wychodzeniu z activity
+	kolejna flaga do klienta android - czy metrics zostal wczesniej uruchomiony, wtedy skipnac flage inst i przejsc od razu do flagi request
+	inaczej - jesli na pc przychodzi flaga inst, pc wysyla od razu flage ready
+	opcja w menu czy wylaczac czy nie?
+
 
 translator popularnych programow z processname na hardcodedname
 
 styl
-material design
-wybor koloru glownego aplikacji
-ogarnac style
+	material design
+	wybor koloru glownego aplikacji
+	ogarnac style
 
-autoconfig
 
-connecting in separate thread
-cancel connecting?
-zmiana przycisku connect
-
-usunac sendmessage na dole
-
-zapisywanie domyslnych polaczen
+connecting/mainactivity
+	connecting in separate thread
+	cancel connecting?
+	zmiana przycisku connect
+	help u gory mowiacy zeby wylaczyc firewalla na kommpie
+	popup do laczenia
 
 string jako statyczne pola zalezne od globalnej opcji wyboru jezyka
+

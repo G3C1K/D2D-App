@@ -41,11 +41,15 @@
   <ItemGroup>
     <Reference Include="Hardcodet.Wpf.TaskbarNotification, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Hardcodet.NotifyIcon.Wpf.1.0.8\lib\net451\Hardcodet.Wpf.TaskbarNotification.dll</HintPath>
+    <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="OpenHardwareMonitorLib">
+      <HintPath>..\PerformanceMetrics\OpenHardwareMonitorLib.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -68,7 +72,9 @@
       <DependentUpon>PasswordForConnection.xaml</DependentUpon>
     </Compile>
     <Compile Include="TCPSender\AutoConfig.cs" />
+    <Compile Include="TCPSender\AutoConfigPC.cs" />
     <Compile Include="TCPSender\CommClientPC.cs" />
+    <Compile Include="TCPSender\PM.cs" />
     <Compile Include="TCPSender\Program.cs" />
     <Compile Include="TCPSender\Test.cs" />
     <Compile Include="TCPSender\VolumeHandling.cs" />

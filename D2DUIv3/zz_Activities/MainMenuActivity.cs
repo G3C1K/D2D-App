@@ -45,6 +45,14 @@ namespace D2DUIv3
                 StartActivity(volumeActivity);
             };
 
+            Button buttonMetrics = FindViewById<Button>(Resource.Id.buttonMetrics);
+
+            buttonMetrics.Click += (o, e) =>
+            {
+                Intent metricsActivity = new Intent(this, typeof(MetricsActivity));
+                StartActivity(metricsActivity);
+            };
+
             // Create your application here
         }
 
