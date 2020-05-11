@@ -1,0 +1,12 @@
+W projekcie są zakomentowane miejsca gdzie należy wstawić funkcje:
+
+PasswordForConnection.xaml.cs:
+Wysyłanie powiadomienia o oczekiwaniu na hasło
+
+TransferWindow.xaml.cs:
+Wysyłanie plików
+Wysyłanie tekstu
+
+MainWindow.xaml.cs
+W delegatach lub zmiana samych delegatów:
+Ustawianie nazwy urządzenia 
