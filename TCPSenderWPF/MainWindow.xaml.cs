@@ -27,6 +27,8 @@ namespace TCPSenderWPF
     {
         CommClientPC client = null;
         IPAddress adresInterfejsuDoNasluchu;
+        TrayIcon trayIcon;
+        PasswordForConnection passwordForConnection;
 
         AutoConfigPC autoConfigClient;
         bool sendFlag;
@@ -35,7 +37,7 @@ namespace TCPSenderWPF
         {
             InitializeComponent();
 
-            
+            trayIcon = new TrayIcon(this);
         }
 
 
@@ -67,6 +69,12 @@ namespace TCPSenderWPF
                 (Action)(() =>
                 {
                     textBlock_debugLog.Text += input + " ConnectedDelegate \n";
+                    //Okno do wpisania hasła
+                    passwordForConnection = new PasswordForConnection();
+                    passwordForConnection.Show();
+                    //Tu wstawić funkcję ustawiania nazwy urządzenia odebraną od urządzenia:
+                    connected_device.Text = "default phone";
+                    TrayIcon.ChangeIcon(trayIcon, "Ikony/connected.ico", "ready");
                     button_advertise.IsEnabled = false;
                     button_listen.Content = "Disconnect";
                 })
@@ -79,6 +87,11 @@ namespace TCPSenderWPF
                 (Action)(() =>
                 {
                     textBlock_debugLog.Text += output + "\n";
+                    //Zamykanie wszystkich okien oprócz MainWindow
+                    for (int i = App.Current.Windows.Count - 1; i > 0; i--)
+                        App.Current.Windows[i].Close();
+                    connected_device.Text = "None";
+                    TrayIcon.ChangeIcon(trayIcon, "Ikony/notconnected.ico", "not ready");
                     button_listen.Content = "Listen";
                 })
                 );
@@ -102,6 +115,11 @@ namespace TCPSenderWPF
                 client.Close();
                 button_listen.Content = "Listen";
             }
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            trayIcon.DisposeIcon();
         }
 
         private void Button_advertise_Click(object sender, RoutedEventArgs e)
