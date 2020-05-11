@@ -37,6 +37,9 @@ namespace TCPSenderWPF
         {
             InitializeComponent();
 
+
+            passwordForConnection = new PasswordForConnection();
+
             trayIcon = new TrayIcon(this);
         }
 
@@ -49,8 +52,11 @@ namespace TCPSenderWPF
             textBlock_debugLog.Text += "Nasluchiwanie na adresie: " + adresInterfejsuDoNasluchu.ToString();
             textBlock_debugLog.Text += "\n";
             button_listen.Content = "Listening";
-            client = new CommClientPC(adresInterfejsuDoNasluchu, OutputDelegate, ConnectedDelegate);
+            client = new CommClientPC(OutputDelegate, ConnectedDelegate);
             client.DisconnectAction = DisconnectDelegate;
+            client.DeviceNameAction = DeviceNameDelegate;
+            ClientHolder.Client = client;
+            client.Start(adresInterfejsuDoNasluchu);
         }
 
         public void OutputDelegate(string input)
@@ -70,11 +76,10 @@ namespace TCPSenderWPF
                 {
                     textBlock_debugLog.Text += input + " ConnectedDelegate \n";
                     //Okno do wpisania hasła
-                    passwordForConnection = new PasswordForConnection();
                     passwordForConnection.Show();
                     //Tu wstawić funkcję ustawiania nazwy urządzenia odebraną od urządzenia:
-                    connected_device.Text = "default phone";
-                    TrayIcon.ChangeIcon(trayIcon, "Ikony/connected.ico", "ready");
+                    //teraz jest delegat
+                    trayIcon.ChangeIcon("Ikony/connected.ico", "ready");
                     button_advertise.IsEnabled = false;
                     button_listen.Content = "Disconnect";
                 })
@@ -89,12 +94,31 @@ namespace TCPSenderWPF
                     textBlock_debugLog.Text += output + "\n";
                     //Zamykanie wszystkich okien oprócz MainWindow
                     for (int i = App.Current.Windows.Count - 1; i > 0; i--)
-                        App.Current.Windows[i].Close();
+                        App.Current.Windows[i].Hide();
                     connected_device.Text = "None";
-                    TrayIcon.ChangeIcon(trayIcon, "Ikony/notconnected.ico", "not ready");
+                    if (trayIcon != null)
+                    {
+                        try
+                        {
+                            trayIcon.ChangeIcon("Ikony/notconnected.ico", "not ready");
+                        }
+                        catch (Exception e)
+                        {
+                            textBlock_debugLog.Text += e.Message + "\n";
+                        }
+                    }
                     button_listen.Content = "Listen";
                 })
                 );
+        }
+
+        public void DeviceNameDelegate(string name)
+        {
+            connected_device.Dispatcher.Invoke(
+                () =>
+                {
+                    connected_device.Text = name;
+                });
         }
 
         private void Button_listen_Click(object sender, RoutedEventArgs e)
@@ -119,7 +143,7 @@ namespace TCPSenderWPF
 
         private void Window_Closed(object sender, EventArgs e)
         {
-            trayIcon.DisposeIcon();
+
         }
 
         private void Button_advertise_Click(object sender, RoutedEventArgs e)
@@ -157,7 +181,8 @@ namespace TCPSenderWPF
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if(client!= null)
+            trayIcon.DisposeIcon();
+            if (client!= null)
             {
                 client.Close();
             }

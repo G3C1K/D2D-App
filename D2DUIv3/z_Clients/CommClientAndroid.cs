@@ -29,6 +29,7 @@ namespace D2DUIv3
 
         TcpClient client;               //klient tcp dla komend
         IPAddress cIP;                  //adres IP. Zalezy od tego czy instancja jest klientem czy serwerem
+        string deviceName = "unknown device";
 
         //delegaty sa potrzebne aby przekazywac infromacje miedzy watkami
         //= (x) => { }; - po to aby ustawic domyslny delegat ktory nic nie robi oprocz unikania wyjatku
@@ -52,7 +53,6 @@ namespace D2DUIv3
         public VolumeAndroid[] VolumeArrayForAndroid { get; internal set; } //android - tablica instancji w formie tekstowej
         public List<VolumeAndroid> VolumeListForAndroid { get; internal set; }     //android - lista instancji w formie testowej
         public bool volumeReady = false;
-
 
         public Action<string> PMReadyAction { internal get; set; }
         public Action<string> PMDataReceivedAction { internal get; set; }
@@ -452,6 +452,12 @@ namespace D2DUIv3
         //METRICS END
         //--------------------------------------------------
 
+        public void SendDeviceName(string name)
+        {
+            writer.Write((int)ClientFlags.Config_DeviceName);
+            writer.Write(name);
+        }
+
         public void Close()
         {
             // writer.Write("x");
@@ -523,7 +529,8 @@ namespace D2DUIv3
         PM_Ready,
         PM_Request,
         PM_Data,
-        PM_Close
+        PM_Close,
+        Config_DeviceName
     }
 
     public static class ClientUtilities

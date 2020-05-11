@@ -31,6 +31,24 @@ namespace D2DUIv3
 
         public void ConnectedDelegate(string message)
         {
+            string deviceName = Android.Provider.Settings.Secure.GetString(this.ContentResolver, "bluetooth_name");
+            if(deviceName != null)
+            {
+                client.SendDeviceName(deviceName);
+            }
+            else
+            {
+                deviceName = Android.OS.Build.Model;
+                if (deviceName != null)
+                {
+                    client.SendDeviceName(deviceName);
+                }
+                else
+                {
+                    client.SendDeviceName("unknown device or emulator");
+                }
+            }
+
             Button button = FindViewById<Button>(Resource.Id.buttonConnect);
             button.Post(() =>
             {

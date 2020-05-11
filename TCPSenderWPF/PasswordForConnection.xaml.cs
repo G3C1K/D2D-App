@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Text.RegularExpressions;
+using TCPSender;
 
 namespace TCPSenderWPF
 {
@@ -20,9 +21,13 @@ namespace TCPSenderWPF
     /// </summary>
     public partial class PasswordForConnection : Window
     {
+        CommClientPC client;
+
         public PasswordForConnection()
         {
             InitializeComponent();
+
+            client = ClientHolder.Client;
         }
 
         private void Password_PreviewTextInput(object sender, TextCompositionEventArgs e)
@@ -40,8 +45,13 @@ namespace TCPSenderWPF
         private void AcceptPassword_Click(object sender, RoutedEventArgs e)
         {
             // Tutaj funkcje wysłania informacji o oczekiwaniu na hasło
-            this.Close();
+            this.Hide();
         }
 
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            e.Cancel = true;
+            this.Hide();
+        }
     }
 }

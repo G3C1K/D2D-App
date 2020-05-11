@@ -6,15 +6,20 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Media;
+using TCPSender;
 
 namespace TCPSenderWPF
 {
     public class TrayIcon
     {
+        CommClientPC client;
+
         private NotifyIcon notifyIcon;
 
         public TrayIcon(System.Windows.Window okno)
         {
+            client = ClientHolder.Client;
+
             string iconName = "Ikony/notconnected.ico";
             string appName = Application.ProductName;
             System.Windows.Resources.StreamResourceInfo sri = System.Windows.Application.GetResourceStream(new Uri(@"/" + appName + ";component/" + iconName, UriKind.RelativeOrAbsolute));
@@ -28,21 +33,26 @@ namespace TCPSenderWPF
 
             notifyIcon.DoubleClick += NotifyIcon_DoubleClick;
 
+            //--------------------------------------------------
+            //DO NAPRAWIENIA
+            //--------------------------------------------------
             
         }
-        public static void ChangeIcon(TrayIcon trayIcon,string iconName, string tag)
+        public void ChangeIcon(string iconName, string tag)
         {
             string appName = Application.ProductName;
             System.Windows.Resources.StreamResourceInfo sri = System.Windows.Application.GetResourceStream(new Uri(@"/" + appName + ";component/" + iconName, UriKind.RelativeOrAbsolute));
             Icon icon = new Icon(sri.Stream);
-            trayIcon.notifyIcon.Icon = icon;
-            trayIcon.notifyIcon.Tag = tag;
+            notifyIcon.Icon = icon;
+            notifyIcon.Tag = tag;
         }
 
 
         private void NotifyIcon_DoubleClick(object sender, EventArgs e)
         {
-            if(notifyIcon.Tag as string == "ready")
+            //if(notifyIcon.Tag as string == "ready")
+            client = ClientHolder.Client;
+            if(client != null && client.IsConnected == true)
             {
                 TransferWindow transferWindow = new TransferWindow();
                 transferWindow.Show();
