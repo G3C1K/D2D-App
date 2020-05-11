@@ -180,7 +180,7 @@ namespace D2DUIv3
                         }
                         else
                         {
-                            Toast.MakeText(this, "Listening for hosts...", ToastLength.Short).Show();
+                            Toast.MakeText(this, "Connecting...", ToastLength.Short).Show();
                             //chyba chodzi o to, ze jak nacisnie sie drugi raz connect podczas connectowania, to nie stworzy sie kolejny klient?
                         }
                     }

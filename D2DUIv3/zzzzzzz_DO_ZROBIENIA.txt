@@ -20,7 +20,6 @@ styl
 
 
 connecting/mainactivity
-	connecting in separate thread
 	cancel connecting?
 	zmiana przycisku connect
 	help u gory mowiacy zeby wylaczyc firewalla na kommpie
@@ -28,3 +27,6 @@ connecting/mainactivity
 
 string jako statyczne pola zalezne od globalnej opcji wyboru jezyka
 
+zrobione
+	pmetrics
+	connecting in separate thread
