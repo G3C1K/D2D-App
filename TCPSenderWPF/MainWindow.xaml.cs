@@ -29,6 +29,8 @@ namespace TCPSenderWPF
         IPAddress adresInterfejsuDoNasluchu;
         TrayIcon trayIcon;
         PasswordForConnection passwordForConnection;
+        int password;
+        string passwordString;
 
         AutoConfigPC autoConfigClient;
         bool sendFlag;
@@ -39,13 +41,18 @@ namespace TCPSenderWPF
 
 
             passwordForConnection = new PasswordForConnection();
+            passwordForConnection.SetPasswordAction = SetPasswordDelegate;
+
+            SetRandomPasswordIfFirstLaunch();
 
             trayIcon = new TrayIcon(this);
         }
 
 
-        public void InitializeClient()
+        public void InitializeClient()  //odpala sie przy listen
         {
+            button_change_password.IsEnabled = false;
+
             //init kleinta
             adresInterfejsuDoNasluchu = CommClientPC.GetLocalIPAddress();
             textBlock_debugLog.Text = "";
@@ -55,6 +62,7 @@ namespace TCPSenderWPF
             client = new CommClientPC(OutputDelegate, ConnectedDelegate);
             client.DisconnectAction = DisconnectDelegate;
             client.DeviceNameAction = DeviceNameDelegate;
+            client.Password = textBlock_password.Text;
             ClientHolder.Client = client;
             client.Start(adresInterfejsuDoNasluchu);
         }
@@ -75,10 +83,6 @@ namespace TCPSenderWPF
                 (Action)(() =>
                 {
                     textBlock_debugLog.Text += input + " ConnectedDelegate \n";
-                    //Okno do wpisania hasła
-                    passwordForConnection.Show();
-                    //Tu wstawić funkcję ustawiania nazwy urządzenia odebraną od urządzenia:
-                    //teraz jest delegat
                     trayIcon.ChangeIcon("Ikony/connected.ico", "ready");
                     button_advertise.IsEnabled = false;
                     button_listen.Content = "Disconnect";
@@ -108,6 +112,8 @@ namespace TCPSenderWPF
                         }
                     }
                     button_listen.Content = "Listen";
+
+                    button_change_password.IsEnabled = true;
                 })
                 );
         }
@@ -185,6 +191,35 @@ namespace TCPSenderWPF
             if (client!= null)
             {
                 client.Close();
+            }
+        }
+
+        private void Button_change_password_Click(object sender, RoutedEventArgs e)
+        {
+            passwordForConnection.Show();
+        }
+
+        public void SetPasswordDelegate(string input)
+        {
+            textBlock_password.Dispatcher.Invoke(() =>
+            {
+                textBlock_password.Text = input;
+                button_listen.IsEnabled = true;
+            });
+        }
+
+        private void SetRandomPasswordIfFirstLaunch()
+        {
+            bool passwordState = int.TryParse(textBlock_password.Text, out int ret);
+            if (passwordState == false)
+            {
+                Random rng = new Random();
+                int pass = rng.Next(1000, 9999);
+                SetPasswordDelegate(pass.ToString());
+            }
+            else
+            {
+
             }
         }
     }

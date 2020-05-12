@@ -35,3 +35,4 @@ zrobione
 	pmetrics
 	connecting in separate thread
 	bugfixing
+	przesylanie nazwy urzadzenia, na razie w jedna strone

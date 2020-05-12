@@ -22,6 +22,7 @@ namespace TCPSenderWPF
     public partial class PasswordForConnection : Window
     {
         CommClientPC client;
+        public Action<string> SetPasswordAction { internal get; set; }
 
         public PasswordForConnection()
         {
@@ -45,12 +46,14 @@ namespace TCPSenderWPF
         private void AcceptPassword_Click(object sender, RoutedEventArgs e)
         {
             // Tutaj funkcje wysłania informacji o oczekiwaniu na hasło
+            SetPasswordAction(password.Password);
             this.Hide();
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             e.Cancel = true;
+
             this.Hide();
         }
     }

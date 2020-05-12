@@ -51,7 +51,9 @@ namespace TCPSender
         //pmetrics
         HWUsage pMetricsClient = null;
         bool sendPMetrics = false;
-        
+
+        //pass
+        public string Password { get; set; }        
 
         public CommClientPC(Action<string> _funkcjaDoPrzekazaniaMessagy, Action<string> _connectedDelegate) //serwer = listen, client = connect
         {
@@ -67,11 +69,16 @@ namespace TCPSender
                 started = true;
 
                 mainThread = new Thread(() => {
-                    bool success = Listen(ip, ConnectedAction);
+                    bool success = Listen(ip);
                     if (success)
                     {
+                        writer = new BinaryWriter(client.GetStream());
+
+                        OpenPasswordLine();
                         OpenCommandLine();
                         IsConnected = true;
+                        
+                        ConnectedAction("Connected!");
                         SendMessage("Connected!");
                     }
                 });
@@ -79,7 +86,7 @@ namespace TCPSender
             }
         }
 
-        private bool Listen(IPAddress _adresInterfejsuNasluchu, Action<string> _connectedDelegate) //W serwerze, nasluchuje na polaczenie
+        private bool Listen(IPAddress _adresInterfejsuNasluchu) //W serwerze, nasluchuje na polaczenie
         {
             listener = new TcpListener(_adresInterfejsuNasluchu, commandPort);
             listener.Start();
@@ -93,13 +100,11 @@ namespace TCPSender
                 return false;
             }
             listener.Stop();
-            _connectedDelegate("Connected!");
             return true;
         }
 
         private void OpenCommandLine()
         {
-            writer = new BinaryWriter(client.GetStream());
             commandLineThread = new Thread(() => ListenForCommands(DebugLogAction));
             commandLineThread.Start();
         }
@@ -193,6 +198,36 @@ namespace TCPSender
                 }
             }
             Close_Self();
+        }
+
+        public void OpenPasswordLine()
+        {
+            BinaryReader passwordReader = new BinaryReader(client.GetStream());
+            string input = "asdf";
+            bool continueLoop = true;
+
+            while(continueLoop == true)
+            {
+                try
+                {
+                    input = passwordReader.ReadString();
+                }
+                catch
+                {
+                    Close();
+                    return;
+                }
+
+                if(input == Password)
+                {
+                    writer.Write((int)ClientFlags.Password_Correct);
+                    continueLoop = false;
+                }
+                else
+                {
+                    writer.Write((int)ClientFlags.Password_Incorrect);
+                }
+            }
         }
 
 
@@ -700,6 +735,8 @@ namespace TCPSender
         PM_Request,
         PM_Data,
         PM_Close,
-        Config_DeviceName
+        Config_DeviceName,
+        Password_Correct,
+        Password_Incorrect
     }
 }

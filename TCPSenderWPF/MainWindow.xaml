@@ -18,12 +18,15 @@
         <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
             <TextBlock x:Name="textBlock_debugLog" TextWrapping="Wrap"/>
         </ScrollViewer>
-        <Button Content="Listen" Grid.Column="1" HorizontalAlignment="Left" Margin="5,10,0,0" VerticalAlignment="Top" Width="75" x:Name="button_listen" Click="Button_listen_Click"/>
+        <Button Content="Listen" Grid.Column="1" HorizontalAlignment="Left" Margin="5,10,0,0" VerticalAlignment="Top" Width="75" x:Name="button_listen" Click="Button_listen_Click" IsEnabled="False"/>
         <Button Content="Advertise IP" Grid.Column="1" HorizontalAlignment="Left" Margin="5,46,0,0" VerticalAlignment="Top" Width="75" x:Name="button_advertise" Click="Button_advertise_Click" IsEnabled="False"/>
         <Button Content="Stop Advertising" Grid.Column="1" HorizontalAlignment="Left" Margin="85,46,0,0" VerticalAlignment="Top" Width="97" x:Name="button_stop_advertising" Click="Button_stop_advertising_Click" IsEnabled="False"/>
 
         <TextBlock Grid.Column="1" HorizontalAlignment="Left" Margin="10,86,0,0" TextWrapping="Wrap" Text="Connected device: " VerticalAlignment="Top" Height="22" Width="376" />
         <TextBlock x:Name="connected_device" Grid.Column="1" HorizontalAlignment="Left" Margin="118,86,-98,0" TextWrapping="Wrap" Text="None" VerticalAlignment="Top" Height="22" Width="376" />
+        <TextBlock x:Name="textBlock_password" Grid.Column="1" HorizontalAlignment="Left" Margin="103,164,0,0" TextWrapping="Wrap" Text="not set" VerticalAlignment="Top" Height="59" Width="158" FontSize="40"/>
+        <TextBlock Grid.Column="1" HorizontalAlignment="Left" Margin="10,191,0,0" TextWrapping="Wrap" VerticalAlignment="Top" RenderTransformOrigin="0.096,0.66" Width="88" Height="18"><Run Text="Password:"/><LineBreak/><Run/></TextBlock>
+        <Button x:Name="button_change_password" Content="Change password" Grid.Column="1" HorizontalAlignment="Left" Margin="10,214,0,0" VerticalAlignment="Top" Width="114" Click="Button_change_password_Click"/>
 
     </Grid>
 

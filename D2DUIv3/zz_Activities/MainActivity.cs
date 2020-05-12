@@ -31,7 +31,7 @@ namespace D2DUIv3
 
         public void ConnectedDelegate(string message)
         {
-            string deviceName = Android.Provider.Settings.Secure.GetString(this.ContentResolver, "bluetooth_name");
+            string deviceName = Android.Provider.Settings.Secure.GetString(this.ContentResolver, "device_name");
             if(deviceName != null)
             {
                 client.SendDeviceName(deviceName);
@@ -222,6 +222,16 @@ namespace D2DUIv3
                 autoConfigClient = new AutoConfigAndroid();
                 autoConfigClient.FinishAction = AutoConfigFinished;
                 autoConfigClient.Listen();
+            };
+
+            Button button1234 = FindViewById<Button>(Resource.Id.button_send_password_1234);
+
+            button1234.Click += (o, e) =>
+            {
+                if (client != null)
+                {
+                    client.SendPassword("1234");
+                }
             };
 
         }

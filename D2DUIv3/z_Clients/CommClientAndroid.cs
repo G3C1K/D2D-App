@@ -67,6 +67,10 @@ namespace D2DUIv3
             Thread connectThread = new Thread(() =>
             {
                 Connect(_adresIP);  //connect 
+                writer = new BinaryWriter(client.GetStream());
+
+                OpenPasswordLine();
+
                 OpenCommandLine();
                 IsConnected = true;
                 ConnectedAction("Connected!");
@@ -90,7 +94,6 @@ namespace D2DUIv3
 
         private void OpenCommandLine()
         {
-            writer = new BinaryWriter(client.GetStream());
             commandLineThread = new Thread(() => ListenForCommands(DebugLogAction));
             commandLineThread.Start();
         }
@@ -149,6 +152,43 @@ namespace D2DUIv3
                 }
             }
             Close_Self();
+        }
+
+        private void OpenPasswordLine()
+        {
+            //delegat - otwieranie okna do wpisania hasla
+            BinaryReader passwordReader = new BinaryReader(client.GetStream());
+
+            bool continueLoop = true;
+            int input;
+            while(continueLoop == true)
+            {
+                try
+                {
+                    input = passwordReader.ReadInt32();
+                }
+                catch
+                {
+                    Close();
+                    return;
+                }
+
+                if(input == (int)ClientFlags.Password_Correct)
+                {
+                    //wylacz okno delegat
+                    continueLoop = false;
+                }
+                else if(input == (int)ClientFlags.Password_Incorrect)
+                {
+                    //delegat do wypisania ze niepooprawne haslo, zresetowania linii itd
+                }
+
+            }
+        }
+
+        public void SendPassword(string password)
+        {
+            writer.Write(password);
         }
 
 
@@ -530,7 +570,9 @@ namespace D2DUIv3
         PM_Request,
         PM_Data,
         PM_Close,
-        Config_DeviceName
+        Config_DeviceName,
+        Password_Correct,
+        Password_Incorrect
     }
 
     public static class ClientUtilities
