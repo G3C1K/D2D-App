@@ -234,6 +234,8 @@ namespace D2DUIv3
                 }
             };
 
+            //Button buttonDialog = 
+
         }
 
         public override bool OnCreateOptionsMenu(IMenu menu)

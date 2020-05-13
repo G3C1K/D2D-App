@@ -258,6 +258,9 @@
     <AndroidResource Include="Resources\layout\metrics_submenu.axml">
       <SubType>Designer</SubType>
     </AndroidResource>
+    <AndroidResource Include="Resources\layout\password_dialog.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
     <Content Include="zzzzzzz_DO_ZROBIENIA.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
