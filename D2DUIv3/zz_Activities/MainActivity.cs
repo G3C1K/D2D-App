@@ -31,6 +31,24 @@ namespace D2DUIv3
 
         public void ConnectedDelegate(string message)
         {
+            string deviceName = Android.Provider.Settings.Secure.GetString(this.ContentResolver, "device_name");
+            if(deviceName != null)
+            {
+                client.SendDeviceName(deviceName);
+            }
+            else
+            {
+                deviceName = Android.OS.Build.Model;
+                if (deviceName != null)
+                {
+                    client.SendDeviceName(deviceName);
+                }
+                else
+                {
+                    client.SendDeviceName("unknown device or emulator");
+                }
+            }
+
             Button button = FindViewById<Button>(Resource.Id.buttonConnect);
             button.Post(() =>
             {
@@ -180,7 +198,7 @@ namespace D2DUIv3
                         }
                         else
                         {
-                            Toast.MakeText(this, "Listening for hosts...", ToastLength.Short).Show();
+                            Toast.MakeText(this, "Connecting...", ToastLength.Short).Show();
                             //chyba chodzi o to, ze jak nacisnie sie drugi raz connect podczas connectowania, to nie stworzy sie kolejny klient?
                         }
                     }
@@ -205,6 +223,18 @@ namespace D2DUIv3
                 autoConfigClient.FinishAction = AutoConfigFinished;
                 autoConfigClient.Listen();
             };
+
+            Button button1234 = FindViewById<Button>(Resource.Id.button_send_password_1234);
+
+            button1234.Click += (o, e) =>
+            {
+                if (client != null)
+                {
+                    client.SendPassword("1234");
+                }
+            };
+
+            //Button buttonDialog = 
 
         }
 

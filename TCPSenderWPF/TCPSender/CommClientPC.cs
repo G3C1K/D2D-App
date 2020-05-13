@@ -16,6 +16,7 @@ namespace TCPSender
     {
        
         Thread mainThread;
+        bool started = false;
 
         //porty polaczen
         int commandPort = 50001;        //port komend/message
@@ -25,9 +26,11 @@ namespace TCPSender
         TcpListener listener;
         TcpClient client;               //klient tcp dla komend
         IPAddress cIP;                  //adres IP. Zalezy od tego czy instancja jest klientem czy serwerem
-        Action<string> outputFunc;      //funkcja ktora jest wywolywana gdy pojawi sie message od hosta
+        Action<string> DebugLogAction;      //funkcja ktora jest wywolywana gdy pojawi sie message od hosta
         public bool IsConnected { get; internal set; }
         public Action<string> DisconnectAction { internal get; set; }//USTAWIAC DELEGATY!!!
+        public Action<string> ConnectedAction { internal get; set; }
+        public Action<string> DeviceNameAction { internal get; set; }
 
         BinaryWriter writer;            //writer dla SendMessage, tutaj zeby nie tworzyc caly czas nowego. na porcie 50001
         int BUFFER_SIZE = 10000;                       //rozmiar bufora dla danych pliku w bajtach
@@ -48,25 +51,42 @@ namespace TCPSender
         //pmetrics
         HWUsage pMetricsClient = null;
         bool sendPMetrics = false;
-        
 
-        public CommClientPC(IPAddress _adresIP, Action<string> _funkcjaDoPrzekazaniaMessagy, Action<string> _connectedDelegate) //serwer = listen, client = connect
+        //pass
+        public string Password { get; set; }        
+
+        public CommClientPC(Action<string> _funkcjaDoPrzekazaniaMessagy, Action<string> _connectedDelegate) //serwer = listen, client = connect
         {
-            cIP = _adresIP;
-            mainThread = new Thread(() => {
-                bool success = Listen(_adresIP, _connectedDelegate);
-                if (success)
-                {
-                    OpenCommandLine();
-                    outputFunc = _funkcjaDoPrzekazaniaMessagy;
-                    IsConnected = true;
-                    SendMessage("Connected!"); 
-                }
-            });
-            mainThread.Start();
+            DebugLogAction = _funkcjaDoPrzekazaniaMessagy;
+            ConnectedAction = _connectedDelegate;
         }
 
-        private bool Listen(IPAddress _adresInterfejsuNasluchu, Action<string> _connectedDelegate) //W serwerze, nasluchuje na polaczenie
+        public void Start(IPAddress ip)
+        {
+            CheckDelegates();
+            if(started == false)
+            {
+                started = true;
+
+                mainThread = new Thread(() => {
+                    bool success = Listen(ip);
+                    if (success)
+                    {
+                        writer = new BinaryWriter(client.GetStream());
+
+                        OpenPasswordLine();
+                        OpenCommandLine();
+                        IsConnected = true;
+                        
+                        ConnectedAction("Connected!");
+                        SendMessage("Connected!");
+                    }
+                });
+                mainThread.Start();
+            }
+        }
+
+        private bool Listen(IPAddress _adresInterfejsuNasluchu) //W serwerze, nasluchuje na polaczenie
         {
             listener = new TcpListener(_adresInterfejsuNasluchu, commandPort);
             listener.Start();
@@ -80,14 +100,12 @@ namespace TCPSender
                 return false;
             }
             listener.Stop();
-            _connectedDelegate("Connected!");
             return true;
         }
 
         private void OpenCommandLine()
         {
-            writer = new BinaryWriter(client.GetStream());
-            commandLineThread = new Thread(() => ListenForCommands(outputFunc));
+            commandLineThread = new Thread(() => ListenForCommands(DebugLogAction));
             commandLineThread.Start();
         }
 
@@ -112,7 +130,7 @@ namespace TCPSender
                 if (input == (int)ClientFlags.Command)
                 {
                     nextInput = reader.ReadString();
-                    outputFunc(nextInput);
+                    DebugLogAction(nextInput);
                 }
                 else if (input == (int)ClientFlags.File)
                 {
@@ -173,8 +191,43 @@ namespace TCPSender
                 {
                     ClosePM();
                 }
+                else if (input == (int)ClientFlags.Config_DeviceName)
+                {
+                    nextInput = reader.ReadString();
+                    DeviceNameAction?.Invoke(nextInput);
+                }
             }
             Close_Self();
+        }
+
+        public void OpenPasswordLine()
+        {
+            BinaryReader passwordReader = new BinaryReader(client.GetStream());
+            string input = "asdf";
+            bool continueLoop = true;
+
+            while(continueLoop == true)
+            {
+                try
+                {
+                    input = passwordReader.ReadString();
+                }
+                catch
+                {
+                    Close();
+                    return;
+                }
+
+                if(input == Password)
+                {
+                    writer.Write((int)ClientFlags.Password_Correct);
+                    continueLoop = false;
+                }
+                else
+                {
+                    writer.Write((int)ClientFlags.Password_Incorrect);
+                }
+            }
         }
 
 
@@ -558,7 +611,7 @@ namespace TCPSender
             }
             catch (Exception e)
             {
-                outputFunc("tried to send PMData to nonexistent stream");
+                DebugLogAction("tried to send PMData to nonexistent stream");
             }
         }
 
@@ -574,9 +627,35 @@ namespace TCPSender
         //METRICS END
         //--------------------------------------------------
 
+        public void CheckDelegates()
+        {
+            bool allDelegatesSet = true;
+
+            
+            if(ConnectedAction == null)
+            {
+                DebugLogAction("ConnectedDelegate missing");
+                allDelegatesSet = false;
+            }
+            if (DeviceNameAction == null)
+            {
+                DebugLogAction("DeviceNameAction missing");
+                allDelegatesSet = false;
+            }
+            if(DisconnectAction == null)
+            {
+                DebugLogAction("DisconnectAction missing");
+                allDelegatesSet = false;
+            }
+
+            if(allDelegatesSet == true)
+            {
+                DebugLogAction("All delegates are set and should be working correctly.");
+            }
+        }
+
         public void Close()
         {
-
             if (listener != null)
             {
                 try
@@ -585,7 +664,7 @@ namespace TCPSender
                 }
                 catch (Exception e)
                 {
-                    outputFunc(e.Message);
+                    DebugLogAction(e.Message);
                 }
             }
 
@@ -619,7 +698,7 @@ namespace TCPSender
             }
             catch (Exception e)
             {
-                outputFunc(e.Message);
+                DebugLogAction(e.Message);
             }
             IsConnected = false;
         }
@@ -655,6 +734,9 @@ namespace TCPSender
         PM_Ready,
         PM_Request,
         PM_Data,
-        PM_Close
+        PM_Close,
+        Config_DeviceName,
+        Password_Correct,
+        Password_Incorrect
     }
 }
