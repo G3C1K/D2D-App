@@ -261,19 +261,6 @@ namespace D2DUIv3
                 autoConfigClient.Listen();
             };
 
-            Button button1234 = FindViewById<Button>(Resource.Id.button_send_password_1234);
-
-            button1234.Click += (o, e) =>
-            {
-                if (client != null)
-                {
-                    client.SendPassword("1234");
-                }
-            };
-
-            Button buttonDialog = FindViewById<Button>(Resource.Id.button_test_dialog);
-            buttonDialog.Click += (o,e) => { OpenPasswordInputDialogDelegate("internal"); };
-
         }
 
         public override bool OnCreateOptionsMenu(IMenu menu)
