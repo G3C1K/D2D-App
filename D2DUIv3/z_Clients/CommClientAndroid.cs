@@ -9,8 +9,10 @@ using System.Text;
 using System.Threading;
 using Android.App;
 using Android.Content;
+using Android.Content.Res;
 using Android.OS;
 using Android.Runtime;
+using Android.Util;
 using Android.Views;
 using Android.Widget;
 
@@ -36,6 +38,7 @@ namespace D2DUIv3
         public Action<string> DebugLogAction { internal get; set; } = (x) => { };     //funkcja ktora jest wywolywana gdy pojawi sie message od hosta       
         public Action<string> DisconnectAction { internal get; set; } = (x) => { };//USTAWIAC DELEGATY
         public Action<string> ConnectedAction { internal get; set; } = (x) => { };
+        public Action<string> OpenPasswordInputDialogAction { internal get; set; } = (x) => { };
 
         BinaryWriter writer;            //writer dla SendMessage, tutaj zeby nie tworzyc caly czas nowego. na porcie 50001
         int BUFFER_SIZE = 10000;                       //rozmiar bufora dla danych pliku w bajtach
@@ -156,7 +159,7 @@ namespace D2DUIv3
 
         private void OpenPasswordLine()
         {
-            //delegat - otwieranie okna do wpisania hasla
+            OpenPasswordInputDialogAction("Password required");
             BinaryReader passwordReader = new BinaryReader(client.GetStream());
 
             bool continueLoop = true;
@@ -180,7 +183,8 @@ namespace D2DUIv3
                 }
                 else if(input == (int)ClientFlags.Password_Incorrect)
                 {
-                    //delegat do wypisania ze niepooprawne haslo, zresetowania linii itd
+                    OpenPasswordInputDialogAction("Incorrect password");
+
                 }
 
             }
@@ -380,7 +384,8 @@ namespace D2DUIv3
         //po fladze vIS
         private void ReadVolumeClient(BinaryReader reader)
         {
-            //VolumeArrayForAndroid = new VolumeAndroid[procCount];
+            //OpenPasswordInputDialogAction("open up");
+
             VolumeListForAndroid = new List<VolumeAndroid>();
 
             float systemVolume = float.Parse(reader.ReadString());
@@ -606,6 +611,15 @@ namespace D2DUIv3
             }
 
             return true;
+        }
+
+        public static int ConvertPixelsToDP(float px, Context context)
+        {
+            Resources resources = context.Resources;
+            DisplayMetrics metrics = resources.DisplayMetrics;
+            var smth = (float)metrics.DensityDpi / 160f;
+            float dp = px / smth;
+            return (int)dp;
         }
     }
 }

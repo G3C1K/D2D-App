@@ -19,6 +19,8 @@ namespace D2DUIv3
 
         public CommClientAndroid client;
 
+
+
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);

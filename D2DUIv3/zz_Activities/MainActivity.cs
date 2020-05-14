@@ -72,6 +72,43 @@ namespace D2DUIv3
             );
         }
 
+        public void OpenPasswordInputDialogDelegate(string input)
+        {
+            Button button = FindViewById<Button>(Resource.Id.buttonConnect);
+            button.Post(() =>
+            {
+                Toast.MakeText(this, input, ToastLength.Short).Show();
+
+
+                Android.App.AlertDialog.Builder builder = new Android.App.AlertDialog.Builder(this);
+
+                //LayoutInflater inflater = this.LayoutInflater;
+                //View view = inflater.Inflate(Resource.Layout.password_dialog, null);
+
+                EditText inputEditText = new EditText(this);
+                inputEditText.InputType = Android.Text.InputTypes.ClassNumber | Android.Text.InputTypes.NumberVariationPassword;
+                FrameLayout container = new FrameLayout(this);
+                FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent);
+                // int sixteenindp = ClientUtilities.ConvertPixelsToDP(80, this);
+                lp.SetMargins(40, 40, 40, 40);
+                inputEditText.LayoutParameters = lp;
+                container.AddView(inputEditText);
+
+                builder.SetView(container);
+                builder.SetMessage("Input your password");
+                builder.SetCancelable(false);
+                builder.SetPositiveButton("OK", (o, e) =>
+                {
+                    string passwordString = inputEditText.Text;
+                    CommClientAndroid client = ClientHolder.Client;
+                    client.SendPassword(passwordString);
+                });
+
+                Android.App.AlertDialog aletrDialog = builder.Create();
+                aletrDialog.Show();
+            });
+        }
+
         public void AutoConfigFinished(List<string> outputLista)
         {
             EditText textBoxIP = FindViewById<EditText>(Resource.Id.textBoxIP);
@@ -150,7 +187,6 @@ namespace D2DUIv3
             EditText textBoxIP = FindViewById<EditText>(Resource.Id.textBoxIP);
             Button buttonAutoConfig = FindViewById<Button>(Resource.Id.button_autoconfig);
 
-            
             //do szybkiego wpisywania adresu mojego kompa
             testView.Click += (o, e) =>
             {
@@ -192,6 +228,7 @@ namespace D2DUIv3
 
                             client = new CommClientAndroid(iPAddress, SetText2);
                             client.DisconnectAction = DisconnectDelegate;
+                            client.OpenPasswordInputDialogAction = OpenPasswordInputDialogDelegate;
                             ClientHolder.Client = client;
                             client.ConnectedAction = ConnectedDelegate;
                             isConnected = true;
@@ -234,7 +271,8 @@ namespace D2DUIv3
                 }
             };
 
-            //Button buttonDialog = 
+            Button buttonDialog = FindViewById<Button>(Resource.Id.button_test_dialog);
+            buttonDialog.Click += (o,e) => { OpenPasswordInputDialogDelegate("internal"); };
 
         }
 
