@@ -23,6 +23,8 @@
         android:layout_height="wrap_content"
         android:id="@+id/buttonConnect"
         android:layout_marginBottom="5px"
+		android:layout_marginLeft="100px"
+		android:layout_marginRight="100px"
 		android:textColor="#ffffff"
 		style="@style/ButtonStyle"/>
 	<Button
@@ -30,6 +32,8 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:id="@+id/button_autoconfig"
+		android:layout_marginLeft="100px"
+		android:layout_marginRight="100px"
 		android:textColor="#ffffff"
 		style="@style/ButtonStyle"/>
 	<ScrollView
@@ -42,7 +46,7 @@
 			android:text="@string/IP_address"
 			android:textAppearance="?android:attr/textAppearanceMedium"
 			android:layout_width="match_parent"
-			android:layout_height="match_parent"
+			android:layout_height="wrap_content"
 			android:id="@+id/textView_test"
 			android:textAlignment="center"
 			android:clickable="true"
