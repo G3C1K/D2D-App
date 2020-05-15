@@ -27,6 +27,10 @@ namespace TCPSenderWPF
     {
         CommClientPC client = null;
         IPAddress adresInterfejsuDoNasluchu;
+        TrayIcon trayIcon;
+        PasswordForConnection passwordForConnection;
+        int password;
+        string passwordString;
 
         AutoConfigPC autoConfigClient;
         bool sendFlag;
@@ -35,20 +39,32 @@ namespace TCPSenderWPF
         {
             InitializeComponent();
 
-            
+
+            passwordForConnection = new PasswordForConnection();
+            passwordForConnection.SetPasswordAction = SetPasswordDelegate;
+
+            SetRandomPasswordIfFirstLaunch();
+
+            trayIcon = new TrayIcon(this);
         }
 
 
-        public void InitializeClient()
+        public void InitializeClient()  //odpala sie przy listen
         {
+            button_change_password.IsEnabled = false;
+
             //init kleinta
             adresInterfejsuDoNasluchu = CommClientPC.GetLocalIPAddress();
             textBlock_debugLog.Text = "";
             textBlock_debugLog.Text += "Nasluchiwanie na adresie: " + adresInterfejsuDoNasluchu.ToString();
             textBlock_debugLog.Text += "\n";
             button_listen.Content = "Listening";
-            client = new CommClientPC(adresInterfejsuDoNasluchu, OutputDelegate, ConnectedDelegate);
+            client = new CommClientPC(OutputDelegate, ConnectedDelegate);
             client.DisconnectAction = DisconnectDelegate;
+            client.DeviceNameAction = DeviceNameDelegate;
+            client.Password = textBlock_password.Text;
+            ClientHolder.Client = client;
+            client.Start(adresInterfejsuDoNasluchu);
         }
 
         public void OutputDelegate(string input)
@@ -67,6 +83,7 @@ namespace TCPSenderWPF
                 (Action)(() =>
                 {
                     textBlock_debugLog.Text += input + " ConnectedDelegate \n";
+                    trayIcon.ChangeIcon("Ikony/connected.ico", "ready");
                     button_advertise.IsEnabled = false;
                     button_listen.Content = "Disconnect";
                 })
@@ -79,9 +96,35 @@ namespace TCPSenderWPF
                 (Action)(() =>
                 {
                     textBlock_debugLog.Text += output + "\n";
+                    //Zamykanie wszystkich okien oprócz MainWindow
+                    for (int i = App.Current.Windows.Count - 1; i > 0; i--)
+                        App.Current.Windows[i].Hide();
+                    connected_device.Text = "None";
+                    if (trayIcon != null)
+                    {
+                        try
+                        {
+                            trayIcon.ChangeIcon("Ikony/notconnected.ico", "not ready");
+                        }
+                        catch (Exception e)
+                        {
+                            textBlock_debugLog.Text += e.Message + "\n";
+                        }
+                    }
                     button_listen.Content = "Listen";
+
+                    button_change_password.IsEnabled = true;
                 })
                 );
+        }
+
+        public void DeviceNameDelegate(string name)
+        {
+            connected_device.Dispatcher.Invoke(
+                () =>
+                {
+                    connected_device.Text = name;
+                });
         }
 
         private void Button_listen_Click(object sender, RoutedEventArgs e)
@@ -102,6 +145,11 @@ namespace TCPSenderWPF
                 client.Close();
                 button_listen.Content = "Listen";
             }
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+
         }
 
         private void Button_advertise_Click(object sender, RoutedEventArgs e)
@@ -139,9 +187,39 @@ namespace TCPSenderWPF
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if(client!= null)
+            trayIcon.DisposeIcon();
+            if (client!= null)
             {
                 client.Close();
+            }
+        }
+
+        private void Button_change_password_Click(object sender, RoutedEventArgs e)
+        {
+            passwordForConnection.Show();
+        }
+
+        public void SetPasswordDelegate(string input)
+        {
+            textBlock_password.Dispatcher.Invoke(() =>
+            {
+                textBlock_password.Text = input;
+                button_listen.IsEnabled = true;
+            });
+        }
+
+        private void SetRandomPasswordIfFirstLaunch()
+        {
+            bool passwordState = int.TryParse(textBlock_password.Text, out int ret);
+            if (passwordState == false)
+            {
+                Random rng = new Random();
+                int pass = rng.Next(1000, 9999);
+                SetPasswordDelegate(pass.ToString());
+            }
+            else
+            {
+
             }
         }
     }

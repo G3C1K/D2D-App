@@ -45,7 +45,6 @@
 			android:background="@drawable/actextviewbackground"
 			android:gravity="center" 
 		/>
-
 	</LinearLayout>
 
 
