@@ -87,7 +87,7 @@ namespace D2DUIv3
             if (item.ItemId == Android.Resource.Id.Home)
             {
                 stillAsk = false;
-                client.ClosePM();
+                //client.ClosePM();
                 this.Finish();
                 return true;
             }

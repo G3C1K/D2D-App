@@ -178,7 +178,17 @@ namespace TCPSender
                 }
                 else if (input == (int)ClientFlags.PM_Instantiate)
                 {
-                    InstantiatePMServer();
+                    if(pMetricsClient == null)
+                    {
+                        InstantiatePMServer();
+                    }
+                    else
+                    {
+                        sendPMetrics = true;
+                        writer.Write((int)ClientFlags.PM_Ready);
+                        writer.Write("ready");
+
+                    }
                 }
                 else if (input == (int)ClientFlags.PM_Request)
                 {
