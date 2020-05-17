@@ -48,8 +48,18 @@ namespace D2DUIv3
             {
                 var HardwareSeparated = item.Split(':');
 
-                name.Text = HardwareSeparated[0];
-                stat.Text = HardwareSeparated[1];
+                try
+                {
+                    name.Text = HardwareSeparated[0];
+
+                    stat.Text = HardwareSeparated[1];
+
+                }
+                catch
+                {
+                    name.Text = " x";
+                    stat.Text = " x";
+                }
             }
 
             public DataViewHolder(View itemView, Action<AdapterForStatisticsClickEventArgs> clickListener,

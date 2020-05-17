@@ -247,16 +247,22 @@ namespace TCPSender
             }
 
             //Console.WriteLine(GPUATIName);
-            ret += GPUATIName + "\n";
+            if(!(GPUATIName == null || GPUATIName == ""))
+            {
+                ret += GPUATIName + "\n";
+            }
 
             //GPUATISensors.ForEach(Console.WriteLine);
-            foreach(string item in GPUATISensors)
+            foreach (string item in GPUATISensors)
             {
                 ret += item + "\n";
             }
 
             //Console.WriteLine(GPUNVName);
-            ret += GPUNVName + "\n";
+            if (!(GPUNVName == null || GPUNVName == ""))
+            {
+                ret += GPUNVName + "\n"; 
+            }
 
             //GPUNVSensors.ForEach(Console.WriteLine);
             foreach(string item in GPUNVSensors)
