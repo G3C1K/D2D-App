@@ -3,20 +3,13 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:orientation="vertical"
 	android:layout_width="match_parent"
-	android:layout_height="match_parent">
-	<ScrollView
+	android:layout_height="match_parent"
+	android:minWidth="25px"
+	android:minHeight="25px">
+	<android.support.v7.widget.RecyclerView
 		android:minWidth="25px"
 		android:minHeight="25px"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:fadeScrollbars="false"
-		android:id="@+id/scrollViewPms">
-		<TextView
-			android:text="Waiting for performance monitor to load. Please wait a moment..."
-			android:textAppearance="?android:attr/textAppearanceMedium"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:id="@+id/textView_pms5" />
-
-	</ScrollView>
+		android:id="@+id/recyclerView_statistics" />
 </LinearLayout>

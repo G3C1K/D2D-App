@@ -56,6 +56,7 @@
     <Reference Include="Mono.Android" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="zz_Activities\AdapterForStatistics.cs" />
     <Compile Include="z_Clients\AutoConfigAndroid.cs" />
     <Compile Include="z_Clients\ClientHolder.cs" />
     <Compile Include="z_Clients\CommClientAndroid.cs" />
@@ -84,7 +85,10 @@
     <AndroidResource Include="Resources\mipmap-anydpi-v26\ic_launcher_round.xml" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Xamarin.Android.Support.Design" Version="27.0.2.1" />
+    <PackageReference Include="Xamarin.Android.Support.Design" Version="28.0.0.3" />
+    <PackageReference Include="Xamarin.Android.Support.v7.RecyclerView">
+      <Version>28.0.0.3</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_action_content_create.png" />
@@ -258,6 +262,7 @@
     <AndroidResource Include="Resources\layout\metrics_submenu.axml">
       <SubType>Designer</SubType>
     </AndroidResource>
+    <AndroidResource Include="Resources\layout\my_recycler_item.xml" />
     <Content Include="zzzzzzz_DO_ZROBIENIA.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
