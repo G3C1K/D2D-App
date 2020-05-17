@@ -5,17 +5,17 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TCPSenderWPF"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800"
+        Title="D2D" Height="450" Width="800"
         Closed="Window_Closed"
         Closing="Window_Closing">
     <Grid>
         
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="2*"/>
-            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="9*"/>
+            <ColumnDefinition Width="3*"/>
         </Grid.ColumnDefinitions>
 
-        <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+        <!--<ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
             <TextBlock x:Name="textBlock_debugLog" TextWrapping="Wrap"/>
         </ScrollViewer>
         <Button Content="Listen" Grid.Column="1" HorizontalAlignment="Left" Margin="5,10,0,0" VerticalAlignment="Top" Width="75" x:Name="button_listen" Click="Button_listen_Click" IsEnabled="False"/>
@@ -26,8 +26,29 @@
         <TextBlock x:Name="connected_device" Grid.Column="1" HorizontalAlignment="Left" Margin="118,86,-98,0" TextWrapping="Wrap" Text="None" VerticalAlignment="Top" Height="22" Width="376" />
         <TextBlock x:Name="textBlock_password" Grid.Column="1" HorizontalAlignment="Left" Margin="103,164,0,0" TextWrapping="Wrap" Text="not set" VerticalAlignment="Top" Height="59" Width="158" FontSize="40"/>
         <TextBlock Grid.Column="1" HorizontalAlignment="Left" Margin="10,191,0,0" TextWrapping="Wrap" VerticalAlignment="Top" RenderTransformOrigin="0.096,0.66" Width="88" Height="18"><Run Text="Password:"/><LineBreak/><Run/></TextBlock>
-        <Button x:Name="button_change_password" Content="Change password" Grid.Column="1" HorizontalAlignment="Left" Margin="10,214,0,0" VerticalAlignment="Top" Width="114" Click="Button_change_password_Click"/>
+        <Button x:Name="button_change_password" Content="Change password" Grid.Column="1" HorizontalAlignment="Left" Margin="10,214,0,0" VerticalAlignment="Top" Width="114" Click="Button_change_password_Click"/>-->
 
+        <Button Content="Listen" Grid.Column="0" HorizontalAlignment="Left" Margin="5,10,0,0" VerticalAlignment="Top" Width="90" Height="25"  
+                x:Name="button_listen" Click="Button_listen_Click" IsEnabled="False" />
+        <Button Content="Advertise IP" Grid.Column="0" HorizontalAlignment="Left" Margin="125,10,0,0" VerticalAlignment="Top" Width="90" Height="25"
+                x:Name="button_advertise" Click="Button_advertise_Click" IsEnabled="False" />
+
+        <TextBlock Grid.Column="0" HorizontalAlignment="Right" Margin="0,10,10,0" TextWrapping="Wrap" Text="Connected device: " 
+                   VerticalAlignment="Top" Height="22" Width="300" FontSize="14" />
+        <TextBlock x:Name="connected_device" Grid.Column="0" HorizontalAlignment="Right" Margin="10,10,0,0" TextWrapping="Wrap" Text="None" 
+                   VerticalAlignment="Top" Height="22" Width="180" FontSize="14" />
+        <TextBlock x:Name="textBlock_password" Grid.Column="0" HorizontalAlignment="Right" Margin="0,0,0,30" TextWrapping="Wrap" Text="not set" 
+                   VerticalAlignment="Bottom" Height="30" Width="100" FontSize="24" />
+        <TextBlock Grid.Column="0" HorizontalAlignment="Right" Margin="0,0,80,30" TextWrapping="Wrap" Text="Password:" VerticalAlignment="Bottom" 
+                   RenderTransformOrigin="0.096,0.66" Width="88" Height="18" />
+        <Button x:Name="button_change_password" Content="Change password" Grid.Column="0" HorizontalAlignment="Right" Margin="0,0,80,5" 
+                VerticalAlignment="Bottom" Width="114" Click="Button_change_password_Click"/>
+        <Button x:Name="button_show_password" Content="Show" Grid.Column="0" HorizontalAlignment="Right" Margin="0,0,10,5" 
+                VerticalAlignment="Bottom" Width="50" Click="Button_show_password_Click"  />
+
+        <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+            <TextBlock x:Name="textBlock_debugLog" TextWrapping="Wrap"/>
+        </ScrollViewer>
     </Grid>
 
 </Window>
