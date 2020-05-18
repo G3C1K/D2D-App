@@ -612,7 +612,7 @@ namespace TCPSender
         private void SendPMData()
         {
             pMetricsClient.Update();
-            string outputwe = pMetricsClient.OutputString();
+            string outputwe = pMetricsClient.OutputStringV2();
 
             try
             {
