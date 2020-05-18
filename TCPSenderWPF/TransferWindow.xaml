@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TCPSenderWPF"
         mc:Ignorable="d"
-        Title="TransferWindow" Height="150" Width="200">
+        Title="TransferWindow" Height="150" Width="200"
+        Closing="Window_Closing">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>

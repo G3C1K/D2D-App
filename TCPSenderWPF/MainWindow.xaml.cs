@@ -29,9 +29,9 @@ namespace TCPSenderWPF
         IPAddress adresInterfejsuDoNasluchu;
         TrayIcon trayIcon;
         PasswordForConnection passwordForConnection;
+        TransferWindow transferWindow;
         int password;
         string passwordString;
-
         AutoConfigPC autoConfigClient;
         bool sendFlag;
 
@@ -43,9 +43,12 @@ namespace TCPSenderWPF
             passwordForConnection = new PasswordForConnection();
             passwordForConnection.SetPasswordAction = SetPasswordDelegate;
 
+            transferWindow = new TransferWindow();
+            transferWindow.TransferAction = TransferHistoryDelegate;
+
             SetRandomPasswordIfFirstLaunch();
 
-            trayIcon = new TrayIcon(this);
+            trayIcon = new TrayIcon(this, transferWindow);
         }
 
 
@@ -62,7 +65,7 @@ namespace TCPSenderWPF
             client = new CommClientPC(OutputDelegate, ConnectedDelegate);
             client.DisconnectAction = DisconnectDelegate;
             client.DeviceNameAction = DeviceNameDelegate;
-            client.Password = textBlock_password.Text;
+            client.Password = passwordString;
             ClientHolder.Client = client;
             client.Start(adresInterfejsuDoNasluchu);
         }
@@ -127,6 +130,16 @@ namespace TCPSenderWPF
                 });
         }
 
+        public void TransferHistoryDelegate(string obj)
+        {
+            textBlock_transferHistory.Dispatcher.Invoke(
+                (Action)(() =>
+                {
+                    textBlock_transferHistory.Text += obj + "\n";
+                })
+                );
+        }
+
         private void Button_listen_Click(object sender, RoutedEventArgs e)
         {
 
@@ -154,17 +167,31 @@ namespace TCPSenderWPF
 
         private void Button_advertise_Click(object sender, RoutedEventArgs e)
         {
-            sendFlag = true;
-            autoConfigClient = new AutoConfigPC(StillSend);
-            autoConfigClient.EndingEvent = () =>
+            if ((string)button_advertise.Content == "Advertise IP")
             {
-                button_advertise.Dispatcher.Invoke(
-                    () => { button_advertise.IsEnabled = true; }
-                    );
-            };
-            autoConfigClient.Advertise();
-            button_stop_advertising.IsEnabled = true;
-            button_advertise.IsEnabled = false;
+                sendFlag = true;
+                autoConfigClient = new AutoConfigPC(StillSend);
+                autoConfigClient.EndingEvent = () =>
+                {
+                    button_advertise.Dispatcher.Invoke(
+                        () => { button_advertise.IsEnabled = true;
+                            button_advertise.Content = "Advertise IP";
+                        }
+                        );
+                };
+                autoConfigClient.Advertise();
+                //button_stop_advertising.IsEnabled = true;
+                //button_advertise.IsEnabled = false;
+                // Zmiana w drugi przycisk
+                //button_advertise.Click -= Button_advertise_Click;
+                //button_advertise.Click += Button_stop_advertising_Click;
+                button_advertise.Content = "Stop Advertising";
+            }
+            else if ((string)button_advertise.Content == "Stop Advertising")
+            {
+                sendFlag = false;
+                button_advertise.IsEnabled = false;
+            }
         }
 
         private bool StillSend(string we)
@@ -178,12 +205,16 @@ namespace TCPSenderWPF
             return sendFlag;
         }
 
-        private void Button_stop_advertising_Click(object sender, RoutedEventArgs e)
-        {
-            sendFlag = false;
-            button_stop_advertising.IsEnabled = false;
-            //button_advertise.IsEnabled = true;
-        }
+        //private void Button_stop_advertising_Click(object sender, RoutedEventArgs e)
+        //{
+        //    sendFlag = false;
+        //    //button_stop_advertising.IsEnabled = false;
+        //    //button_advertise.IsEnabled = true;
+        //    // Zmiana w drugi przycisk
+        //    button_advertise.Click -= Button_stop_advertising_Click;
+        //    button_advertise.Click += Button_advertise_Click;
+        //    button_advertise.Content = "Advertise IP";
+        //}
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
@@ -203,14 +234,18 @@ namespace TCPSenderWPF
         {
             textBlock_password.Dispatcher.Invoke(() =>
             {
-                textBlock_password.Text = input;
+                textBlock_password.Text = "****";
+                passwordString = input;
                 button_listen.IsEnabled = true;
             });
         }
 
         private void SetRandomPasswordIfFirstLaunch()
         {
-            bool passwordState = int.TryParse(textBlock_password.Text, out int ret);
+            bool passwordState = true;
+            if (passwordString == null)
+                passwordState = false;
+            //bool passwordState = int.TryParse(passwordString, out int ret);
             if (passwordState == false)
             {
                 Random rng = new Random();
@@ -220,6 +255,20 @@ namespace TCPSenderWPF
             else
             {
 
+            }
+        }
+
+        private void Button_show_password_Click(object sender, RoutedEventArgs e)
+        {
+            if ((string)button_show_password.Content == "Show")
+            {
+                textBlock_password.Text = passwordString;
+                button_show_password.Content = "Hide";
+            }
+            else if ((string)button_show_password.Content == "Hide")
+            {
+                textBlock_password.Text = "****";
+                button_show_password.Content = "Show";
             }
         }
     }

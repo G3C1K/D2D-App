@@ -13,12 +13,14 @@ namespace TCPSenderWPF
     public class TrayIcon
     {
         CommClientPC client;
+        TransferWindow transferWindow;
 
         private NotifyIcon notifyIcon;
 
-        public TrayIcon(System.Windows.Window okno)
+        public TrayIcon(System.Windows.Window okno, TransferWindow transferWindow)
         {
             client = ClientHolder.Client;
+            this.transferWindow = transferWindow;
 
             string iconName = "Ikony/notconnected.ico";
             string appName = Application.ProductName;
@@ -54,7 +56,7 @@ namespace TCPSenderWPF
             client = ClientHolder.Client;
             if(client != null && client.IsConnected == true)
             {
-                TransferWindow transferWindow = new TransferWindow();
+                //TransferWindow transferWindow = new TransferWindow();
                 transferWindow.Show();
             }
             else
