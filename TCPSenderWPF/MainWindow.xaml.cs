@@ -29,9 +29,9 @@ namespace TCPSenderWPF
         IPAddress adresInterfejsuDoNasluchu;
         TrayIcon trayIcon;
         PasswordForConnection passwordForConnection;
+        TransferWindow transferWindow;
         int password;
         string passwordString;
-
         AutoConfigPC autoConfigClient;
         bool sendFlag;
 
@@ -43,9 +43,12 @@ namespace TCPSenderWPF
             passwordForConnection = new PasswordForConnection();
             passwordForConnection.SetPasswordAction = SetPasswordDelegate;
 
+            transferWindow = new TransferWindow();
+            transferWindow.TransferAction = TransferHistoryDelegate;
+
             SetRandomPasswordIfFirstLaunch();
 
-            trayIcon = new TrayIcon(this);
+            trayIcon = new TrayIcon(this, transferWindow);
         }
 
 
@@ -125,6 +128,16 @@ namespace TCPSenderWPF
                 {
                     connected_device.Text = name;
                 });
+        }
+
+        public void TransferHistoryDelegate(string obj)
+        {
+            textBlock_transferHistory.Dispatcher.Invoke(
+                (Action)(() =>
+                {
+                    textBlock_transferHistory.Text += obj + "\n";
+                })
+                );
         }
 
         private void Button_listen_Click(object sender, RoutedEventArgs e)

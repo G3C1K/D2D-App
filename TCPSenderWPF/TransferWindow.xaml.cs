@@ -19,6 +19,7 @@ namespace TCPSenderWPF
     /// </summary>
     public partial class TransferWindow : Window
     {
+        public Action<string> TransferAction { internal get; set; }
         public TransferWindow()
         {
             InitializeComponent();
@@ -43,6 +44,7 @@ namespace TCPSenderWPF
                 {
                     //Sending files function here
                     this.lastSent.Content = file;
+                    TransferAction.Invoke(file);
                 }
             }
             if (e.Data.GetDataPresent(DataFormats.Text))
@@ -50,6 +52,7 @@ namespace TCPSenderWPF
                 string text = (string)e.Data.GetData(DataFormats.Text);
                 //Sending text function here if first if doesn't work for text as well
                 this.lastSent.Content = text;
+                TransferAction.Invoke(text);
             }
             var tsPanel = sender as StackPanel;
             tsPanel.Background = Brushes.Gray;
@@ -71,5 +74,10 @@ namespace TCPSenderWPF
             tsPanel.Background = Brushes.Gray;
         }
 
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            (sender as TransferWindow).Hide();
+            e.Cancel = true;
+        }
     }
 }

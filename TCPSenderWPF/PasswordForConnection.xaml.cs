@@ -56,5 +56,10 @@ namespace TCPSenderWPF
 
             this.Hide();
         }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            Keyboard.Focus(password);
+        }
     }
 }
