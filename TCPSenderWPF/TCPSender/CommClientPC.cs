@@ -31,6 +31,7 @@ namespace TCPSender
         public Action<string> DisconnectAction { internal get; set; }//USTAWIAC DELEGATY!!!
         public Action<string> ConnectedAction { internal get; set; }
         public Action<string> DeviceNameAction { internal get; set; }
+        public Action<List<string>> FileInstAction { internal get; set; }   //wypelnia liste plikow plikami
 
         BinaryWriter writer;            //writer dla SendMessage, tutaj zeby nie tworzyc caly czas nowego. na porcie 50001
         int BUFFER_SIZE = 10000;                       //rozmiar bufora dla danych pliku w bajtach
@@ -53,7 +54,10 @@ namespace TCPSender
         bool sendPMetrics = false;
 
         //pass
-        public string Password { get; set; }        
+        public string Password { get; set; }
+
+        //filetransfer
+        List<string> fileList;
 
         public CommClientPC(Action<string> _funkcjaDoPrzekazaniaMessagy, Action<string> _connectedDelegate) //serwer = listen, client = connect
         {
@@ -205,6 +209,10 @@ namespace TCPSender
                 {
                     nextInput = reader.ReadString();
                     DeviceNameAction?.Invoke(nextInput);
+                }
+                else if (input == (int)ClientFlags.FT_Instantiate)
+                {
+                    InstantiateTrasferServer();
                 }
             }
             Close_Self();
@@ -637,6 +645,29 @@ namespace TCPSender
         //METRICS END
         //--------------------------------------------------
 
+        //--------------------------------------------------
+        //FILEV2 START
+        //--------------------------------------------------
+
+        private void InstantiateTrasferServer()
+        {
+            fileList = new List<string>();
+            FileInstAction(fileList);
+
+            writer.Write((int)ClientFlags.FT_Ready);
+
+            int count = fileList.Count;
+            writer.Write(count);
+            foreach (string file in fileList)
+            {
+                writer.Write(file);
+            }
+        }
+
+        //--------------------------------------------------
+        //FILEV2 END
+        //--------------------------------------------------
+
         public void CheckDelegates()
         {
             bool allDelegatesSet = true;
@@ -655,6 +686,11 @@ namespace TCPSender
             if(DisconnectAction == null)
             {
                 DebugLogAction("DisconnectAction missing");
+                allDelegatesSet = false;
+            }
+            if(FileInstAction == null)
+            {
+                DebugLogAction("FileInstAction missing");
                 allDelegatesSet = false;
             }
 
@@ -747,6 +783,8 @@ namespace TCPSender
         PM_Close,
         Config_DeviceName,
         Password_Correct,
-        Password_Incorrect
+        Password_Incorrect,
+        FT_Instantiate,
+        FT_Ready
     }
 }

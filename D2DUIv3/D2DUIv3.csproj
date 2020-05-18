@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="zz_Activities\AdapterForStatistics.cs" />
+    <Compile Include="zz_Activities\FileTransferActivity.cs" />
     <Compile Include="z_Clients\AutoConfigAndroid.cs" />
     <Compile Include="z_Clients\ClientHolder.cs" />
     <Compile Include="z_Clients\CommClientAndroid.cs" />

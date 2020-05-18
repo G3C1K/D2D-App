@@ -35,6 +35,11 @@ namespace TCPSenderWPF
         AutoConfigPC autoConfigClient;
         bool sendFlag;
 
+
+        //listy plikow
+        List<string> fileList_internal = new List<string>();
+        List<string> stringList = new List<string>();
+
         public MainWindow()
         {
             InitializeComponent();
@@ -63,8 +68,12 @@ namespace TCPSenderWPF
             textBlock_debugLog.Text += "\n";
             button_listen.Content = "Listening";
             client = new CommClientPC(OutputDelegate, ConnectedDelegate);
+
             client.DisconnectAction = DisconnectDelegate;
             client.DeviceNameAction = DeviceNameDelegate;
+            client.FileInstAction = FileInstDelegate;
+
+
             client.Password = passwordString;
             ClientHolder.Client = client;
             client.Start(adresInterfejsuDoNasluchu);
@@ -135,9 +144,21 @@ namespace TCPSenderWPF
             textBlock_transferHistory.Dispatcher.Invoke(
                 (Action)(() =>
                 {
+                    fileList_internal.Add(obj);
                     textBlock_transferHistory.Text += obj + "\n";
                 })
                 );
+        }
+
+        public void FileInstDelegate(List<string> fileList)
+        {
+            if (fileList != null)
+            {
+                foreach(string item in fileList_internal)
+                {
+                    fileList.Add(item);
+                }
+            }
         }
 
         private void Button_listen_Click(object sender, RoutedEventArgs e)

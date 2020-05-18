@@ -31,6 +31,9 @@ connecting/mainactivity
 
 string jako statyczne pola zalezne od globalnej opcji wyboru jezyka
 
+filetransfer
+	transferhistory
+
 zrobione
 	pmetrics
 	connecting in separate thread

@@ -55,6 +55,14 @@ namespace D2DUIv3
                 StartActivity(metricsActivity);
             };
 
+            Button buttonFiles = FindViewById<Button>(Resource.Id.buttonFileTransfer);
+
+            buttonFiles.Click += (o, e) =>
+            {
+                Intent fileActivity = new Intent(this, typeof(FileTransferActivity));
+                StartActivity(fileActivity);
+            };
+
             // Create your application here
         }
 

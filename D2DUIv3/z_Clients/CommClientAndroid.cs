@@ -61,6 +61,13 @@ namespace D2DUIv3
         public Action<string> PMDataReceivedAction { internal get; set; }
 
 
+
+        //pliki
+        List<string> fileList = new List<string>();
+
+        public Action<List<string>> FileListReceivedAction { internal get; set; }
+
+
         public CommClientAndroid(IPAddress _adresIP, Action<string> _connectedDelegate) //serwer = listen, client = connect
         {
             cIP = _adresIP;
@@ -152,6 +159,10 @@ namespace D2DUIv3
                 {
                     nextInput = reader.ReadString();
                     PMDataReceivedAction(nextInput);
+                }
+                else if(input == (int)ClientFlags.FT_Ready)
+                {
+                    ReceiveFilesInfo(reader);
                 }
             }
             Close_Self();
@@ -497,6 +508,30 @@ namespace D2DUIv3
         //METRICS END
         //--------------------------------------------------
 
+        //--------------------------------------------------
+        //FILEV2 START
+        //--------------------------------------------------
+
+        public void InstantiateTransfer()
+        {
+            writer.Write((int)ClientFlags.FT_Instantiate);
+        }
+
+        private void ReceiveFilesInfo(BinaryReader reader)
+        {
+            int count = reader.ReadInt32();
+            for (int i = 0; i < count; i++)
+            {
+                string input = reader.ReadString();
+                fileList.Add(input);
+            }
+            FileListReceivedAction(fileList);
+        }
+
+        //--------------------------------------------------
+        //FILEV2 END
+        //--------------------------------------------------
+
         public void SendDeviceName(string name)
         {
             writer.Write((int)ClientFlags.Config_DeviceName);
@@ -577,7 +612,9 @@ namespace D2DUIv3
         PM_Close,
         Config_DeviceName,
         Password_Correct,
-        Password_Incorrect
+        Password_Incorrect,
+        FT_Instantiate,
+        FT_Ready
     }
 
     public static class ClientUtilities

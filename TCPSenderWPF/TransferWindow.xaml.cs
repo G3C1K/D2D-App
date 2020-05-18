@@ -20,6 +20,8 @@ namespace TCPSenderWPF
     public partial class TransferWindow : Window
     {
         public Action<string> TransferAction { internal get; set; }
+
+
         public TransferWindow()
         {
             InitializeComponent();
@@ -52,7 +54,7 @@ namespace TCPSenderWPF
                 string text = (string)e.Data.GetData(DataFormats.Text);
                 //Sending text function here if first if doesn't work for text as well
                 this.lastSent.Content = text;
-                TransferAction.Invoke(text);
+                //TransferAction.Invoke(text);
             }
             var tsPanel = sender as StackPanel;
             tsPanel.Background = Brushes.Gray;
