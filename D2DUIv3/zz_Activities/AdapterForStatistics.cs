@@ -22,10 +22,12 @@ namespace D2DUIv3
         public void setItems(string[] data)
         {
             this.items = data;
-            foreach(var item in items)
-            {
-                ((DataViewHolder)viewHolderV2).setDataDetails(item);
-            }
+            // To jest chyba niepotrzebne, bo działa bez tego 
+            //foreach(var item in items)
+            //{
+            //    ((DataViewHolder)viewHolderV2).setDataDetails(item);
+            //}
+            //((DataViewHolder)viewHolderV2).setDataDetails(item);
             NotifyDataSetChanged();
         }
 
@@ -48,18 +50,10 @@ namespace D2DUIv3
             {
                 var HardwareSeparated = item.Split(':');
 
-                try
-                {
                     name.Text = HardwareSeparated[0];
 
                     stat.Text = HardwareSeparated[1];
 
-                }
-                catch
-                {
-                    name.Text = " x";
-                    stat.Text = " x";
-                }
             }
 
             public DataViewHolder(View itemView, Action<AdapterForStatisticsClickEventArgs> clickListener,

@@ -2,17 +2,22 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="40dp">
+    android:layout_height="40dp"
+    android:layout_margin="1dp"
+    android:background="#343431">
   <TextView
       android:text=""
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_gravity="left"
+      android:layout_gravity="left|center_vertical"
+      android:padding="1dp"
+      android:textStyle="bold"
       android:id="@+id/textView_left"/>
   <TextView
       android:text=""
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_gravity="right"
+      android:layout_gravity="right|center_vertical"
+      android:padding="1dp"
       android:id="@+id/textView_right"/>
 </FrameLayout>

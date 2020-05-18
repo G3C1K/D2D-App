@@ -130,7 +130,7 @@ namespace TCPSender
 
                         }
                     }
-                    RAMSensors.Add("Memory Used/Memory Total: " + RAMUsed.ToString("0.00") + "GB/" + RAMTotal + "GB");
+                    RAMSensors.Add("Memory Used/Total: " + RAMUsed.ToString("0.00") + "GB/" + RAMTotal + "GB");
                 }
 
                 //if (hardware.HardwareType == HardwareType.HDD)
@@ -317,7 +317,10 @@ namespace TCPSender
             }
 
             //Console.WriteLine(GPUATIName);
-            ret += "GPU: " + GPUATIName + "\n";
+            if (GPUATIName != null)
+            {
+                ret += "GPU: " + GPUATIName + "\n";
+            }
 
             //GPUATISensors.ForEach(Console.WriteLine);
             foreach (string item in GPUATISensors)
@@ -326,7 +329,10 @@ namespace TCPSender
             }
 
             //Console.WriteLine(GPUNVName);
-            ret += "GPU: " + GPUNVName + "\n";
+            if (GPUNVName != null)
+            {
+                ret += "GPU: " + GPUNVName + "\n";
+            }
 
             //GPUNVSensors.ForEach(Console.WriteLine);
             foreach (string item in GPUNVSensors)
@@ -337,7 +343,7 @@ namespace TCPSender
             for (int i = 0; i < HDDReadsC.Count; i++)
             {
                 //Console.WriteLine(HDDNames[i] + " Size: " + HDDSizes[i] + "GB");
-                ret += "Storage device: " + HDDNames[i] + "\n";
+                ret += "Drive: " + HDDNames[i] + "\n";
 
                 //Split volume string
                 ret += "Size: " + HDDSizes[i] + "GB" + "\n";
@@ -346,7 +352,15 @@ namespace TCPSender
                 ret += "Read: " + (HDDReadsC[i].NextValue() / 1024 / 1024).ToString("0.00") + "MB / S" + "\n";
 
                 //Console.WriteLine("Write: " + (HDDWritesC[i].NextValue() / 1024 / 1024).ToString("0.00") + "MB/S");
-                ret += "Write: " + (HDDWritesC[i].NextValue() / 1024 / 1024).ToString("0.00") + "MB/S" + "\n";
+
+                if (i< HDDReadsC.Count - 1)
+                {
+                    ret += "Write: " + (HDDWritesC[i].NextValue() / 1024 / 1024).ToString("0.00") + "MB/S" + "\n"; 
+                }
+                else
+                {
+                    ret += "Write: " + (HDDWritesC[i].NextValue() / 1024 / 1024).ToString("0.00") + "MB/S";
+                }
             }
 
             return ret;

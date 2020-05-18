@@ -24,8 +24,6 @@ namespace D2DUIv3
         RecyclerView recyclerView_statistics;
         AdapterForStatistics recyclerView_statistics_adapter;
         RecyclerView.LayoutManager recyclerView_statistics_layoutManager;
-        String[][] HardwareSeparated;
-        //Testowanie
         String[] HardwareSeparated1D;
 
         public void PMReadyDelegate(string input)
@@ -86,9 +84,9 @@ namespace D2DUIv3
 
             //textViewMetrics = FindViewById<TextView>(Resource.Id.textView_pms5);
             //textViewMetrics.Text += " test instancji\n";
-
-            string test = "test1: 1 \n test2: 2";
-            HardwareSeparated1D = test.Split('\n');
+            string[] statOnStart = new string[1];
+            statOnStart[0] = "Loading...: Please wait";
+            HardwareSeparated1D = statOnStart;
 
             // Recycler view
             recyclerView_statistics = FindViewById<RecyclerView>(Resource.Id.recyclerView_statistics);
