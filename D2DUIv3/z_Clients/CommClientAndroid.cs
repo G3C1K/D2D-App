@@ -519,6 +519,7 @@ namespace D2DUIv3
 
         private void ReceiveFilesInfo(BinaryReader reader)
         {
+            fileList.Clear();
             int count = reader.ReadInt32();
             for (int i = 0; i < count; i++)
             {

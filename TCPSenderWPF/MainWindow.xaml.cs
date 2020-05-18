@@ -145,6 +145,7 @@ namespace TCPSenderWPF
                 (Action)(() =>
                 {
                     fileList_internal.Add(obj);
+                    //client.FileList.Add(obj);
                     textBlock_transferHistory.Text += obj + "\n";
                 })
                 );

@@ -57,7 +57,7 @@ namespace TCPSender
         public string Password { get; set; }
 
         //filetransfer
-        List<string> fileList;
+        public List<string> FileList { get; set; }
 
         public CommClientPC(Action<string> _funkcjaDoPrzekazaniaMessagy, Action<string> _connectedDelegate) //serwer = listen, client = connect
         {
@@ -651,14 +651,14 @@ namespace TCPSender
 
         private void InstantiateTrasferServer()
         {
-            fileList = new List<string>();
-            FileInstAction(fileList);
+            FileList = new List<string>();
+            FileInstAction(FileList);
 
             writer.Write((int)ClientFlags.FT_Ready);
 
-            int count = fileList.Count;
+            int count = FileList.Count;
             writer.Write(count);
-            foreach (string file in fileList)
+            foreach (string file in FileList)
             {
                 writer.Write(file);
             }
