@@ -263,6 +263,9 @@
       <SubType>Designer</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\my_recycler_item.xml" />
+    <AndroidResource Include="Resources\layout\filetransfer_submenu.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
     <Content Include="zzzzzzz_DO_ZROBIENIA.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
