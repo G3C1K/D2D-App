@@ -411,7 +411,7 @@ namespace TCPSender
             
             InputSimulator v = new InputSimulator();
 
-            outputFunc(a.ToString());
+            DebugLogAction(a.ToString());
             v.Keyboard.KeyPress(a);
         }
 

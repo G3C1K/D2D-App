@@ -2408,8 +2408,8 @@ namespace D2DUIv3
 			// aapt resource value: 0x7f08005d
 			public const int activity_chooser_view_content = 2131230813;
 			
-			// aapt resource value: 0x7f0800bb
-			public const int actvbg = 2131230907;
+			// aapt resource value: 0x7f0800bc
+			public const int actvbg = 2131230908;
 			
 			// aapt resource value: 0x7f080027
 			public const int add = 2131230759;
@@ -2441,17 +2441,17 @@ namespace D2DUIv3
 			// aapt resource value: 0x7f08008c
 			public const int buttonConnect = 2131230860;
 			
-			// aapt resource value: 0x7f0800a1
-			public const int buttonMetrics = 2131230881;
+			// aapt resource value: 0x7f0800a0
+			public const int buttonMetrics = 2131230880;
 			
-			// aapt resource value: 0x7f0800a2
-			public const int buttonNumpad = 2131230882;
+			// aapt resource value: 0x7f0800a1
+			public const int buttonNumpad = 2131230881;
 			
 			// aapt resource value: 0x7f080063
 			public const int buttonPanel = 2131230819;
 			
-			// aapt resource value: 0x7f0800a0
-			public const int buttonVolume = 2131230880;
+			// aapt resource value: 0x7f08009f
+			public const int buttonVolume = 2131230879;
 			
 			// aapt resource value: 0x7f08008d
 			public const int button_autoconfig = 2131230861;
@@ -2609,8 +2609,8 @@ namespace D2DUIv3
 			// aapt resource value: 0x7f08008e
 			public const int linearLayoutAC = 2131230862;
 			
-			// aapt resource value: 0x7f0800ba
-			public const int linearLayoutVolume = 2131230906;
+			// aapt resource value: 0x7f0800bb
+			public const int linearLayoutVolume = 2131230907;
 			
 			// aapt resource value: 0x7f08001d
 			public const int listMode = 2131230749;
@@ -2618,20 +2618,20 @@ namespace D2DUIv3
 			// aapt resource value: 0x7f080061
 			public const int list_item = 2131230817;
 			
-			// aapt resource value: 0x7f0800bd
-			public const int masked = 2131230909;
+			// aapt resource value: 0x7f0800be
+			public const int masked = 2131230910;
 			
 			// aapt resource value: 0x7f0800ab
 			public const int media_actions = 2131230891;
 			
+			// aapt resource value: 0x7f0800c0
+			public const int menu_disconnect = 2131230912;
+			
 			// aapt resource value: 0x7f0800bf
-			public const int menu_disconnect = 2131230911;
+			public const int menu_settings = 2131230911;
 			
-			// aapt resource value: 0x7f0800be
-			public const int menu_settings = 2131230910;
-			
-			// aapt resource value: 0x7f0800b8
-			public const int message = 2131230904;
+			// aapt resource value: 0x7f0800b9
+			public const int message = 2131230905;
 			
 			// aapt resource value: 0x7f080031
 			public const int middle = 2131230769;
@@ -2719,10 +2719,10 @@ namespace D2DUIv3
 			
 			// aapt resource value: 0x7f080068
 			public const int scrollView = 2131230824;
-
-			// aapt resource value: 0x7f0800b9
-			public const int scrollViewVolume = 2131230905;
-      
+			
+			// aapt resource value: 0x7f0800ba
+			public const int scrollViewVolume = 2131230906;
+			
 			// aapt resource value: 0x7f080055
 			public const int scrollable = 2131230805;
 			
@@ -2825,8 +2825,8 @@ namespace D2DUIv3
 			// aapt resource value: 0x7f08008b
 			public const int textBoxIP = 2131230859;
 			
-			// aapt resource value: 0x7f08009f
-			public const int textIPInfo = 2131230879;
+			// aapt resource value: 0x7f08009e
+			public const int textIPInfo = 2131230878;
 			
 			// aapt resource value: 0x7f08006a
 			public const int textSpacerNoButtons = 2131230826;
@@ -2834,16 +2834,11 @@ namespace D2DUIv3
 			// aapt resource value: 0x7f080069
 			public const int textSpacerNoTitle = 2131230825;
 			
-			// aapt resource value: 0x7f08009e
-			public const int textView1 = 2131230878;
-			
 			// aapt resource value: 0x7f0800a3
 			public const int textView_left = 2131230883;
 			
 			// aapt resource value: 0x7f0800a4
 			public const int textView_right = 2131230884;
-			// aapt resource value: 0x7f0800a4
-			public const int textView_pms5 = 2131230884;
 			
 			// aapt resource value: 0x7f08008f
 			public const int textView_test = 2131230863;
@@ -2905,12 +2900,11 @@ namespace D2DUIv3
 			// aapt resource value: 0x7f080016
 			public const int view_offset_helper = 2131230742;
 			
-			// aapt resource value: 0x7f0800bc
-			public const int visible = 2131230908;
+			// aapt resource value: 0x7f0800bd
+			public const int visible = 2131230909;
 			
-			// aapt resource value: 0x7f0800c0
-			public const int volume_refresh = 2131230912;
-
+			// aapt resource value: 0x7f0800c1
+			public const int volume_refresh = 2131230913;
 			
 			// aapt resource value: 0x7f08003c
 			public const int withText = 2131230780;
@@ -3152,25 +3146,28 @@ namespace D2DUIv3
 			public const int notification_template_part_chronometer = 2130968634;
 			
 			// aapt resource value: 0x7f04003b
-			public const int numpad_submenu = 2130968635;
-
+			public const int notification_template_part_time = 2130968635;
+			
 			// aapt resource value: 0x7f04003c
-			public const int select_dialog_item_material = 2130968636;
+			public const int numpad_submenu = 2130968636;
 			
 			// aapt resource value: 0x7f04003d
-			public const int select_dialog_multichoice_material = 2130968637;
+			public const int select_dialog_item_material = 2130968637;
 			
 			// aapt resource value: 0x7f04003e
-			public const int select_dialog_singlechoice_material = 2130968638;
+			public const int select_dialog_multichoice_material = 2130968638;
 			
 			// aapt resource value: 0x7f04003f
-			public const int support_simple_spinner_dropdown_item = 2130968639;
+			public const int select_dialog_singlechoice_material = 2130968639;
 			
 			// aapt resource value: 0x7f040040
-			public const int tooltip = 2130968640;
+			public const int support_simple_spinner_dropdown_item = 2130968640;
 			
 			// aapt resource value: 0x7f040041
-			public const int volume_submenu = 2130968641;
+			public const int tooltip = 2130968641;
+			
+			// aapt resource value: 0x7f040042
+			public const int volume_submenu = 2130968642;
 			
 			static Layout()
 			{
