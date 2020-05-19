@@ -10,6 +10,8 @@ using Android.Runtime;
 using Android.Support.V7.App;
 using Android.Views;
 using Android.Widget;
+using D2DUIv3.zz_Activities;
+//sing D2DUIv3.zz_Activities;
 
 namespace D2DUIv3
 {
@@ -53,6 +55,14 @@ namespace D2DUIv3
             {
                 Intent metricsActivity = new Intent(this, typeof(MetricsActivity));
                 StartActivity(metricsActivity);
+            };
+
+            var buttonNumpad = FindViewById<Button>(Resource.Id.buttonNumpad);
+
+            buttonNumpad.Click += (o, e) =>
+            {
+                Intent numpadActivity = new Intent(this, typeof(NumpadActivity));
+                StartActivity(numpadActivity);
             };
 
             // Create your application here

@@ -2444,6 +2444,9 @@ namespace D2DUIv3
 			// aapt resource value: 0x7f0800a1
 			public const int buttonMetrics = 2131230881;
 			
+			// aapt resource value: 0x7f0800a2
+			public const int buttonNumpad = 2131230882;
+			
 			// aapt resource value: 0x7f080063
 			public const int buttonPanel = 2131230819;
 			
@@ -2560,6 +2563,9 @@ namespace D2DUIv3
 			
 			// aapt resource value: 0x7f08000a
 			public const int ghost_view = 2131230730;
+			
+			// aapt resource value: 0x7f0800b8
+			public const int gridlayout_numpad = 2131230904;
 			
 			// aapt resource value: 0x7f080005
 			public const int home = 2131230725;
@@ -2713,10 +2719,10 @@ namespace D2DUIv3
 			
 			// aapt resource value: 0x7f080068
 			public const int scrollView = 2131230824;
-			
+
 			// aapt resource value: 0x7f0800b9
 			public const int scrollViewVolume = 2131230905;
-			
+      
 			// aapt resource value: 0x7f080055
 			public const int scrollable = 2131230805;
 			
@@ -2836,6 +2842,8 @@ namespace D2DUIv3
 			
 			// aapt resource value: 0x7f0800a4
 			public const int textView_right = 2131230884;
+			// aapt resource value: 0x7f0800a4
+			public const int textView_pms5 = 2131230884;
 			
 			// aapt resource value: 0x7f08008f
 			public const int textView_test = 2131230863;
@@ -2902,6 +2910,7 @@ namespace D2DUIv3
 			
 			// aapt resource value: 0x7f0800c0
 			public const int volume_refresh = 2131230912;
+
 			
 			// aapt resource value: 0x7f08003c
 			public const int withText = 2131230780;
@@ -3143,8 +3152,8 @@ namespace D2DUIv3
 			public const int notification_template_part_chronometer = 2130968634;
 			
 			// aapt resource value: 0x7f04003b
-			public const int notification_template_part_time = 2130968635;
-			
+			public const int numpad_submenu = 2130968635;
+
 			// aapt resource value: 0x7f04003c
 			public const int select_dialog_item_material = 2130968636;
 			
