@@ -9,8 +9,10 @@ using System.Text;
 using System.Threading;
 using Android.App;
 using Android.Content;
+using Android.Content.Res;
 using Android.OS;
 using Android.Runtime;
+using Android.Util;
 using Android.Views;
 using Android.Widget;
 
@@ -29,12 +31,14 @@ namespace D2DUIv3
 
         TcpClient client;               //klient tcp dla komend
         IPAddress cIP;                  //adres IP. Zalezy od tego czy instancja jest klientem czy serwerem
+        string deviceName = "unknown device";
 
         //delegaty sa potrzebne aby przekazywac infromacje miedzy watkami
         //= (x) => { }; - po to aby ustawic domyslny delegat ktory nic nie robi oprocz unikania wyjatku
         public Action<string> DebugLogAction { internal get; set; } = (x) => { };     //funkcja ktora jest wywolywana gdy pojawi sie message od hosta       
         public Action<string> DisconnectAction { internal get; set; } = (x) => { };//USTAWIAC DELEGATY
         public Action<string> ConnectedAction { internal get; set; } = (x) => { };
+        public Action<string> OpenPasswordInputDialogAction { internal get; set; } = (x) => { };
 
         BinaryWriter writer;            //writer dla SendMessage, tutaj zeby nie tworzyc caly czas nowego. na porcie 50001
         int BUFFER_SIZE = 10000;                       //rozmiar bufora dla danych pliku w bajtach
@@ -53,7 +57,6 @@ namespace D2DUIv3
         public List<VolumeAndroid> VolumeListForAndroid { get; internal set; }     //android - lista instancji w formie testowej
         public bool volumeReady = false;
 
-
         public Action<string> PMReadyAction { internal get; set; }
         public Action<string> PMDataReceivedAction { internal get; set; }
 
@@ -67,6 +70,10 @@ namespace D2DUIv3
             Thread connectThread = new Thread(() =>
             {
                 Connect(_adresIP);  //connect 
+                writer = new BinaryWriter(client.GetStream());
+
+                OpenPasswordLine();
+
                 OpenCommandLine();
                 IsConnected = true;
                 ConnectedAction("Connected!");
@@ -90,7 +97,6 @@ namespace D2DUIv3
 
         private void OpenCommandLine()
         {
-            writer = new BinaryWriter(client.GetStream());
             commandLineThread = new Thread(() => ListenForCommands(DebugLogAction));
             commandLineThread.Start();
         }
@@ -155,6 +161,44 @@ namespace D2DUIv3
                 }
             }
             Close_Self();
+        }
+
+        private void OpenPasswordLine()
+        {
+            OpenPasswordInputDialogAction("Password required");
+            BinaryReader passwordReader = new BinaryReader(client.GetStream());
+
+            bool continueLoop = true;
+            int input;
+            while(continueLoop == true)
+            {
+                try
+                {
+                    input = passwordReader.ReadInt32();
+                }
+                catch
+                {
+                    Close();
+                    return;
+                }
+
+                if(input == (int)ClientFlags.Password_Correct)
+                {
+                    //wylacz okno delegat
+                    continueLoop = false;
+                }
+                else if(input == (int)ClientFlags.Password_Incorrect)
+                {
+                    OpenPasswordInputDialogAction("Incorrect password");
+
+                }
+
+            }
+        }
+
+        public void SendPassword(string password)
+        {
+            writer.Write(password);
         }
 
 
@@ -352,7 +396,8 @@ namespace D2DUIv3
         //po fladze vIS
         private void ReadVolumeClient(BinaryReader reader)
         {
-            //VolumeArrayForAndroid = new VolumeAndroid[procCount];
+            //OpenPasswordInputDialogAction("open up");
+
             VolumeListForAndroid = new List<VolumeAndroid>();
 
             float systemVolume = float.Parse(reader.ReadString());
@@ -470,6 +515,12 @@ namespace D2DUIv3
         //METRICS END
         //--------------------------------------------------
 
+        public void SendDeviceName(string name)
+        {
+            writer.Write((int)ClientFlags.Config_DeviceName);
+            writer.Write(name);
+        }
+
         public void Close()
         {
             // writer.Write("x");
@@ -542,7 +593,10 @@ namespace D2DUIv3
         PM_Ready,
         PM_Request,
         PM_Data,
-        PM_Close
+        PM_Close,
+        Config_DeviceName,
+        Password_Correct,
+        Password_Incorrect
     }
 
     public static class ClientUtilities
@@ -576,6 +630,15 @@ namespace D2DUIv3
             }
 
             return true;
+        }
+
+        public static int ConvertPixelsToDP(float px, Context context)
+        {
+            Resources resources = context.Resources;
+            DisplayMetrics metrics = resources.DisplayMetrics;
+            var smth = (float)metrics.DensityDpi / 160f;
+            float dp = px / smth;
+            return (int)dp;
         }
     }
 }

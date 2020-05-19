@@ -4,6 +4,8 @@
 
 do zrobienia:
 
+transferwindow
+
 czy monitor na pc powinien byc close gdy sie wychodzi z activity czy gdy sie disconnectuje?
 	proste do realizacji - nie wysylac flagi close przy wychodzeniu z activity
 	kolejna flaga do klienta android - czy metrics zostal wczesniej uruchomiony, wtedy skipnac flage inst i przejsc od razu do flagi request
@@ -20,11 +22,19 @@ styl
 
 
 connecting/mainactivity
-	connecting in separate thread
 	cancel connecting?
 	zmiana przycisku connect
 	help u gory mowiacy zeby wylaczyc firewalla na kommpie
 	popup do laczenia
+	konstruktor /= connect
+
 
 string jako statyczne pola zalezne od globalnej opcji wyboru jezyka
 
+zrobione
+	pmetrics
+	connecting in separate thread
+	bugfixing
+	przesylanie nazwy urzadzenia, na razie w jedna strone
+
+	persistent hwmonitor

@@ -8,6 +8,7 @@ using Android.Content;
 using Android.OS;
 using Android.Runtime;
 using Android.Support.V7.App;
+using Android.Support.V7.Widget;
 using Android.Views;
 using Android.Widget;
 
@@ -20,6 +21,10 @@ namespace D2DUIv3
         public CommClientAndroid client;
         TextView textViewMetrics;
         bool stillAsk = false;
+        RecyclerView recyclerView_statistics;
+        AdapterForStatistics recyclerView_statistics_adapter;
+        RecyclerView.LayoutManager recyclerView_statistics_layoutManager;
+        String[] HardwareSeparated1D;
 
         public void PMReadyDelegate(string input)
         {
@@ -34,10 +39,26 @@ namespace D2DUIv3
         {
             try
             {
-                textViewMetrics.Post(() =>
+                //textViewMetrics.Post(() =>
+                //{
+                //    textViewMetrics.Text = input;
+                //});
+
+                recyclerView_statistics.Post(() =>
                 {
-                    textViewMetrics.Text = input;
+                    HardwareSeparated1D = input.Split('\n');
+                    recyclerView_statistics_adapter.setItems(HardwareSeparated1D);
                 });
+
+                //HardwareSeparated1D = input.Split('\n');
+
+
+                //HardwareSeparated = input.Split('\n').Select(x => x.Split(':')).ToArray();
+
+                //recyclerView_statistics_adapter.setItems(HardwareSeparated1D);
+
+                //recyclerView_statistics_adapter.NotifyDataSetChanged();
+
             }
             catch
             {
@@ -61,14 +82,27 @@ namespace D2DUIv3
             stillAsk = true;
             SetContentView(Resource.Layout.metrics_submenu);
 
-            textViewMetrics = FindViewById<TextView>(Resource.Id.textView_pms5);
+            //textViewMetrics = FindViewById<TextView>(Resource.Id.textView_pms5);
             //textViewMetrics.Text += " test instancji\n";
+            string[] statOnStart = new string[1];
+            statOnStart[0] = "Loading...: Please wait";
+            HardwareSeparated1D = statOnStart;
+
+            // Recycler view
+            recyclerView_statistics = FindViewById<RecyclerView>(Resource.Id.recyclerView_statistics);
+            recyclerView_statistics_layoutManager = new LinearLayoutManager(this);
+            recyclerView_statistics.SetLayoutManager(recyclerView_statistics_layoutManager);
+
+            recyclerView_statistics_adapter = new AdapterForStatistics(HardwareSeparated1D);
+            recyclerView_statistics.SetAdapter(recyclerView_statistics_adapter);
 
             client = ClientHolder.Client;
             client.PMReadyAction = PMReadyDelegate;
             client.PMDataReceivedAction = PMDataReceivedDelegate;
 
             client.InstantiatePMClient();
+
+            
 
         }
 
@@ -87,7 +121,7 @@ namespace D2DUIv3
             if (item.ItemId == Android.Resource.Id.Home)
             {
                 stillAsk = false;
-                client.ClosePM();
+                //client.ClosePM();
                 this.Finish();
                 return true;
             }

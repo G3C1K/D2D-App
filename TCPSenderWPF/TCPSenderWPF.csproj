@@ -34,7 +34,14 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>
+    </ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Hardcodet.Wpf.TaskbarNotification, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Hardcodet.NotifyIcon.Wpf.1.0.8\lib\net451\Hardcodet.Wpf.TaskbarNotification.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="OpenHardwareMonitorLib">
       <HintPath>..\PerformanceMetrics\OpenHardwareMonitorLib.dll</HintPath>
@@ -42,6 +49,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Management" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -64,14 +72,22 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="PasswordForConnection.xaml.cs">
+      <DependentUpon>PasswordForConnection.xaml</DependentUpon>
+    </Compile>
     <Compile Include="TCPSender\AutoConfig.cs" />
     <Compile Include="TCPSender\AutoConfigPC.cs" />
+    <Compile Include="TCPSender\ClientHolder.cs" />
     <Compile Include="TCPSender\CommClientPC.cs" />
     <Compile Include="TCPSender\PM.cs" />
     <Compile Include="TCPSender\Program.cs" />
     <Compile Include="TCPSender\Test.cs" />
     <Compile Include="TCPSender\VolumeHandling.cs" />
     <Compile Include="TCPSender\VolumeMixer.cs" />
+    <Compile Include="TransferWindow.xaml.cs">
+      <DependentUpon>TransferWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="TrayIcon.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -84,6 +100,14 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="PasswordForConnection.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="TransferWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -111,6 +135,18 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Ikony\redcircle.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Ikony\bluecircle.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Ikony\connected.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Ikony\notconnected.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
