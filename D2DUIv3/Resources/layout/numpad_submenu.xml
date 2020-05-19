@@ -9,7 +9,8 @@
         android:orientation="horizontal"
         android:layout_weight="1"
         android:rowCount="5"
-        android:columnCount="4">
+        android:columnCount="4"
+        android:id="@+id/gridlayout_numpad">
         <Button
             android:layout_height="0dp"
             android:layout_width="0dp"
@@ -18,10 +19,6 @@
             android:text="7"
             android:textSize="50sp"
             android:onClick="NumClick"
-            
-          
-            
-            
             />
         <Button
           android:layout_height="0dp"

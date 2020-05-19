@@ -347,7 +347,8 @@ namespace TCPSender
 
             
             InputSimulator v = new InputSimulator();
-            
+
+            outputFunc(a.ToString());
             v.Keyboard.KeyPress(a);
         }
 

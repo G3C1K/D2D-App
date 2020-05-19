@@ -21,8 +21,8 @@ namespace D2DUIv3.zz_Activities
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
-           // client = ClientHolder.Client;
-           // client.NumpadInstantiate();
+            client = ClientHolder.Client;
+            //client.NumpadInstantiate();
             
 
 
@@ -89,10 +89,7 @@ namespace D2DUIv3.zz_Activities
                 
             }
             client.SendKey(klawisz);
-            
-          
-            
-
+           
         } 
 
     }

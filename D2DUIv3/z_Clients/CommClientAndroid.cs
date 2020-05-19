@@ -346,6 +346,7 @@ namespace D2DUIv3
         public void NumpadInstantiate()
         {
             writer.Write((int)ClientFlags.Numpad);
+            //oczekuje string???
         }
 
         //po fladze vIS
@@ -392,6 +393,7 @@ namespace D2DUIv3
 
         public void SendKey(string klawisz)
         {
+            writer.Write((int)ClientFlags.Numpad);
             writer.Write(klawisz);
         }
 
