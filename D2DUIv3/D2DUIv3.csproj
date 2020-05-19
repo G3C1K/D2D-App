@@ -50,12 +50,14 @@
     <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Mono.Android.Export" />
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="Mono.Android" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="zz_Activities\NumpadActivity.cs" />
     <Compile Include="z_Clients\AutoConfigAndroid.cs" />
     <Compile Include="z_Clients\ClientHolder.cs" />
     <Compile Include="z_Clients\CommClientAndroid.cs" />
@@ -256,6 +258,10 @@
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\ACTextViewBackground.xml" />
     <AndroidResource Include="Resources\layout\metrics_submenu.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\main_menu.xml" />
+    <AndroidResource Include="Resources\layout\numpad_submenu.xml">
       <SubType>Designer</SubType>
     </AndroidResource>
     <Content Include="zzzzzzz_DO_ZROBIENIA.txt" />

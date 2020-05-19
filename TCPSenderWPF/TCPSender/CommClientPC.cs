@@ -1,20 +1,26 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using WindowsInput;
+using WindowsInput.Native;
 
 namespace TCPSender
 {
     public class CommClientPC
     {
-       
+        [DllImport("user32.dll")]
+        static extern bool SetForegroundWindow(IntPtr hWnd);
+
         Thread mainThread;
 
         //porty polaczen
@@ -108,6 +114,13 @@ namespace TCPSender
                     Close();
                     return;
                 }
+
+                if (input == (int)ClientFlags.Numpad)
+                {
+                    nextInput = reader.ReadString();
+                    pisz(nextInput);
+                }
+
 
                 if (input == (int)ClientFlags.Command)
                 {
@@ -256,6 +269,86 @@ namespace TCPSender
         {
             writer.Write((int)ClientFlags.Command);
             writer.Write(_message);
+        }
+
+        public void pisz(string klawisz)
+        {
+
+            VirtualKeyCode a = VirtualKeyCode.NONAME; // powinno być null
+
+            switch (klawisz)
+            {
+                case "1":
+                    a = VirtualKeyCode.VK_1;
+                    break;
+                case "2":
+                    a = VirtualKeyCode.VK_2;
+                    break;
+                case "3":
+                    a = VirtualKeyCode.VK_3;
+                    break;
+                case "4":
+                    a = VirtualKeyCode.VK_4;
+                    break;
+                case "5":
+                    a = VirtualKeyCode.VK_5;
+                    break;
+                case "6":
+                    a = VirtualKeyCode.VK_6;
+                    break;
+                case "7":
+                    a = VirtualKeyCode.VK_7;
+                    break;
+                case "8":
+                    a = VirtualKeyCode.VK_8;
+                    break;
+                case "9":
+                    a = VirtualKeyCode.VK_9;
+                    break;
+                case "0":
+                    a = VirtualKeyCode.VK_0;
+                    break;
+                case "ADD":
+                    a = VirtualKeyCode.ADD;
+                    break;
+                case "SUB":
+                    a = VirtualKeyCode.SUBTRACT;
+                    break;
+                case "MUL":
+                    a = VirtualKeyCode.MULTIPLY;
+                    break;
+                case "DIV":
+                    a = VirtualKeyCode.DIVIDE;
+                    break;
+                case "DEC":
+                    a = VirtualKeyCode.DECIMAL;
+                    break;
+
+            }
+
+
+
+
+            IntPtr h = IntPtr.Zero;
+            Process[] proc = Process.GetProcesses();
+            foreach (Process p in proc)
+            {
+                if (p.MainWindowTitle.Contains("Notatnik"))
+                {
+                    Console.WriteLine(p.MainWindowTitle);
+                    h = p.MainWindowHandle;
+
+                }
+            }
+
+            SetForegroundWindow(h);
+
+
+
+            
+            InputSimulator v = new InputSimulator();
+            
+            v.Keyboard.KeyPress(a);
         }
 
         /// <summary>
@@ -639,6 +732,7 @@ namespace TCPSender
 
     public enum ClientFlags
     {
+        Numpad,
         Close,
         Command,
         File,
