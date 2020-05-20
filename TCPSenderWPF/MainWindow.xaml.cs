@@ -309,6 +309,7 @@ namespace TCPSenderWPF
             else
             {
                 textBlock_password.Text = "****";
+                button_listen.IsEnabled = true;
             }
         }
 

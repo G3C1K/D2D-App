@@ -67,6 +67,8 @@ namespace D2DUIv3
 
         public Action<List<string>> FileListReceivedAction { internal get; set; }
 
+        public Action<string, string, string, int> FileReceivedAction { internal get; set; }
+
 
         public CommClientAndroid(IPAddress _adresIP, Action<string> _connectedDelegate) //serwer = listen, client = connect
         {
@@ -163,6 +165,12 @@ namespace D2DUIv3
                 else if(input == (int)ClientFlags.FT_Ready)
                 {
                     ReceiveFilesInfo(reader);
+                }
+                else if(input == (int)ClientFlags.FT_SendFile)
+                {
+                    nextInput = reader.ReadString();
+                    Thread recThread = new Thread(() => ReceiveFileV2(nextInput));
+                    recThread.Start();
                 }
             }
             Close_Self();
@@ -541,6 +549,42 @@ namespace D2DUIv3
             writer.Write(file);
         }
 
+        private void ReceiveFileV2(string ip)
+        {
+            TcpClient fileClient = new TcpClient();
+            fileClient.Connect(IPAddress.Parse(ip), filePort);
+
+            BinaryReader fileReader = new BinaryReader(fileClient.GetStream());
+            string fileName = fileReader.ReadString();
+            int fileLength = fileReader.ReadInt32();
+            int packetCount = fileReader.ReadInt32();
+            int reszta = fileReader.ReadInt32();
+            byte[] buffer = new byte[BUFFER_SIZE];
+            byte[] lastPacket = new byte[reszta];
+
+            string fullFilePath = System.IO.Path.Combine(DownloadPath, fileName);
+            FileStream fileStream = File.OpenWrite(fullFilePath);
+
+            for(int i = 0; i<packetCount; i++)
+            {
+                buffer = fileReader.ReadBytes(BUFFER_SIZE);
+                if (buffer.Length != BUFFER_SIZE)
+                {
+                    int i23 = 0;
+                }
+                fileStream.Write(buffer, 0, BUFFER_SIZE);
+            }
+            lastPacket = fileReader.ReadBytes(lastPacket.Length);
+            fileStream.Write(lastPacket, 0, lastPacket.Length);
+
+
+            fileReader.Close();
+            fileStream.Close();
+            fileClient.Close();
+
+            FileReceivedAction(fileName, "placeholder description", fullFilePath, fileLength);
+        }
+
 
         //--------------------------------------------------
         //FILEV2 END
@@ -630,7 +674,8 @@ namespace D2DUIv3
         FT_Instantiate,
         FT_Ready,
         FT_RemoveFileFromList,
-        FT_DownloadFile
+        FT_DownloadFile,
+        FT_SendFile
     }
 
     public static class ClientUtilities

@@ -140,8 +140,6 @@ namespace TCPSender
                 else if (input == (int)ClientFlags.File)
                 {
                     nextInput = reader.ReadString();
-                    Thread rec = new Thread(() => ReceiveFile(nextInput));
-                    rec.Start();
                 }
                 else if (input == (int)ClientFlags.XOR)
                 {
@@ -220,6 +218,12 @@ namespace TCPSender
                     nextInput = reader.ReadString();
                     RemoveFileInternal(nextInput);
                 }
+                else if(input == (int)ClientFlags.FT_DownloadFile)
+                {
+                    nextInput = reader.ReadString();
+                    Thread sendFileThread = new Thread(() => SendFileV2(nextInput));
+                    sendFileThread.Start();
+                }
             }
             Close_Self();
         }
@@ -255,96 +259,10 @@ namespace TCPSender
         }
 
 
-        private void SendFile_T(string _path)   //deprecated
-        {
-            //ustanawianie polaczenia na porcie 50002
-            TcpClient fileClient = new TcpClient();
-            IPAddress ownIPAddress = GetLocalIPAddress();
-            TcpListener fileListener = new TcpListener(ownIPAddress, filePort);
-            fileListener.Start();
-            writer.Write((int)ClientFlags.File);
-            writer.Write(ownIPAddress.ToString());
-            fileClient = fileListener.AcceptTcpClient();
-            fileListener.Stop();
-            //Console.WriteLine("50002 connected");
-
-            //prep do wyslania pliku
-            BinaryWriter fileWriter = new BinaryWriter(fileClient.GetStream());
-            FileInfo fileInfo = new FileInfo(_path);
-            string fileName = fileInfo.Name;
-            long fileSize = fileInfo.Length;
-            FileStream fileStream = new FileStream(_path, FileMode.Open, FileAccess.Read);
-            int packetCount = (int)Math.Floor((double)(fileSize / BUFFER_SIZE));
-            int reszta = (int)(fileSize - packetCount * BUFFER_SIZE);
-            byte[] buffer = new byte[BUFFER_SIZE];
-            byte[] lastPacket = new byte[reszta];
-
-            //wlasciwe wysylanie
-            fileWriter.Write(fileName);
-            fileWriter.Write(packetCount.ToString());
-            fileWriter.Write(reszta.ToString());
-            for (int i = 0; i < packetCount; i++)
-            {
-                fileStream.Read(buffer, 0, BUFFER_SIZE);
-                fileWriter.Write(buffer, 0, BUFFER_SIZE);
-            }
-            fileStream.Read(lastPacket, 0, reszta);
-            fileWriter.Write(lastPacket, 0, reszta);
-
-            //konczenie
-            fileWriter.Close();
-            fileStream.Close();
-            fileClient.Close();
-        }
-
-        private void ReceiveFile(string _targetIPAddress)   //deprecated
-        {
-            //ustanawianie polaczenia na porcie 50002
-            TcpClient fileClient = new TcpClient();
-            fileClient.Connect(IPAddress.Parse(_targetIPAddress), filePort);
-            //Console.WriteLine("50002 connected");
-
-            //przygotowanie do odebrania pliku
-            BinaryReader fileReader = new BinaryReader(fileClient.GetStream());
-            string fileName = fileReader.ReadString();
-            int packetCount = int.Parse(fileReader.ReadString());
-            int reszta = int.Parse(fileReader.ReadString());
-            byte[] buffer = new byte[BUFFER_SIZE];
-            byte[] lastPacket = new byte[reszta];
-            Directory.CreateDirectory(DownloadPath);
-            FileStream fileStream = File.OpenWrite(DownloadPath + @"/" + fileName);
-
-            //wlasciwe pobieranie
-            for (int i = 0; i < packetCount; i++)
-            {
-                buffer = fileReader.ReadBytes(BUFFER_SIZE);
-                fileStream.Write(buffer, 0, BUFFER_SIZE);
-            }
-            lastPacket = fileReader.ReadBytes(reszta);
-            fileStream.Write(lastPacket, 0, reszta);
-
-            //konczenie
-            fileReader.Close();
-            fileStream.Close();
-            fileClient.Close();
-        }
-
         public void SendMessage(string _message)    //Wysyla message (type 1) do odbiorcy
         {
             writer.Write((int)ClientFlags.Command);
             writer.Write(_message);
-        }
-
-        /// <summary>
-        /// deprecated
-        /// </summary>
-        /// <param name="_path">
-        /// sciezka do pliku
-        /// </param>
-        public void SendFile(string _path)  
-        {
-            Thread fileThread = new Thread(() => SendFile_T(_path));
-            fileThread.Start();
         }
 
         //--------------------------------------------------
@@ -672,8 +590,59 @@ namespace TCPSender
 
         private void RemoveFileInternal(string file)
         {
+            FileList.Remove(file);
             FileRemoveAction(file);
         }
+
+        private void SendFileV2(string filePath)
+        {
+            if (FileList.Contains(filePath))
+            {
+                TcpClient fileClient = new TcpClient();
+                IPAddress ownIPAddress = GetLocalIPAddress();
+                TcpListener fileListener = new TcpListener(ownIPAddress, filePort);
+                fileListener.Start();
+
+                writer.Write((int)ClientFlags.FT_SendFile);
+                writer.Write(ownIPAddress.ToString());
+                fileClient = fileListener.AcceptTcpClient();
+                fileListener.Stop();
+
+                BinaryWriter fileWriter = new BinaryWriter(fileClient.GetStream());
+                FileInfo fileInfo = new FileInfo(filePath);
+                string fileName = fileInfo.Name;
+                int fileSize = (int)fileInfo.Length;
+
+                DebugLogAction("attempting to send file named: " + fileName + "\n");
+
+                FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+                int packetCount = (int)Math.Floor((double)(fileSize / BUFFER_SIZE));
+                int reszta = (fileSize - packetCount * BUFFER_SIZE);
+                byte[] buffer = new byte[BUFFER_SIZE];
+                byte[] lastPacket = new byte[reszta];
+
+                //wlasciwe wysylanie
+                fileWriter.Write(fileName);
+                fileWriter.Write((int)fileSize);
+                fileWriter.Write(packetCount);
+                fileWriter.Write(reszta);
+                for (int i = 0; i < packetCount; i++)
+                {
+                    fileStream.Read(buffer, 0, BUFFER_SIZE);
+                    fileWriter.Write(buffer, 0, BUFFER_SIZE);
+                }
+                fileStream.Read(lastPacket, 0, lastPacket.Length);
+                fileWriter.Write(lastPacket, 0, lastPacket.Length);
+                //fileWriter.Write(lastPacket);
+                DebugLogAction("lastPacket.Length: " + lastPacket.Length + "reszta: " + reszta.ToString() + "\n");
+
+                //konczenie
+                fileWriter.Close();
+                fileStream.Close();
+                fileClient.Close();
+            }
+        }
+
 
         //--------------------------------------------------
         //FILEV2 END
@@ -797,6 +766,8 @@ namespace TCPSender
         Password_Incorrect,
         FT_Instantiate,
         FT_Ready,
-        FT_RemoveFileFromList
+        FT_RemoveFileFromList,
+        FT_DownloadFile,
+        FT_SendFile
     }
 }

@@ -2,14 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
+using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
+using Android.Content.PM;
 using Android.OS;
 using Android.Runtime;
 using Android.Support.V7.App;
 using Android.Views;
 using Android.Widget;
+using Android.Support.Design.Widget;
+using Android.Webkit;
 
 namespace D2DUIv3
 {
@@ -19,6 +22,13 @@ namespace D2DUIv3
         CommClientAndroid client;
         LinearLayout transferLayout;
 
+        readonly string[] PermissionsStorage =
+        {
+            Android.Manifest.Permission.ReadExternalStorage,
+            Android.Manifest.Permission.WriteExternalStorage
+        };
+
+        const int RequestStorageId = 0;
 
         public void FileListReceivedDelegate(List<string> fileList)
         {
@@ -51,13 +61,20 @@ namespace D2DUIv3
                     ACTVItem.Click += (o, e) =>
                     {
                         TextView oo = o as TextView;
-                        CommClientAndroid client = ClientHolder.Client;
-                        client.RemoveFile(oo.Text);
 
+                        const string permission = Android.Manifest.Permission.WriteExternalStorage;
+                        if (CheckSelfPermission(permission) == (int)Permission.Granted)
+                        {
+                            CommClientAndroid client = ClientHolder.Client;
+                            client.FileReceivedAction = FileReceivedDelegate;
+                            client.DownloadFile(oo.Text);
+                        }
+                        else
+                        {
+                            Toast.MakeText(this, "Unable to download file. Insufficient permissions.", ToastLength.Long).Show();
+                        }
 
-
-                        ViewGroup parent = (ViewGroup)oo.Parent;
-                        parent.RemoveView(oo);
+                       
                     };
 
                     transferLayout.AddView(ACTVItem);
@@ -65,10 +82,52 @@ namespace D2DUIv3
             });
         }
 
+        public void FileReceivedDelegate(string fileName, string fileDescription,string filePath, int fileSize)
+        {
+            MimeTypeMap mime = MimeTypeMap.Singleton;
+            string ext = fileName.ToLower();
+            string type = mime.GetMimeTypeFromExtension(ext);
+
+            DownloadManager downloadManager = DownloadManager.FromContext(Android.App.Application.Context);
+            downloadManager.AddCompletedDownload(fileName, fileDescription, true, "application/pdf", filePath, fileSize, true);
+        }
+
+        private void TryGetStorage()
+        {
+            if ((int)Build.VERSION.SdkInt < 23)
+            {
+                return;
+            }
+
+            GetStoragePermission();
+        }
+
+        private void GetStoragePermission()
+        {
+            const string permission = Android.Manifest.Permission.WriteExternalStorage;
+            if (CheckSelfPermission(permission) == (int)Permission.Granted)
+            {
+                return;
+            }
+
+            if (ShouldShowRequestPermissionRationale(permission))
+            {
+                Snackbar snackbar = Snackbar.Make(transferLayout, "Storage access is required to download files.", Snackbar.LengthIndefinite);
+                snackbar.SetAction("OK", v => RequestPermissions(PermissionsStorage, RequestStorageId));
+                snackbar.Show();
+
+                return;
+            }
+
+            RequestPermissions(PermissionsStorage, RequestStorageId);
+        }
+
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
             SetContentView(Resource.Layout.filetransfer_submenu);
+
+            TryGetStorage();
 
             transferLayout = FindViewById<LinearLayout>(Resource.Id.linearLayout_filetransfer);
 
