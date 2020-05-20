@@ -6,7 +6,6 @@
         xmlns:local="clr-namespace:TCPSenderWPF"
         mc:Ignorable="d"
         Title="D2D" Height="450" Width="600"
-        Closed="Window_Closed"
         Closing="Window_Closing">
     <Grid>
         

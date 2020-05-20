@@ -535,6 +535,12 @@ namespace D2DUIv3
             writer.Write(file);
         }
 
+        public void DownloadFile(string file)
+        {
+            writer.Write((int)ClientFlags.FT_DownloadFile);
+            writer.Write(file);
+        }
+
 
         //--------------------------------------------------
         //FILEV2 END
@@ -623,7 +629,8 @@ namespace D2DUIv3
         Password_Incorrect,
         FT_Instantiate,
         FT_Ready,
-        FT_RemoveFileFromList
+        FT_RemoveFileFromList,
+        FT_DownloadFile
     }
 
     public static class ClientUtilities

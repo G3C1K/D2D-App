@@ -9,6 +9,7 @@ using Android.Views;
 using Android.Graphics;
 using Android.Content;
 using System.Collections.Generic;
+using System.IO;
 
 namespace D2DUIv3
 {
@@ -231,6 +232,8 @@ namespace D2DUIv3
                             client.OpenPasswordInputDialogAction = OpenPasswordInputDialogDelegate;
                             ClientHolder.Client = client;
                             client.ConnectedAction = ConnectedDelegate;
+                            client.DownloadPath = System.IO.Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
+
                             isConnected = true;
                         }
                         else

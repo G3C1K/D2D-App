@@ -44,6 +44,7 @@ namespace TCPSenderWPF
         {
             InitializeComponent();
 
+            passwordString = Properties.Settings.Default.Password;
 
             passwordForConnection = new PasswordForConnection();
             passwordForConnection.SetPasswordAction = SetPasswordDelegate;
@@ -281,7 +282,13 @@ namespace TCPSenderWPF
         {
             textBlock_password.Dispatcher.Invoke(() =>
             {
-                textBlock_password.Text = "****";
+                //textBlock_password.Text = "****";
+                if((string)button_show_password.Content == "Hide")
+                {
+                    textBlock_password.Text = input;
+                }
+                Properties.Settings.Default.Password = input;
+                Properties.Settings.Default.Save();
                 passwordString = input;
                 button_listen.IsEnabled = true;
             });
@@ -290,9 +297,9 @@ namespace TCPSenderWPF
         private void SetRandomPasswordIfFirstLaunch()
         {
             bool passwordState = true;
-            if (passwordString == null)
-                passwordState = false;
-            //bool passwordState = int.TryParse(passwordString, out int ret);
+            //if (passwordString == null)
+            //    passwordState = false;
+            passwordState = int.TryParse(passwordString, out int ret);
             if (passwordState == false)
             {
                 Random rng = new Random();
@@ -301,7 +308,7 @@ namespace TCPSenderWPF
             }
             else
             {
-
+                textBlock_password.Text = "****";
             }
         }
 
