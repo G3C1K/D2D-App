@@ -68,6 +68,7 @@ namespace D2DUIv3
         public Action<List<string>> FileListReceivedAction { internal get; set; }
 
         public Action<string, string, string, int> FileReceivedAction { internal get; set; }
+        public Action BrokenFileAction { internal get; set; }
 
 
         public CommClientAndroid(IPAddress _adresIP, Action<string> _connectedDelegate) //serwer = listen, client = connect
@@ -568,13 +569,13 @@ namespace D2DUIv3
             for(int i = 0; i<packetCount; i++)
             {
                 buffer = fileReader.ReadBytes(BUFFER_SIZE);
-                if (buffer.Length != BUFFER_SIZE)
-                {
-                    int i23 = 0;
-                }
                 fileStream.Write(buffer, 0, BUFFER_SIZE);
             }
             lastPacket = fileReader.ReadBytes(lastPacket.Length);
+            if(lastPacket.Length != reszta)
+            {
+                BrokenFileAction();
+            }
             fileStream.Write(lastPacket, 0, lastPacket.Length);
 
 

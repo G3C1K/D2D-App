@@ -134,6 +134,15 @@ namespace D2DUIv3
 
             client = ClientHolder.Client;
             client.FileListReceivedAction = FileListReceivedDelegate;
+
+            client.BrokenFileAction = delegate
+            {
+                transferLayout.Post(delegate
+                {
+                    Toast.MakeText(this, "Corrupted file...", ToastLength.Short).Show();
+                });
+            };
+
             client.InstantiateTransfer();
 
 

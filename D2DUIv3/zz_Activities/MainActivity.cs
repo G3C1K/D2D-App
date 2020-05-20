@@ -26,8 +26,10 @@ namespace D2DUIv3
 
         public void SetText2(string _message)
         {
-            //textNumber.Post(() => textNumber.Text += _message + "\n"); //????
-            //RunOnUiThread(() => textNumber.Text += _message + "\n");
+            //RunOnUiThread(() =>
+            //{
+            //    Toast.MakeText(this, _message, ToastLength.Short).Show();
+            //});
         }
 
         public void ConnectedDelegate(string message)
