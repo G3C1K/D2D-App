@@ -32,6 +32,7 @@ namespace TCPSender
         public Action<string> ConnectedAction { internal get; set; }
         public Action<string> DeviceNameAction { internal get; set; }
         public Action<List<string>> FileInstAction { internal get; set; }   //wypelnia liste plikow plikami
+        public Action<string> FileRemoveAction { internal get; set; }
 
         BinaryWriter writer;            //writer dla SendMessage, tutaj zeby nie tworzyc caly czas nowego. na porcie 50001
         int BUFFER_SIZE = 10000;                       //rozmiar bufora dla danych pliku w bajtach
@@ -213,6 +214,11 @@ namespace TCPSender
                 else if (input == (int)ClientFlags.FT_Instantiate)
                 {
                     InstantiateTrasferServer();
+                }
+                else if (input == (int)ClientFlags.FT_RemoveFileFromList)
+                {
+                    nextInput = reader.ReadString();
+                    RemoveFileInternal(nextInput);
                 }
             }
             Close_Self();
@@ -664,6 +670,11 @@ namespace TCPSender
             }
         }
 
+        private void RemoveFileInternal(string file)
+        {
+            FileRemoveAction(file);
+        }
+
         //--------------------------------------------------
         //FILEV2 END
         //--------------------------------------------------
@@ -785,6 +796,7 @@ namespace TCPSender
         Password_Correct,
         Password_Incorrect,
         FT_Instantiate,
-        FT_Ready
+        FT_Ready,
+        FT_RemoveFileFromList
     }
 }

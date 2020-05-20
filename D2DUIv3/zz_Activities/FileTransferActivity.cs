@@ -51,7 +51,13 @@ namespace D2DUIv3
                     ACTVItem.Click += (o, e) =>
                     {
                         TextView oo = o as TextView;
-                        //textBoxIP.Text = oo.Text;
+                        CommClientAndroid client = ClientHolder.Client;
+                        client.RemoveFile(oo.Text);
+
+
+
+                        ViewGroup parent = (ViewGroup)oo.Parent;
+                        parent.RemoveView(oo);
                     };
 
                     transferLayout.AddView(ACTVItem);

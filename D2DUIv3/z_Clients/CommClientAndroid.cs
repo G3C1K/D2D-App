@@ -517,17 +517,24 @@ namespace D2DUIv3
             writer.Write((int)ClientFlags.FT_Instantiate);
         }
 
-        private void ReceiveFilesInfo(BinaryReader reader)
+        private void ReceiveFilesInfo(BinaryReader reader) //odpala sie po fladze ready
         {
-            fileList.Clear();
+            fileList.Clear();       //czysci liste plikow
             int count = reader.ReadInt32();
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < count; i++) //czyta liczbe plikow, dodaje je po kolei do listy
             {
                 string input = reader.ReadString();
                 fileList.Add(input);
             }
-            FileListReceivedAction(fileList);
+            FileListReceivedAction(fileList);   //konczy delegatem ktory przekazuje zawartosc listy do activity, nastepnie activity umieszcze je jako textview na ekranie
         }
+
+        public void RemoveFile(string file)
+        {
+            writer.Write((int)ClientFlags.FT_RemoveFileFromList);
+            writer.Write(file);
+        }
+
 
         //--------------------------------------------------
         //FILEV2 END
@@ -615,7 +622,8 @@ namespace D2DUIv3
         Password_Correct,
         Password_Incorrect,
         FT_Instantiate,
-        FT_Ready
+        FT_Ready,
+        FT_RemoveFileFromList
     }
 
     public static class ClientUtilities

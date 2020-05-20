@@ -50,12 +50,16 @@ namespace TCPSenderWPF
 
             transferWindow = new TransferWindow();
             transferWindow.TransferAction = TransferHistoryDelegate;
+            transferWindow.FinishAction = FinishDelegate_TransferWindow;
 
             SetRandomPasswordIfFirstLaunch();
 
             trayIcon = new TrayIcon(this, transferWindow);
         }
 
+        //--------------------------------------------------
+        //CLIENT START
+        //--------------------------------------------------
 
         public void InitializeClient()  //odpala sie przy listen
         {
@@ -72,6 +76,7 @@ namespace TCPSenderWPF
             client.DisconnectAction = DisconnectDelegate;
             client.DeviceNameAction = DeviceNameDelegate;
             client.FileInstAction = FileInstDelegate;
+            client.FileRemoveAction = FileRemoveDelegate;
 
 
             client.Password = passwordString;
@@ -79,7 +84,7 @@ namespace TCPSenderWPF
             client.Start(adresInterfejsuDoNasluchu);
         }
 
-        public void OutputDelegate(string input)
+        public void OutputDelegate(string input)    //delegat = wypis do loga
         {
             textBlock_debugLog.Dispatcher.Invoke(
                 (Action)(() => 
@@ -89,7 +94,7 @@ namespace TCPSenderWPF
                 );
         }
 
-        public void ConnectedDelegate(string input)
+        public void ConnectedDelegate(string input) //delegat - po polaczeniu
         {
             textBlock_debugLog.Dispatcher.Invoke(
                 (Action)(() =>
@@ -102,7 +107,7 @@ namespace TCPSenderWPF
                 );
         }
 
-        public void DisconnectDelegate(string output)
+        public void DisconnectDelegate(string output)   //delegat - po rozlaczeniu
         {
             textBlock_debugLog.Dispatcher.Invoke(
                 (Action)(() =>
@@ -130,7 +135,7 @@ namespace TCPSenderWPF
                 );
         }
 
-        public void DeviceNameDelegate(string name)
+        public void DeviceNameDelegate(string name) //delegat - po polaczeniu przychodzi nazwa urzadzenia android
         {
             connected_device.Dispatcher.Invoke(
                 () =>
@@ -139,28 +144,53 @@ namespace TCPSenderWPF
                 });
         }
 
-        public void TransferHistoryDelegate(string obj)
-        {
-            textBlock_transferHistory.Dispatcher.Invoke(
-                (Action)(() =>
-                {
-                    fileList_internal.Add(obj);
-                    //client.FileList.Add(obj);
-                    textBlock_transferHistory.Text += obj + "\n";
-                })
-                );
-        }
-
-        public void FileInstDelegate(List<string> fileList)
+        public void FileInstDelegate(List<string> fileList) //delegat - po uruchomieniu filetransferactivity wysyla flage instant, uruchamia sie ten delegat
         {
             if (fileList != null)
             {
-                foreach(string item in fileList_internal)
+                foreach (string item in fileList_internal)
                 {
                     fileList.Add(item);
                 }
             }
         }
+
+        public void FileRemoveDelegate(string file) //delegat - po przyjsciu flagi remove usuwa plik z listy
+        {
+            fileList_internal.Remove(file);
+            FinishDelegate_TransferWindow("removed item from android: " + file + "\n");
+        }
+
+        public void TransferHistoryDelegate(string obj) //delegat - po 
+        {
+            textBlock_transferHistory.Dispatcher.Invoke(
+                (Action)(() =>
+                {
+                    fileList_internal.Add(obj);
+                })
+                );
+        }
+
+        public void FinishDelegate_TransferWindow(string obj)   //PODWOJNY DELEGAT - po usunieciu i dodaniu pliku
+        {
+            textBlock_transferHistory.Dispatcher.Invoke(
+                (Action)(() =>
+                {
+                    textBlock_transferHistory.Text = "";
+
+                    foreach(string item in fileList_internal)
+                    {
+                        textBlock_transferHistory.Text += item + "\n";
+                    }
+
+                    textBlock_debugLog.Text += obj + "\n";
+                })
+                );
+        }
+
+        
+
+        
 
         private void Button_listen_Click(object sender, RoutedEventArgs e)
         {
@@ -168,7 +198,7 @@ namespace TCPSenderWPF
             if ((string)button_listen.Content == "Listen")
             {
                 InitializeClient();
-                autoConfigClient = new AutoConfigPC(StillSend);
+                autoConfigClient = new AutoConfigPC(StillSendDelegate);
                 button_advertise.IsEnabled = true;
             }
             else if((string)button_listen.Content == "Listening")
@@ -182,17 +212,12 @@ namespace TCPSenderWPF
             }
         }
 
-        private void Window_Closed(object sender, EventArgs e)
-        {
-
-        }
-
         private void Button_advertise_Click(object sender, RoutedEventArgs e)
         {
             if ((string)button_advertise.Content == "Advertise IP")
             {
                 sendFlag = true;
-                autoConfigClient = new AutoConfigPC(StillSend);
+                autoConfigClient = new AutoConfigPC(StillSendDelegate);
                 autoConfigClient.EndingEvent = () =>
                 {
                     button_advertise.Dispatcher.Invoke(
@@ -216,7 +241,7 @@ namespace TCPSenderWPF
             }
         }
 
-        private bool StillSend(string we)
+        private bool StillSendDelegate(string we)
         {
             textBlock_debugLog.Dispatcher.Invoke(
                 (Action)(() =>

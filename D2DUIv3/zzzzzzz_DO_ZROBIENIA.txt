@@ -32,7 +32,8 @@ connecting/mainactivity
 string jako statyczne pola zalezne od globalnej opcji wyboru jezyka
 
 filetransfer
-	transferhistory
+	nie ma powodu dla ktorego filetransfer mialby byc dostepny dopiero po polaczeniu
+	transferhistory as listbox
 
 zrobione
 	pmetrics

@@ -20,6 +20,7 @@ namespace TCPSenderWPF
     public partial class TransferWindow : Window
     {
         public Action<string> TransferAction { internal get; set; }
+        public Action<string> FinishAction { internal get; set; }
 
 
         public TransferWindow()
@@ -56,6 +57,8 @@ namespace TCPSenderWPF
                 this.lastSent.Content = text;
                 //TransferAction.Invoke(text);
             }
+
+            FinishAction("Finished adding files");
             var tsPanel = sender as StackPanel;
             tsPanel.Background = Brushes.Gray;
         }
