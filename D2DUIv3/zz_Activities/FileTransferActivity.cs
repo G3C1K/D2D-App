@@ -68,11 +68,11 @@ namespace D2DUIv3
                         {
                             CommClientAndroid client = ClientHolder.Client;
                             client.FileReceivedAction = FileReceivedDelegate;
-                            client.DownloadFile(oo.Text);
+                            client.DownloadFile(oo.Text, oo);
 
-                            client.RemoveFile(oo.Text);
-                            ViewGroup parent = (ViewGroup)oo.Parent;
-                            parent.RemoveView(oo);
+                            //client.RemoveFile(oo.Text);
+                            //ViewGroup parent = (ViewGroup)oo.Parent;
+                            //parent.RemoveView(oo);
                         }
                         else
                         {
@@ -87,7 +87,7 @@ namespace D2DUIv3
             });
         }
 
-        public void FileReceivedDelegate(string fileName, string fileDescription,string filePath, int fileSize)
+        public void FileReceivedDelegate(string fileName, string fileDescription,string filePath, int fileSize, TextView associatedTextView)
         {
             MimeTypeMap mime = MimeTypeMap.Singleton;
             string ext = fileName.ToLower();
@@ -104,6 +104,14 @@ namespace D2DUIv3
 
             DownloadManager downloadManager = DownloadManager.FromContext(Android.App.Application.Context);
             downloadManager.AddCompletedDownload(fileName, fileDescription, true, type, filePath, fileSize, true);
+
+            client.RemoveFile(associatedTextView.Text);
+            ViewGroup parent = (ViewGroup)associatedTextView.Parent;
+            parent.Post(delegate
+            {
+                parent.RemoveView(associatedTextView);
+            });
+
         }
 
         private void TryGetStorage()

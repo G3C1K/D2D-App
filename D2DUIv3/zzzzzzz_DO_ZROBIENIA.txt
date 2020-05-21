@@ -34,6 +34,7 @@ string jako statyczne pola zalezne od globalnej opcji wyboru jezyka
 filetransfer
 	nie ma powodu dla ktorego filetransfer mialby byc dostepny dopiero po polaczeniu
 	transferhistory as listbox
+	progressbar
 
 zrobione
 	pmetrics

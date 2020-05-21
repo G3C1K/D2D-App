@@ -622,6 +622,7 @@ namespace TCPSender
                 byte[] lastPacket = new byte[reszta];
 
                 //wlasciwe wysylanie
+                fileWriter.Write(filePath);
                 fileWriter.Write(fileName);
                 fileWriter.Write((int)fileSize);
                 fileWriter.Write(packetCount);

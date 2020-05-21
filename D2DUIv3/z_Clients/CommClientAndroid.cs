@@ -67,8 +67,12 @@ namespace D2DUIv3
 
         public Action<List<string>> FileListReceivedAction { internal get; set; }
 
-        public Action<string, string, string, int> FileReceivedAction { internal get; set; }
+        public Action<string, string, string, int, TextView> FileReceivedAction { internal get; set; }
         public Action<string> BrokenFileAction { internal get; set; }
+
+        public Dictionary<string, TextView> FilesWithTheirAssociatedTextViews = new Dictionary<string, TextView>();
+
+        
 
 
         public CommClientAndroid(IPAddress _adresIP, Action<string> _connectedDelegate) //serwer = listen, client = connect
@@ -544,10 +548,11 @@ namespace D2DUIv3
             writer.Write(file);
         }
 
-        public void DownloadFile(string file)
+        public void DownloadFile(string file, TextView associatedTextView)
         {
             writer.Write((int)ClientFlags.FT_DownloadFile);
             writer.Write(file);
+            FilesWithTheirAssociatedTextViews.Add(file, associatedTextView);
         }
 
         private void ReceiveFileV2(string ip)
@@ -556,6 +561,7 @@ namespace D2DUIv3
             fileClient.Connect(IPAddress.Parse(ip), filePort);
 
             BinaryReader fileReader = new BinaryReader(fileClient.GetStream());
+            string fullFileNameFromPC = fileReader.ReadString();
             string fileName = fileReader.ReadString();
             int fileLength = fileReader.ReadInt32();
             int packetCount = fileReader.ReadInt32();
@@ -587,7 +593,10 @@ namespace D2DUIv3
             fileStream.Close();
             fileClient.Close();
 
-            FileReceivedAction(fileName, fileName, fullFilePath, fileLength);
+            TextView refTextView = null;
+            FilesWithTheirAssociatedTextViews.TryGetValue(fullFileNameFromPC, out refTextView);
+
+            FileReceivedAction(fileName, fileName, fullFilePath, fileLength, refTextView);
         }
 
 
