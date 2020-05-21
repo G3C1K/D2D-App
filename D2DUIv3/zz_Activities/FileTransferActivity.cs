@@ -105,7 +105,8 @@ namespace D2DUIv3
             DownloadManager downloadManager = DownloadManager.FromContext(Android.App.Application.Context);
             downloadManager.AddCompletedDownload(fileName, fileDescription, true, type, filePath, fileSize, true);
 
-            client.RemoveFile(associatedTextView.Text);
+            CommClientAndroid client2 = ClientHolder.Client;
+            client2.RemoveFile(associatedTextView.Text);
             ViewGroup parent = (ViewGroup)associatedTextView.Parent;
             parent.Post(delegate
             {

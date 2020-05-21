@@ -159,7 +159,7 @@ namespace TCPSenderWPF
         public void FileRemoveDelegate(string file) //delegat - po przyjsciu flagi remove usuwa plik z listy
         {
             fileList_internal.Remove(file);
-            FinishDelegate_TransferWindow("removed item from android: " + file + "\n");
+            FinishDelegate_TransferWindow("removed item from android: " + file);
         }
 
         public void TransferHistoryDelegate(string obj) //delegat - po 

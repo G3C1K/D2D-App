@@ -598,6 +598,8 @@ namespace TCPSender
         {
             if (FileList.Contains(filePath))
             {
+                DebugLogAction("attempting to send file named: " + filePath);
+
                 TcpClient fileClient = new TcpClient();
                 IPAddress ownIPAddress = GetLocalIPAddress();
                 TcpListener fileListener = new TcpListener(ownIPAddress, filePort);
@@ -613,7 +615,6 @@ namespace TCPSender
                 string fileName = fileInfo.Name;
                 int fileSize = (int)fileInfo.Length;
 
-                DebugLogAction("attempting to send file named: " + fileName);
 
                 FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
                 int packetCount = (int)Math.Floor((double)(fileSize / BUFFER_SIZE));
@@ -640,6 +641,10 @@ namespace TCPSender
                 fileWriter.Close();
                 fileStream.Close();
                 fileClient.Close();
+            }
+            else
+            {
+                DebugLogAction("attempted to download file that does not exist");
             }
         }
 
