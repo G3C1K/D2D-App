@@ -68,7 +68,7 @@ namespace D2DUIv3
         public Action<List<string>> FileListReceivedAction { internal get; set; }
 
         public Action<string, string, string, int> FileReceivedAction { internal get; set; }
-        public Action BrokenFileAction { internal get; set; }
+        public Action<string> BrokenFileAction { internal get; set; }
 
 
         public CommClientAndroid(IPAddress _adresIP, Action<string> _connectedDelegate) //serwer = listen, client = connect
@@ -574,7 +574,11 @@ namespace D2DUIv3
             lastPacket = fileReader.ReadBytes(lastPacket.Length);
             if(lastPacket.Length != reszta)
             {
-                BrokenFileAction();
+                BrokenFileAction("Corrupted file!");
+            }
+            else
+            {
+                BrokenFileAction("File was downloaded correctly...");
             }
             fileStream.Write(lastPacket, 0, lastPacket.Length);
 
@@ -583,7 +587,7 @@ namespace D2DUIv3
             fileStream.Close();
             fileClient.Close();
 
-            FileReceivedAction(fileName, "placeholder description", fullFilePath, fileLength);
+            FileReceivedAction(fileName, fileName, fullFilePath, fileLength);
         }
 
 

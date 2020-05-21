@@ -32,7 +32,7 @@ namespace TCPSender
         public Action<string> ConnectedAction { internal get; set; }
         public Action<string> DeviceNameAction { internal get; set; }
         public Action<List<string>> FileInstAction { internal get; set; }   //wypelnia liste plikow plikami
-        public Action<string> FileRemoveAction { internal get; set; }
+        public Action<string> FileRemoveAction { internal get; set; }   //usuwa plik z listy
 
         BinaryWriter writer;            //writer dla SendMessage, tutaj zeby nie tworzyc caly czas nowego. na porcie 50001
         int BUFFER_SIZE = 10000;                       //rozmiar bufora dla danych pliku w bajtach
@@ -613,7 +613,7 @@ namespace TCPSender
                 string fileName = fileInfo.Name;
                 int fileSize = (int)fileInfo.Length;
 
-                DebugLogAction("attempting to send file named: " + fileName + "\n");
+                DebugLogAction("attempting to send file named: " + fileName);
 
                 FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
                 int packetCount = (int)Math.Floor((double)(fileSize / BUFFER_SIZE));
@@ -634,7 +634,6 @@ namespace TCPSender
                 fileStream.Read(lastPacket, 0, lastPacket.Length);
                 fileWriter.Write(lastPacket, 0, lastPacket.Length);
                 //fileWriter.Write(lastPacket);
-                DebugLogAction("lastPacket.Length: " + lastPacket.Length + "reszta: " + reszta.ToString() + "\n");
 
                 //konczenie
                 fileWriter.Close();

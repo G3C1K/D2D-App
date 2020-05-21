@@ -13,6 +13,7 @@ using Android.Views;
 using Android.Widget;
 using Android.Support.Design.Widget;
 using Android.Webkit;
+using System.IO;
 
 namespace D2DUIv3
 {
@@ -68,6 +69,10 @@ namespace D2DUIv3
                             CommClientAndroid client = ClientHolder.Client;
                             client.FileReceivedAction = FileReceivedDelegate;
                             client.DownloadFile(oo.Text);
+
+                            client.RemoveFile(oo.Text);
+                            ViewGroup parent = (ViewGroup)oo.Parent;
+                            parent.RemoveView(oo);
                         }
                         else
                         {
@@ -86,10 +91,19 @@ namespace D2DUIv3
         {
             MimeTypeMap mime = MimeTypeMap.Singleton;
             string ext = fileName.ToLower();
-            string type = mime.GetMimeTypeFromExtension(ext);
+            string extension = MimeTypeMap.GetFileExtensionFromUrl(ext);
+            string type = null;
+            if (extension != null)
+            {
+                type = MimeTypeMap.Singleton.GetMimeTypeFromExtension(extension);
+            }
+            if(type == null)
+            {
+                type = "application/octet-stream";
+            }
 
             DownloadManager downloadManager = DownloadManager.FromContext(Android.App.Application.Context);
-            downloadManager.AddCompletedDownload(fileName, fileDescription, true, "application/pdf", filePath, fileSize, true);
+            downloadManager.AddCompletedDownload(fileName, fileDescription, true, type, filePath, fileSize, true);
         }
 
         private void TryGetStorage()
@@ -135,11 +149,11 @@ namespace D2DUIv3
             client = ClientHolder.Client;
             client.FileListReceivedAction = FileListReceivedDelegate;
 
-            client.BrokenFileAction = delegate
+            client.BrokenFileAction = delegate (string input)
             {
                 transferLayout.Post(delegate
                 {
-                    Toast.MakeText(this, "Corrupted file...", ToastLength.Short).Show();
+                    Toast.MakeText(this, input, ToastLength.Short).Show();
                 });
             };
 
