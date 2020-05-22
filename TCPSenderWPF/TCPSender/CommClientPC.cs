@@ -630,9 +630,15 @@ namespace TCPSender
                 fileWriter.Write(reszta);
                 for (int i = 0; i < packetCount; i++)
                 {
+                    if(i%10 == 0)
+                    {
+                        DebugLogAction("sending packet " + i + "/" + packetCount);
+                    }
+
                     fileStream.Read(buffer, 0, BUFFER_SIZE);
                     fileWriter.Write(buffer, 0, BUFFER_SIZE);
                 }
+                DebugLogAction("sending last packet...");
                 fileStream.Read(lastPacket, 0, lastPacket.Length);
                 fileWriter.Write(lastPacket, 0, lastPacket.Length);
                 //fileWriter.Write(lastPacket);

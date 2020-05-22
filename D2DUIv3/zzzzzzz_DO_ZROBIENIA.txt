@@ -35,6 +35,10 @@ filetransfer
 	nie ma powodu dla ktorego filetransfer mialby byc dostepny dopiero po polaczeniu
 	transferhistory as listbox
 	progressbar
+	czemu sadzi ze kazdy plik to pdf? xD
+	compatibility z api < 23
+	download manager jest deprecated dla api > 29
+
 
 zrobione
 	pmetrics

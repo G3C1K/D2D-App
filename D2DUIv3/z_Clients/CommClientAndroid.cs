@@ -552,6 +552,10 @@ namespace D2DUIv3
         {
             writer.Write((int)ClientFlags.FT_DownloadFile);
             writer.Write(file);
+            if (FilesWithTheirAssociatedTextViews.ContainsKey(file))
+            {
+                FilesWithTheirAssociatedTextViews.Remove(file);
+            }
             FilesWithTheirAssociatedTextViews.Add(file, associatedTextView);
         }
 
