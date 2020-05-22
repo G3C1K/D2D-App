@@ -562,7 +562,9 @@ namespace D2DUIv3
         private void ReceiveFileV2(string ip)
         {
             TcpClient fileClient = new TcpClient();
-            fileClient.Connect(IPAddress.Parse(ip), filePort);
+            //fileClient.Connect(IPAddress.Parse(ip), filePort);
+            fileClient.Connect(cIP, filePort);
+
 
             BinaryReader fileReader = new BinaryReader(fileClient.GetStream());
             string fullFileNameFromPC = fileReader.ReadString();
