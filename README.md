@@ -4,7 +4,7 @@ Witamy na stronie repozytorium naszej aplikacji!
 
 Krótki opis aplikacji:
 
-Głównym zadaniem naszej aplikacji jest połączenie się urządzenia (z systemem Android) z komputerem (z systemem windows), sterowanie sobą nawzajem oraz przesyłanie pożądanych danych.
+Głównym zadaniem naszej aplikacji jest połączenie się urządzenia (z systemem Android) z komputerem (z systemem Windows), sterowanie sobą nawzajem oraz przesyłanie pożądanych danych.
 
 
 Aktualnie zaimplementowane moduły aplikacji:
