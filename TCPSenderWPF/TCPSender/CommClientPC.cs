@@ -271,6 +271,23 @@ namespace TCPSender
             writer.Write(_message);
         }
 
+        
+
+        /// <summary>
+        /// deprecated
+        /// </summary>
+        /// <param name="_path">
+        /// sciezka do pliku
+        /// </param>
+        public void SendFile(string _path)  
+        {
+            Thread fileThread = new Thread(() => SendFile_T(_path));
+            fileThread.Start();
+        }
+
+        //--------------------------------------------------
+        //NUMPAD START 
+        //--------------------------------------------------
         public void pisz(string klawisz)
         {
 
@@ -323,11 +340,12 @@ namespace TCPSender
                 case "DEC":
                     a = VirtualKeyCode.DECIMAL;
                     break;
+                case "EQ":
+                    // notatnik?
+                    a = VirtualKeyCode.RETURN;
+                    break;
 
             }
-
-
-
 
             IntPtr h = IntPtr.Zero;
             Process[] proc = Process.GetProcesses();
@@ -342,26 +360,13 @@ namespace TCPSender
             }
 
             SetForegroundWindow(h);
-
-
-
-            
             InputSimulator v = new InputSimulator();
-            
+
             v.Keyboard.KeyPress(a);
         }
-
-        /// <summary>
-        /// deprecated
-        /// </summary>
-        /// <param name="_path">
-        /// sciezka do pliku
-        /// </param>
-        public void SendFile(string _path)  
-        {
-            Thread fileThread = new Thread(() => SendFile_T(_path));
-            fileThread.Start();
-        }
+        //--------------------------------------------------
+        //NUMPAD END 
+        //--------------------------------------------------
 
         //--------------------------------------------------
         //IMAGES START  (do przerobienia)
