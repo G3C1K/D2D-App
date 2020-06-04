@@ -49,7 +49,7 @@ namespace D2DUIv3.zz_Activities
 
 
 
-            // System.NullReferenceException: 'Object reference not set to an instance of an object.'
+           
             foreach (int id in tab)
             {
                 Button b = FindViewById<Button>(id);
