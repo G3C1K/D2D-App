@@ -8,7 +8,7 @@ Głównym zadaniem naszej aplikacji jest połączenie się urządzenia (z system
 
 
 Aktualnie zaimplementowane moduły aplikacji:
-- sterowanie poziomem głośności komputera za pomocą telefonu - możliwość zmiany głośnoći poszczególnych aplikacji oraz ogólnej głośności systemu,
+- sterowanie poziomem głośności komputera za pomocą telefonu - możliwość zmiany głośności poszczególnych aplikacji oraz ogólnej głośności systemu,
 - wyświetlanie na telefonie obciążenia komputera na żywo - dane które są wyświetlane to m.in.: aktualnie używana pamięć RAM, poziom zużycia procesora, karty graficznej, dysków,
 - przesyłanie plików oraz tekstu z komputera na urządzenie z nim połączone.
 
