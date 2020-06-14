@@ -38,6 +38,7 @@ filetransfer
 	czemu sadzi ze kazdy plik to pdf? xD
 	compatibility z api < 23
 	download manager jest deprecated dla api > 29
+	proper wylaczanie, jak wylaczysz podczas przesylania a nic sie nie przesyla
 
 
 zrobione
