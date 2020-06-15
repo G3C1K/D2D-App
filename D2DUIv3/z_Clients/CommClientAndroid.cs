@@ -610,6 +610,20 @@ namespace D2DUIv3
         //FILEV2 END
         //--------------------------------------------------
 
+        //--------------------------------------------------
+        //NUMPAD START
+        //--------------------------------------------------
+        public void SendKey(string klawisz)
+        {
+            writer.Write((int)ClientFlags.Numpad);
+            writer.Write(klawisz);
+        }
+        //--------------------------------------------------
+        //NUMPAD END
+        //--------------------------------------------------
+
+
+
         public void SendDeviceName(string name)
         {
             writer.Write((int)ClientFlags.Config_DeviceName);
@@ -695,7 +709,8 @@ namespace D2DUIv3
         FT_Ready,
         FT_RemoveFileFromList,
         FT_DownloadFile,
-        FT_SendFile
+        FT_SendFile,
+        Numpad
     }
 
     public static class ClientUtilities

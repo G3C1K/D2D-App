@@ -48,3 +48,15 @@ zrobione
 	przesylanie nazwy urzadzenia, na razie w jedna strone
 
 	persistent hwmonitor
+
+
+ostatnie poprawki
+	numpad
+	keybd eventy zamiast nugeta
+	blokada wysylania folderow
+	po polaczeniu stop advertising
+	numlock do numpada
+	zmieniony debug wysylania plikow
+	transferwindow przed polaczeniem
+	openfiledialog
+	

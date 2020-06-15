@@ -61,7 +61,8 @@ namespace TCPSenderWPF
             }
             else
             {
-                //Nothing
+                //experimental, w razie problemow usunac
+                transferWindow.Show();
             }
         }
 

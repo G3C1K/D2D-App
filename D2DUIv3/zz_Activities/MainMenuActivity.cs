@@ -63,6 +63,16 @@ namespace D2DUIv3
                 StartActivity(fileActivity);
             };
 
+            Button buttonNumpad = FindViewById<Button>(Resource.Id.buttonNumpad);
+
+            buttonNumpad.Click += (o, e) =>
+            {
+                Intent numpadActivity = new Intent(this, typeof(NumpadActivity));
+                StartActivity(numpadActivity);
+            };
+
+
+
             // Create your application here
         }
 

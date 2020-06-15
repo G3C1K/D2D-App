@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -35,6 +37,8 @@ namespace TCPSenderWPF
         AutoConfigPC autoConfigClient;
         bool sendFlag;
 
+        OpenFileDialog openFileDialog;
+
 
         //listy plikow
         List<string> fileList_internal = new List<string>();
@@ -54,6 +58,9 @@ namespace TCPSenderWPF
             transferWindow.FinishAction = FinishDelegate_TransferWindow;
 
             SetRandomPasswordIfFirstLaunch();
+
+            openFileDialog = new OpenFileDialog();
+            openFileDialog.Multiselect = true;
 
             trayIcon = new TrayIcon(this, transferWindow);
         }
@@ -100,6 +107,10 @@ namespace TCPSenderWPF
             textBlock_debugLog.Dispatcher.Invoke(
                 (Action)(() =>
                 {
+                    sendFlag = false;
+                    button_advertise.IsEnabled = false;
+
+
                     textBlock_debugLog.Text += input + " ConnectedDelegate \n";
                     trayIcon.ChangeIcon("Ikony/connected.ico", "ready");
                     button_advertise.IsEnabled = false;
@@ -172,6 +183,7 @@ namespace TCPSenderWPF
                 );
         }
 
+        //resetuje wyswietlana liste plikow, main lista jest List<>
         public void FinishDelegate_TransferWindow(string obj)   //PODWOJNY DELEGAT - po usunieciu i dodaniu pliku
         {
             textBlock_transferHistory.Dispatcher.Invoke(
@@ -324,6 +336,22 @@ namespace TCPSenderWPF
             {
                 textBlock_password.Text = "****";
                 button_show_password.Content = "Show";
+            }
+        }
+
+        private void Button_Browse_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult dr = this.openFileDialog.ShowDialog();
+            List<string> listaPlikow = new List<string>();
+
+            if(dr == System.Windows.Forms.DialogResult.OK)
+            {
+                foreach (string file in openFileDialog.FileNames)
+                {
+                    listaPlikow.Add(file);
+                }
+
+                transferWindow.AddFiles(listaPlikow);
             }
         }
     }

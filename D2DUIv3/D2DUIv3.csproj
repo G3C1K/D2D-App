@@ -64,6 +64,7 @@
   <ItemGroup>
     <Compile Include="zz_Activities\AdapterForStatistics.cs" />
     <Compile Include="zz_Activities\FileTransferActivity.cs" />
+    <Compile Include="zz_Activities\NumpadActivity.cs" />
     <Compile Include="z_Clients\AutoConfigAndroid.cs" />
     <Compile Include="z_Clients\ClientHolder.cs" />
     <Compile Include="z_Clients\CommClientAndroid.cs" />
@@ -271,6 +272,12 @@
     </AndroidResource>
     <AndroidResource Include="Resources\layout\my_recycler_item.xml" />
     <AndroidResource Include="Resources\layout\filetransfer_submenu.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\numpad_submenu.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\menu\numpad_toolbar.axml">
       <SubType>Designer</SubType>
     </AndroidResource>
     <Content Include="zzzzzzz_DO_ZROBIENIA.txt" />

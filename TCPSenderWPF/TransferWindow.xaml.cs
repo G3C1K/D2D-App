@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -45,9 +46,15 @@ namespace TCPSenderWPF
 
                 foreach(var file in files)
                 {
-                    //Sending files function here
-                    this.lastSent.Content = file;
-                    TransferAction.Invoke(file);
+                    FileAttributes attr = File.GetAttributes(file);
+
+                    if (!((attr & FileAttributes.Directory) == FileAttributes.Directory))
+                    {
+                        this.lastSent.Content = file;
+                        TransferAction.Invoke(file);
+                    }
+
+                    
                 }
             }
             if (e.Data.GetDataPresent(DataFormats.Text))
@@ -61,6 +68,21 @@ namespace TCPSenderWPF
             FinishAction("Finished adding files");
             var tsPanel = sender as StackPanel;
             tsPanel.Background = Brushes.Gray;
+        }
+
+        public void AddFiles(List<string> files)
+        {
+            foreach (var file in files)
+            {
+                FileAttributes attr = File.GetAttributes(file);
+
+                if (!((attr & FileAttributes.Directory) == FileAttributes.Directory))
+                {
+                    this.lastSent.Content = file;
+                    TransferAction.Invoke(file);
+                }           
+            }
+            FinishAction("Finished adding files");
         }
 
         private void Space_DragOver(object sender, DragEventArgs e)

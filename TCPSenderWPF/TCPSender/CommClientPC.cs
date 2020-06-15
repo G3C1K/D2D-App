@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -224,6 +225,12 @@ namespace TCPSender
                     Thread sendFileThread = new Thread(() => SendFileV2(nextInput));
                     sendFileThread.Start();
                 }
+                else if (input == (int)ClientFlags.Numpad)
+                {
+                    nextInput = reader.ReadString();
+                    InputKey(nextInput);
+                }
+
             }
             Close_Self();
         }
@@ -628,9 +635,11 @@ namespace TCPSender
                 fileWriter.Write((int)fileSize);
                 fileWriter.Write(packetCount);
                 fileWriter.Write(reszta);
+
+                int debugSpace = packetCount / 10;
                 for (int i = 0; i < packetCount; i++)
                 {
-                    if(i%10 == 0)
+                    if(i%debugSpace == 0)
                     {
                         DebugLogAction("sending packet " + i + "/" + packetCount);
                     }
@@ -658,6 +667,79 @@ namespace TCPSender
         //--------------------------------------------------
         //FILEV2 END
         //--------------------------------------------------
+
+        //--------------------------------------------------
+        //NUMPAD START 
+        //--------------------------------------------------
+        public void InputKey(string klawisz)
+        {
+
+            DebugLogAction(klawisz);
+
+            byte a = InputKeyClass.VK_UNDEFINED;
+
+            switch (klawisz)
+            {
+                case "1":
+                    a = InputKeyClass.VK_NUMPAD1;
+                    break;
+                case "2":
+                    a = InputKeyClass.VK_NUMPAD2;
+                    break;
+                case "3":
+                    a = InputKeyClass.VK_NUMPAD3;
+                    break;
+                case "4":
+                    a = InputKeyClass.VK_NUMPAD4;
+                    break;
+                case "5":
+                    a = InputKeyClass.VK_NUMPAD5;
+                    break;
+                case "6":
+                    a = InputKeyClass.VK_NUMPAD6;
+                    break;
+                case "7":
+                    a = InputKeyClass.VK_NUMPAD7;
+                    break;
+                case "8":
+                    a = InputKeyClass.VK_NUMPAD8;
+                    break;
+                case "9":
+                    a = InputKeyClass.VK_NUMPAD9;
+                    break;
+                case "0":
+                    a = InputKeyClass.VK_NUMPAD0;
+                    break;
+                case "ADD":
+                    a = InputKeyClass.VK_ADD;
+                    break;
+                case "SUB":
+                    a = InputKeyClass.VK_SUBSTRACT;
+                    break;
+                case "MUL":
+                    a = InputKeyClass.VK_MULTIPLY;
+                    break;
+                case "DIV":
+                    a = InputKeyClass.VK_DIVIDE;
+                    break;
+                case "DEC":
+                    a = InputKeyClass.VK_DECIMAL;
+                    break;
+                case "EQ":
+                    a = InputKeyClass.VK_RETURN;
+                    break;
+
+            }
+
+            InputKeyClass.InputKeyFromByte(a);
+            
+        }
+        //--------------------------------------------------
+        //NUMPAD END 
+        //--------------------------------------------------
+
+
+
 
         public void CheckDelegates()
         {
@@ -751,6 +833,65 @@ namespace TCPSender
             }
             return localIP;
         }
+
+        static class InputKeyClass
+        {
+            private const byte VK_VOLUME_MUTE = 0xAD;
+            private const byte VK_VOLUME_DOWN = 0xAE;
+            private const byte VK_VOLUME_UP = 0xAF;
+            private const UInt32 KEYEVENTF_EXTENDEDKEY = 0x0001;
+            private const UInt32 KEYEVENTF_KEYUP = 0x0002;
+
+            [DllImport("user32.dll")]
+            static extern void keybd_event(byte bVk, byte bScan, UInt32 dwFlags, UInt32 dwExtraInfo);
+
+            [DllImport("user32.dll")]
+            static extern Byte MapVirtualKey(UInt32 uCode, UInt32 uMapType);
+
+            public const byte VK_NUMPAD0 = 0x60;
+            public const byte VK_NUMPAD1 = 0x61;
+            public const byte VK_NUMPAD2 = 0x62;
+            public const byte VK_NUMPAD3 = 0x63;
+            public const byte VK_NUMPAD4 = 0x64;
+            public const byte VK_NUMPAD5 = 0x65;
+            public const byte VK_NUMPAD6 = 0x66;
+            public const byte VK_NUMPAD7 = 0x67;
+            public const byte VK_NUMPAD8 = 0x68;
+            public const byte VK_NUMPAD9 = 0x69;
+            public const byte VK_MULTIPLY = 0x6A;
+            public const byte VK_ADD = 0x6B;
+            public const byte VK_SEPARATOR = 0x6C;
+            public const byte VK_SUBSTRACT = 0x6D;
+            public const byte VK_DECIMAL = 0x6E;
+            public const byte VK_DIVIDE = 0x6F;
+            public const byte VK_RETURN = 0x0D;
+            public const byte VK_UNDEFINED = 0x07;
+
+            public static void InputKeyFromByte(byte input)
+            {
+                keybd_event(input, MapVirtualKey(input, 0), KEYEVENTF_EXTENDEDKEY, 0);
+                keybd_event(input, MapVirtualKey(input, 0), KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
+            }
+
+
+            //public static void VolumeUp()
+            //{
+            //    keybd_event(VK_VOLUME_UP, MapVirtualKey(VK_VOLUME_UP, 0), KEYEVENTF_EXTENDEDKEY, 0);
+            //    keybd_event(VK_VOLUME_UP, MapVirtualKey(VK_VOLUME_UP, 0), KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
+            //}
+
+            //public static void VolumeDown()
+            //{
+            //    keybd_event(VK_VOLUME_DOWN, MapVirtualKey(VK_VOLUME_DOWN, 0), KEYEVENTF_EXTENDEDKEY, 0);
+            //    keybd_event(VK_VOLUME_DOWN, MapVirtualKey(VK_VOLUME_DOWN, 0), KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
+            //}
+
+            //public static void Mute()
+            //{
+            //    keybd_event(VK_VOLUME_MUTE, MapVirtualKey(VK_VOLUME_MUTE, 0), KEYEVENTF_EXTENDEDKEY, 0);
+            //    keybd_event(VK_VOLUME_MUTE, MapVirtualKey(VK_VOLUME_MUTE, 0), KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
+            //}
+        }
     }
 
     public enum ClientFlags
@@ -779,6 +920,7 @@ namespace TCPSender
         FT_Ready,
         FT_RemoveFileFromList,
         FT_DownloadFile,
-        FT_SendFile
+        FT_SendFile,
+        Numpad
     }
 }
