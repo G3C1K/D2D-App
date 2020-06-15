@@ -25,7 +25,7 @@ namespace TCPSenderWPF
     
     //test
     //test2
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
         CommClientPC client = null;
         IPAddress adresInterfejsuDoNasluchu;
@@ -36,7 +36,9 @@ namespace TCPSenderWPF
         string passwordString;
         AutoConfigPC autoConfigClient;
         bool sendFlag;
-
+        //Ikony do paska okna
+        BitmapFrame connectedIcon = BitmapFrame.Create(new Uri("pack://application:,,,/Ikony/connected.ico", UriKind.RelativeOrAbsolute));
+        BitmapFrame notconnectedIcon = BitmapFrame.Create(new Uri("pack://application:,,,/Ikony/notconnected.ico", UriKind.RelativeOrAbsolute));
         OpenFileDialog openFileDialog;
 
 
@@ -63,6 +65,7 @@ namespace TCPSenderWPF
             openFileDialog.Multiselect = true;
 
             trayIcon = new TrayIcon(this, transferWindow);
+            this.Icon = notconnectedIcon;
         }
 
         //--------------------------------------------------
@@ -113,6 +116,7 @@ namespace TCPSenderWPF
 
                     textBlock_debugLog.Text += input + " ConnectedDelegate \n";
                     trayIcon.ChangeIcon("Ikony/connected.ico", "ready");
+                    this.Icon = connectedIcon;
                     button_advertise.IsEnabled = false;
                     button_listen.Content = "Disconnect";
                 })
@@ -134,6 +138,7 @@ namespace TCPSenderWPF
                         try
                         {
                             trayIcon.ChangeIcon("Ikony/notconnected.ico", "not ready");
+                            this.Icon = notconnectedIcon;
                         }
                         catch (Exception e)
                         {

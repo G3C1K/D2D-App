@@ -18,7 +18,7 @@ namespace TCPSenderWPF
     /// <summary>
     /// Logika interakcji dla klasy TransferWindow.xaml
     /// </summary>
-    public partial class TransferWindow : Window
+    public partial class TransferWindow
     {
         public Action<string> TransferAction { internal get; set; }
         public Action<string> FinishAction { internal get; set; }
