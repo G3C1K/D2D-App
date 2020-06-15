@@ -68,7 +68,12 @@ namespace D2DUIv3
                         {
                             CommClientAndroid client = ClientHolder.Client;
                             client.FileReceivedAction = FileReceivedDelegate;
-                            client.DownloadFile(oo.Text, oo);
+                            client.ProgressBarAction = ProgressBarDelegate;
+
+                            if(client.currentlyDownloadingFile == false)
+                            {
+                                client.DownloadFile(oo.Text, oo);
+                            }
 
                             //client.RemoveFile(oo.Text);
                             //ViewGroup parent = (ViewGroup)oo.Parent;
@@ -113,6 +118,17 @@ namespace D2DUIv3
                 parent.RemoveView(associatedTextView);
             });
 
+            client.currentlyDownloadingFile = false;
+        }
+
+        public void ProgressBarDelegate(int progress)
+        {
+            ProgressBar bar = FindViewById<ProgressBar>(Resource.Id.simpleProgressBar);
+            bar.Max = 100;
+            bar.Post(delegate
+            {
+                bar.Progress = progress;
+            });
         }
 
         private void TryGetStorage()

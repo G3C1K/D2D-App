@@ -64,15 +64,15 @@ namespace D2DUIv3
 
         //pliki
         List<string> fileList = new List<string>();
-
+        public bool currentlyDownloadingFile = false;
         public Action<List<string>> FileListReceivedAction { internal get; set; }
 
         public Action<string, string, string, int, TextView> FileReceivedAction { internal get; set; }
         public Action<string> BrokenFileAction { internal get; set; }
 
         public Dictionary<string, TextView> FilesWithTheirAssociatedTextViews = new Dictionary<string, TextView>();
+        public Action<int> ProgressBarAction { internal get; set; }
 
-        
 
 
         public CommClientAndroid(IPAddress _adresIP, Action<string> _connectedDelegate) //serwer = listen, client = connect
@@ -173,6 +173,7 @@ namespace D2DUIv3
                 }
                 else if(input == (int)ClientFlags.FT_SendFile)
                 {
+                    currentlyDownloadingFile = true;
                     nextInput = reader.ReadString();
                     Thread recThread = new Thread(() => ReceiveFileV2(nextInput));
                     recThread.Start();
@@ -575,6 +576,8 @@ namespace D2DUIv3
             byte[] buffer = new byte[BUFFER_SIZE];
             byte[] lastPacket = new byte[reszta];
 
+
+
             string fullFilePath = System.IO.Path.Combine(DownloadPath, fileName);
             FileStream fileStream = File.OpenWrite(fullFilePath);
 
@@ -582,6 +585,10 @@ namespace D2DUIv3
             {
                 buffer = fileReader.ReadBytes(BUFFER_SIZE);
                 fileStream.Write(buffer, 0, BUFFER_SIZE);
+                if(packetCount > 500 && i%500 == 0)
+                {
+                    ProgressBarAction((int)(Math.Ceiling(((double)i/(double)packetCount)*100)));
+                }
             }
             lastPacket = fileReader.ReadBytes(lastPacket.Length);
             if(lastPacket.Length != reszta)
