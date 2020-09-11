@@ -58,7 +58,9 @@ namespace D2DUIv3
             base.OnCreate(savedInstanceState);
             this.Title = Resources.GetString(Resource.String.volume);
             client = ClientHolder.Client;
-            client.volumeReady = false;
+            client.volumeReady = false;           
+
+            //instantiate sliders
             client.InstantiateVolumeClient();
             
             while(client.volumeReady == false)
@@ -68,6 +70,25 @@ namespace D2DUIv3
 
             SetContentView(Resource.Layout.volume_submenu);
 
+            //inst buttons
+            Button playpausebutton = FindViewById<Button>(Resource.Id.button_play_pause);
+            Button nextmediaButton = FindViewById<Button>(Resource.Id.button_skip_right);
+            Button prevmediaButton = FindViewById<Button>(Resource.Id.button_skip_left);
+
+            playpausebutton.Click += (o, e) =>
+            {
+                client.SendKey("PP");
+            };
+
+            nextmediaButton.Click += (o, e) =>
+            {
+                client.SendKey("NEXT");
+            };
+
+            prevmediaButton.Click += (o, e) =>
+            {
+                client.SendKey("PREV");
+            };
 
             var linearLayoutVolume = FindViewById<LinearLayout>(Resource.Id.linearLayoutVolume);
 

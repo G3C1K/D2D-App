@@ -7,13 +7,15 @@
     android:layout_height="match_parent">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
         <Button
             style="@style/button_style"
             android:layout_width="0dp"
             android:layout_weight="0.33"
             android:paddingLeft="40dp"
             android:layout_height="50dp"
+            android:id="@+id/button_skip_left"
             app:icon="@drawable/baseline_fast_rewind_white_48dp"/>
         <Button
             style="@style/button_style"
@@ -21,6 +23,7 @@
             android:layout_weight="0.33"
             android:paddingLeft="40dp"
             android:layout_height="50dp"
+            android:id="@+id/button_play_pause"
             app:icon="@drawable/baseline_play_arrow_white_48dp"
             android:textAlignment="center"/>
         <Button
@@ -29,6 +32,7 @@
             android:layout_weight="0.33"
             android:paddingLeft="40dp"
             android:layout_height="50dp"
+            android:id="@+id/button_skip_right"
             app:icon="@drawable/baseline_fast_forward_white_48dp"/>
     </LinearLayout>
     <ScrollView
