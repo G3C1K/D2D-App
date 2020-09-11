@@ -7,7 +7,8 @@
         xmlns:fw="clr-namespace:SourceChord.FluentWPF;assembly=FluentWPF"
         mc:Ignorable="d"
         Title="D2D" Height="450" Width="600"
-        Closing="Window_Closing">
+                  
+        Closing="Window_Closing" ResizeMode="NoResize">
     <StackPanel  Background="{DynamicResource SystemBaseLowColorBrush}" fw:PointerTracker.Enabled="True">
 
         <StackPanel Orientation="Horizontal" Background="{x:Static fw:AccentColors.ImmersiveSystemAccentLight1Brush}">
