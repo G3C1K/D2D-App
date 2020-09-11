@@ -18,7 +18,7 @@ using Android.Widget;
 namespace D2DUIv3
 {
 
-    [Activity(Label = "Volume", Theme = "@style/AppTheme")]
+    [Activity(Theme = "@style/AppTheme")]
     public class VolumeActivity : AppCompatActivity
     {
         public class Slider2 : SeekBar      //niepoprawne rozwiązanie
@@ -56,9 +56,11 @@ namespace D2DUIv3
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
-
+            this.Title = Resources.GetString(Resource.String.volume);
             client = ClientHolder.Client;
-            client.volumeReady = false;
+            client.volumeReady = false;           
+
+            //instantiate sliders
             client.InstantiateVolumeClient();
             
             while(client.volumeReady == false)
@@ -68,6 +70,25 @@ namespace D2DUIv3
 
             SetContentView(Resource.Layout.volume_submenu);
 
+            //inst buttons
+            Button playpausebutton = FindViewById<Button>(Resource.Id.button_play_pause);
+            Button nextmediaButton = FindViewById<Button>(Resource.Id.button_skip_right);
+            Button prevmediaButton = FindViewById<Button>(Resource.Id.button_skip_left);
+
+            playpausebutton.Click += (o, e) =>
+            {
+                client.SendKey("PP");
+            };
+
+            nextmediaButton.Click += (o, e) =>
+            {
+                client.SendKey("NEXT");
+            };
+
+            prevmediaButton.Click += (o, e) =>
+            {
+                client.SendKey("PREV");
+            };
 
             var linearLayoutVolume = FindViewById<LinearLayout>(Resource.Id.linearLayoutVolume);
 
@@ -107,7 +128,7 @@ namespace D2DUIv3
                     textView.Text = volume.ProcessName;
                 }
                 else textView.Text = "unknown process";
-                textView.Text += " " + volume.ProcessID;
+               // textView.Text += " " + volume.ProcessID;
 
                 if(textView.Text.Contains("AudioSrv", StringComparison.InvariantCultureIgnoreCase))
                 {

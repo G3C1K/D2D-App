@@ -22,7 +22,7 @@ namespace TCPSenderWPF
             client = ClientHolder.Client;
             this.transferWindow = transferWindow;
 
-            string iconName = "Ikony/notconnected.ico";
+            string iconName = "Ikony/d2dnc.ico";
             string appName = Application.ProductName;
             System.Windows.Resources.StreamResourceInfo sri = System.Windows.Application.GetResourceStream(new Uri(@"/" + appName + ";component/" + iconName, UriKind.RelativeOrAbsolute));
             Icon icon = new Icon(sri.Stream);
@@ -45,8 +45,16 @@ namespace TCPSenderWPF
             string appName = Application.ProductName;
             System.Windows.Resources.StreamResourceInfo sri = System.Windows.Application.GetResourceStream(new Uri(@"/" + appName + ";component/" + iconName, UriKind.RelativeOrAbsolute));
             Icon icon = new Icon(sri.Stream);
-            notifyIcon.Icon = icon;
-            notifyIcon.Tag = tag;
+            try
+            {
+                notifyIcon.Icon = icon;
+                notifyIcon.Tag = tag;
+            }
+            catch (Exception)
+            {
+
+                
+            }
         }
 
 

@@ -18,7 +18,7 @@
     <AndroidResgenClass>Resource</AndroidResgenClass>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
     <AndroidUseLatestPlatformSdk>false</AndroidUseLatestPlatformSdk>
-    <TargetFrameworkVersion>v8.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v9.0</TargetFrameworkVersion>
     <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
     <MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
     <MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
@@ -54,6 +54,7 @@
     <AotAssemblies>false</AotAssemblies>
     <EnableLLVM>false</EnableLLVM>
     <BundleAssemblies>false</BundleAssemblies>
+    <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -248,18 +249,6 @@
     </AndroidResource>
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\mipmap-xxxhdpi\baseline_refresh_white_48.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidResource Include="Resources\mipmap-xxhdpi\baseline_refresh_white_48.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidResource Include="Resources\mipmap-xhdpi\baseline_refresh_white_48.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidResource Include="Resources\mipmap-mdpi\baseline_refresh_white_48.png" />
-  </ItemGroup>
-  <ItemGroup>
     <AndroidResource Include="Resources\mipmap-hdpi\baseline_refresh_white_48.png" />
   </ItemGroup>
   <ItemGroup>
@@ -280,6 +269,13 @@
     <AndroidResource Include="Resources\menu\numpad_toolbar.axml">
       <SubType>Designer</SubType>
     </AndroidResource>
+    <AndroidResource Include="Resources\values-pl\strings.xml" />
+    <AndroidResource Include="Resources\values-night\styles.xml" />
+    <AndroidResource Include="Resources\drawable\baseline_play_arrow_white_48dp.png" />
+    <AndroidResource Include="Resources\drawable\baseline_fast_forward_white_48dp.png" />
+    <AndroidResource Include="Resources\drawable\baseline_fast_rewind_white_48dp.png" />
+    <AndroidResource Include="Resources\drawable\baseline_pause_white_48dp.png" />
+    <AndroidResource Include="Resources\drawable\baseline_playpause_white_48dp.png" />
     <Content Include="zzzzzzz_DO_ZROBIENIA.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
