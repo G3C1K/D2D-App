@@ -115,6 +115,7 @@ namespace D2DUIv3
         public void AutoConfigFinished(List<string> outputLista)
         {
             EditText textBoxIP = FindViewById<EditText>(Resource.Id.textBoxIP);
+
             LinearLayout ACLayout = FindViewById<LinearLayout>(Resource.Id.linearLayoutAC);
 
             if (textBoxIP.Text == "acdebug")

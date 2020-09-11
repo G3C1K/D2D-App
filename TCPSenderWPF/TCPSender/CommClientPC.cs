@@ -639,10 +639,14 @@ namespace TCPSender
                 int debugSpace = packetCount / 10;
                 for (int i = 0; i < packetCount; i++)
                 {
-                    if(i%debugSpace == 0)
+                    try
                     {
-                        DebugLogAction("sending packet " + i + "/" + packetCount);
+                        if (i % debugSpace == 0)
+                        {
+                            DebugLogAction("sending packet " + i + "/" + packetCount);
+                        }
                     }
+                    catch { }
 
                     fileStream.Read(buffer, 0, BUFFER_SIZE);
                     fileWriter.Write(buffer, 0, BUFFER_SIZE);
