@@ -71,13 +71,6 @@ namespace D2DUIv3
                 StartActivity(numpadActivity);
             };
 
-            Button buttonNotificationListener = FindViewById<Button>(Resource.Id.buttonNotificationListener);
-
-            buttonNotificationListener.Click += (o, r) =>
-            {
-                Intent notificationActivity = new Intent(this, typeof(NotificationListenerActivity));
-                StartActivity(notificationActivity);
-            };
 
 
 
