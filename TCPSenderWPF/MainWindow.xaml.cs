@@ -37,8 +37,8 @@ namespace TCPSenderWPF
         AutoConfigPC autoConfigClient;
         bool sendFlag;
         //Ikony do paska okna
-        BitmapFrame connectedIcon = BitmapFrame.Create(new Uri("pack://application:,,,/Ikony/connected.ico", UriKind.RelativeOrAbsolute));
-        BitmapFrame notconnectedIcon = BitmapFrame.Create(new Uri("pack://application:,,,/Ikony/notconnected.ico", UriKind.RelativeOrAbsolute));
+        BitmapFrame connectedIcon = BitmapFrame.Create(new Uri("pack://application:,,,/Ikony/d2dc.ico", UriKind.RelativeOrAbsolute));
+        BitmapFrame notconnectedIcon = BitmapFrame.Create(new Uri("pack://application:,,,/Ikony/d2dnc.ico", UriKind.RelativeOrAbsolute));
         OpenFileDialog openFileDialog;
 
 
