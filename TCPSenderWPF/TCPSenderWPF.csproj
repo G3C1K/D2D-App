@@ -149,10 +149,8 @@
     <Resource Include="Ikony\notconnected.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Ikony\send.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Ikony\lock.ico" />
+    <Resource Include="Ikony\d2dc.ico" />
+    <Resource Include="Ikony\d2dnc.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

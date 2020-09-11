@@ -15,13 +15,14 @@ using Java.Security;
 
 namespace D2DUIv3
 {
-    [Activity(Label = "NumpadActivity")]
+    [Activity]
     public class NumpadActivity : AppCompatActivity
     {
         public CommClientAndroid client;
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
+            this.Title = Resources.GetString(Resource.String.numpad);
             client = ClientHolder.Client;
             // client.NumpadInstantiate();
             SetContentView(Resource.Layout.numpad_submenu);

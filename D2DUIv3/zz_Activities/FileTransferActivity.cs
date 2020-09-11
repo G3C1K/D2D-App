@@ -17,7 +17,7 @@ using System.IO;
 
 namespace D2DUIv3
 {
-    [Activity(Label = "FileTransferActivity")]
+    [Activity]
     public class FileTransferActivity : AppCompatActivity
     {
         CommClientAndroid client;
@@ -40,7 +40,7 @@ namespace D2DUIv3
 
             transferLayout.Post(() =>
             {
-                Toast.MakeText(this, fileList.Count.ToString(), ToastLength.Short).Show();
+                //Toast.MakeText(this, fileList.Count.ToString(), ToastLength.Short).Show();
                 transferLayout.RemoveAllViews();
 
                 foreach(string item in fileList)
@@ -81,7 +81,7 @@ namespace D2DUIv3
                         }
                         else
                         {
-                            Toast.MakeText(this, "Unable to download file. Insufficient permissions.", ToastLength.Long).Show();
+                            Toast.MakeText(this, Resources.GetString(Resource.String.insufficient_permisions), ToastLength.Long).Show();
                         }
 
                        
@@ -164,6 +164,7 @@ namespace D2DUIv3
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
+            this.Title = (Resources.GetString(Resource.String.file_transfer));
             SetContentView(Resource.Layout.filetransfer_submenu);
 
             TryGetStorage();

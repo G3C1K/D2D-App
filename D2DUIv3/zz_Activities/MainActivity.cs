@@ -68,7 +68,7 @@ namespace D2DUIv3
                 {
                     client.volumeReady = false;
                     client.Close();
-                    Toast.MakeText(this, "Disconnected", ToastLength.Short).Show();
+                    Toast.MakeText(this, Resources.GetString(Resource.String.disconnected), ToastLength.Short).Show();
                     Intent rtrn = new Intent(this.ApplicationContext, typeof(MainActivity));
                     StartActivity(rtrn);
                 }
@@ -115,7 +115,7 @@ namespace D2DUIv3
         public void AutoConfigFinished(List<string> outputLista)
         {
             EditText textBoxIP = FindViewById<EditText>(Resource.Id.textBoxIP);
-            LinearLayout ACLayout = FindViewById<LinearLayout>(Resource.Id.linearLayoutAC);
+            //LinearLayout ACLayout = FindViewById<LinearLayout>(Resource.Id.linearLayoutAC);
 
             if (textBoxIP.Text == "acdebug")
             {
@@ -139,43 +139,43 @@ namespace D2DUIv3
             //});
 
 
-            TextView ACTVItem;
+           // TextView ACTVItem;
 
-            ACLayout.Post(() =>
-            {
-                ACLayout.RemoveAllViews();
+            //ACLayout.Post(() =>
+            //{
+            //    ACLayout.RemoveAllViews();
 
-                if(outputLista.Count == 0)
-                {
-                    Toast.MakeText(this, "No clients found!", ToastLength.Short).Show();
-                }
+            //    if(outputLista.Count == 0)
+            //    {
+            //        Toast.MakeText(this, "No clients found!", ToastLength.Short).Show();
+            //    }
 
-                foreach (string item in outputLista)
-                {
+            //    foreach (string item in outputLista)
+            //    {
 
-                    ACTVItem = new TextView(this);
-                    ACTVItem.SetTextAppearance(Android.Resource.Style.TextAppearanceMedium);
-                    float factor = this.Resources.DisplayMetrics.Density;
-                    LinearLayout.LayoutParams paramss = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MatchParent, (int)(40 * factor));
-                    paramss.SetMargins(2, 2, 2, 2);
-                    ACTVItem.LayoutParameters = paramss;
-                    ACTVItem.TextAlignment = TextAlignment.Center;
-                    ACTVItem.Clickable = true;
-                    ACTVItem.Focusable = true;
-                    ACTVItem.Background = GetDrawable(Resource.Drawable.ACTextViewBackground);
-                    ACTVItem.Gravity = GravityFlags.Center;
+            //        ACTVItem = new TextView(this);
+            //        ACTVItem.SetTextAppearance(Android.Resource.Style.TextAppearanceMedium);
+            //        float factor = this.Resources.DisplayMetrics.Density;
+            //        LinearLayout.LayoutParams paramss = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MatchParent, (int)(40 * factor));
+            //        paramss.SetMargins(2, 2, 2, 2);
+            //        ACTVItem.LayoutParameters = paramss;
+            //        ACTVItem.TextAlignment = TextAlignment.Center;
+            //        ACTVItem.Clickable = true;
+            //        ACTVItem.Focusable = true;
+            //        ACTVItem.Background = GetDrawable(Resource.Drawable.ACTextViewBackground);
+            //        ACTVItem.Gravity = GravityFlags.Center;
 
-                    ACTVItem.Text = item;
+            //        ACTVItem.Text = item;
 
-                    ACTVItem.Click += (o, e) =>
-                    {
-                        TextView oo = o as TextView;
-                        textBoxIP.Text = oo.Text;
-                    };
+            //        ACTVItem.Click += (o, e) =>
+            //        {
+            //            TextView oo = o as TextView;
+            //            textBoxIP.Text = oo.Text;
+            //        };
 
-                    ACLayout.AddView(ACTVItem);
-                }
-            });
+            //        ACLayout.AddView(ACTVItem);
+            //    }
+            //});
 
         }
 
@@ -186,15 +186,15 @@ namespace D2DUIv3
             // Set our view from the "main" layout resource
             SetContentView(Resource.Layout.activity_main);
 
-            TextView testView = FindViewById<TextView>(Resource.Id.textView_test);
+           // TextView testView = FindViewById<TextView>(Resource.Id.textView_test);
             EditText textBoxIP = FindViewById<EditText>(Resource.Id.textBoxIP);
             Button buttonAutoConfig = FindViewById<Button>(Resource.Id.button_autoconfig);
 
             //do szybkiego wpisywania adresu mojego kompa
-            testView.Click += (o, e) =>
-            {
-                textBoxIP.Text = testView.Text;
-            };
+            //testView.Click += (o, e) =>
+            //{
+            //    textBoxIP.Text = testView.Text;
+            //};
 
             //pzycisk connect
             FindViewById<Button>(Resource.Id.buttonConnect).Click += (o, e) =>
@@ -211,7 +211,7 @@ namespace D2DUIv3
                     }
                     else
                     {
-                        Toast.MakeText(this, "Invalid IP Address", ToastLength.Short).Show();   //jak nie wyswietlam i nie daje pozwolenia
+                        Toast.MakeText(this, Resources.GetString(Resource.String.invalid_ip), ToastLength.Short).Show();   //jak nie wyswietlam i nie daje pozwolenia
                         canProceedToMainMenu = false;
                     }
                 }
@@ -240,7 +240,7 @@ namespace D2DUIv3
                         }
                         else
                         {
-                            Toast.MakeText(this, "Connecting...", ToastLength.Short).Show();
+                            Toast.MakeText(this, Resources.GetString(Resource.String.connecting), ToastLength.Short).Show();
                             //chyba chodzi o to, ze jak nacisnie sie drugi raz connect podczas connectowania, to nie stworzy sie kolejny klient?
                         }
                     }
@@ -284,8 +284,8 @@ namespace D2DUIv3
 
         public override bool OnOptionsItemSelected(IMenuItem item)
         {
-            Toast.MakeText(this, "Action selected: " + item.TitleFormatted,
-                ToastLength.Short).Show();
+            //Toast.MakeText(this, "Action selected: " + item.TitleFormatted,
+            //    ToastLength.Short).Show();
 
             return base.OnOptionsItemSelected(item);
         }
