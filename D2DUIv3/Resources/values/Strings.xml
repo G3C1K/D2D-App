@@ -1,4 +1,20 @@
 <resources>
-    <string name="app_name">D2DUIv3</string>
-    <string name="action_settings">Settings</string>
+   <string name="app_name">D2DUIv3</string>
+   <string name="action_settings">Settings</string>
+   <string name="host_ip">Enter computer\'s IP address</string>
+   <string name="connect">Connect</string>
+   <string name="find_open_hosts">Find open computers</string>
+  <string name="loading">Loading...: Please wait</string>
+  <string name="pmetrics">Performance metrics</string>
+  <string name="connected_with">Connected with: </string>
+  <string name="volume">Volume mixer</string>
+  <string name="file_transfer">File transfer</string>
+  <string name="numpad">Numpad</string>
+  <string name="menu">Main menu</string>
+  <string name="download_path">Download path: </string>
+  <string name="connected">Connected</string>
+  <string name="insufficient_permisions">Unable to download file. Insufficient permissions.</string>
+  <string name="disconnected">Disconnected</string>
+  <string name="invalid_ip">Invalid IP Address</string>
+  <string name="connecting">Connecting</string>
 </resources>

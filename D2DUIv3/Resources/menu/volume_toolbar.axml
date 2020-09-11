@@ -5,7 +5,7 @@
   <item
        android:id="@+id/menu_settings"
        app:showAsAction="never"
-       android:title="Settings" />
+       android:title="@string/action_settings" />
   <item
      android:id="@+id/volume_refresh"
      android:icon="@mipmap/baseline_refresh_white_48"

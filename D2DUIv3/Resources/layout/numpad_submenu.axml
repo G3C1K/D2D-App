@@ -12,8 +12,10 @@
         android:rowCount="5"
         android:columnCount="4">
         <Button
+            style="@style/button_style"
             android:layout_height="0dp"
             android:layout_width="0dp"
+            android:layout_margin="5px"
             android:layout_columnWeight="1"
             android:layout_rowWeight="1"
             android:text="7"
@@ -21,8 +23,10 @@
             android:id="@+id/seven"
             />
         <Button
+            style="@style/button_style"
           android:layout_height="0dp"
           android:layout_width="0dp"
+            android:layout_margin="5px"
             android:layout_columnWeight="1"
             android:layout_rowWeight="1"
             android:text="8"
@@ -30,8 +34,10 @@
             android:id="@+id/eight"
            />
         <Button
+            style="@style/button_style"
           android:layout_height="0dp"
           android:layout_width="0dp"
+            android:layout_margin="5px"
             android:layout_columnWeight="1"
             android:layout_rowWeight="1"
             android:text="9"
@@ -39,8 +45,10 @@
             android:id="@+id/nine"
            />
         <Button
+            style="@style/button_style"
           android:layout_height="0dp"
           android:layout_width="0dp"
+            android:layout_margin="5px"
             android:layout_columnWeight="1"
             android:layout_rowWeight="1"            
             android:text="+"
@@ -48,8 +56,10 @@
             android:id="@+id/plus"
            />
         <Button
+            style="@style/button_style"
           android:layout_height="0dp"
           android:layout_width="0dp"
+            android:layout_margin="5px"
             android:layout_columnWeight="1"
             android:layout_rowWeight="1"
             android:text="4"
@@ -59,8 +69,10 @@
 
 
         <Button
+            style="@style/button_style"
           android:layout_height="0dp"
           android:layout_width="0dp"
+            android:layout_margin="5px"
             android:layout_columnWeight="1"
             android:layout_rowWeight="1"
             android:text="5"
@@ -68,8 +80,10 @@
             android:id="@+id/five"
            />
         <Button
+            style="@style/button_style"
           android:layout_height="0dp"
           android:layout_width="0dp"
+            android:layout_margin="5px"
             android:layout_columnWeight="1"
             android:layout_rowWeight="1"
             android:text="6"
@@ -77,8 +91,10 @@
             android:id="@+id/six"
            />
         <Button
+            style="@style/button_style"
           android:layout_height="0dp"
           android:layout_width="0dp"
+            android:layout_margin="5px"
             android:layout_columnWeight="1"
             android:layout_rowWeight="1"
             android:text="-"
@@ -86,8 +102,10 @@
             android:id="@+id/minus"
            />
         <Button
+            style="@style/button_style"
           android:layout_height="0dp"
           android:layout_width="0dp"
+            android:layout_margin="5px"
             android:layout_columnWeight="1"
             android:layout_rowWeight="1"
             android:text="1"
@@ -95,8 +113,10 @@
             android:id="@+id/one"
            />
         <Button
+            style="@style/button_style"
           android:layout_height="0dp"
           android:layout_width="0dp"
+            android:layout_margin="5px"
             android:layout_columnWeight="1"
             android:layout_rowWeight="1"
             android:text="2"
@@ -104,8 +124,10 @@
             android:id="@+id/two"
            />
         <Button
+            style="@style/button_style"
           android:layout_height="0dp"
           android:layout_width="0dp"
+            android:layout_margin="5px"
             android:layout_columnWeight="1"
             android:layout_rowWeight="1"
             android:text="3"
@@ -113,8 +135,10 @@
             android:id="@+id/three"
            />
         <Button
+            style="@style/button_style"
           android:layout_height="0dp"
           android:layout_width="0dp"
+            android:layout_margin="5px"
             android:layout_columnWeight="1"
             android:layout_rowWeight="1"
             android:text="*"
@@ -122,8 +146,10 @@
             android:id="@+id/razy"
            />
         <Button
+            style="@style/button_style"
           android:layout_height="0dp"
           android:layout_width="0dp"
+            android:layout_margin="5px"
             android:layout_columnWeight="1"
             android:layout_rowWeight="1"
             android:text="0"
@@ -132,8 +158,10 @@
            />
 
         <Button
+            style="@style/button_style"
           android:layout_height="0dp"
           android:layout_width="0dp"
+            android:layout_margin="5px"
             android:layout_columnWeight="1"
             android:layout_rowWeight="1"
             android:text="."
@@ -141,16 +169,20 @@
             android:id="@+id/dot"
            />
         <Button
+            style="@style/button_style"
           android:layout_height="0dp"
           android:layout_width="0dp"
+            android:layout_margin="5px"
             android:layout_columnWeight="1"
             android:layout_rowWeight="1"
             android:text="enter"
             android:id="@+id/equal"
            />
         <Button
+            style="@style/button_style"
           android:layout_height="0dp"
           android:layout_width="0dp"
+            android:layout_margin="5px"
             android:layout_columnWeight="1"
             android:layout_rowWeight="1"
             android:text="/"

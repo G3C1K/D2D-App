@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -413,7 +414,7 @@ namespace D2DUIv3
 
             VolumeListForAndroid = new List<VolumeAndroid>();
 
-            float systemVolume = float.Parse(reader.ReadString());
+            float systemVolume = float.Parse(reader.ReadString(), CultureInfo.InvariantCulture.NumberFormat);
             int systemVolumeIconLen = reader.ReadInt32();
             byte[] systemVolumeIconBytes = reader.ReadBytes(systemVolumeIconLen);
             VolumeListForAndroid.Add(new VolumeAndroid("System Volume", "System Volume", false, systemVolume, int.MaxValue, systemVolumeIconBytes));
@@ -429,7 +430,7 @@ namespace D2DUIv3
                     string displayName = reader.ReadString();
                     string processName = reader.ReadString();
                     bool mute = bool.Parse(reader.ReadString());
-                    double volume = double.Parse(reader.ReadString());
+                    double volume = double.Parse(reader.ReadString(), CultureInfo.InvariantCulture.NumberFormat);
                     int processID = int.Parse(reader.ReadString());
                     int bitmapBytesLength = reader.ReadInt32();
                     byte[] bitmapBytes = reader.ReadBytes(bitmapBytesLength);
