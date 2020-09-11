@@ -112,7 +112,7 @@ namespace TCPSenderWPF
 
 
                     textBlock_debugLog.Text += input + " ConnectedDelegate \n";
-                    trayIcon.ChangeIcon("Ikony/connected.ico", "ready");
+                    trayIcon.ChangeIcon("Ikony/d2dc.ico", "ready");
                     button_advertise.IsEnabled = false;
                     button_listen.Content = "Disconnect";
                 })
@@ -133,7 +133,7 @@ namespace TCPSenderWPF
                     {
                         try
                         {
-                            trayIcon.ChangeIcon("Ikony/notconnected.ico", "not ready");
+                            trayIcon.ChangeIcon("Ikony/d2dnc.ico", "not ready");
                         }
                         catch (Exception e)
                         {

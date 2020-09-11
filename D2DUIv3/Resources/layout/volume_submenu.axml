@@ -21,10 +21,10 @@
             style="@style/button_style"
             android:layout_width="0dp"
             android:layout_weight="0.33"
-            android:paddingLeft="40dp"
+            android:paddingLeft="20dp"
             android:layout_height="50dp"
             android:id="@+id/button_play_pause"
-            app:icon="@drawable/baseline_play_arrow_white_48dp"
+            app:icon="@drawable/baseline_playpause_white_48dp"
             android:textAlignment="center"/>
         <Button
             style="@style/button_style"

@@ -275,6 +275,7 @@
     <AndroidResource Include="Resources\drawable\baseline_fast_forward_white_48dp.png" />
     <AndroidResource Include="Resources\drawable\baseline_fast_rewind_white_48dp.png" />
     <AndroidResource Include="Resources\drawable\baseline_pause_white_48dp.png" />
+    <AndroidResource Include="Resources\drawable\baseline_playpause_white_48dp.png" />
     <Content Include="zzzzzzz_DO_ZROBIENIA.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
