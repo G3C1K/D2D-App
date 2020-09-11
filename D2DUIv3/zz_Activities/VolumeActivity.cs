@@ -18,7 +18,7 @@ using Android.Widget;
 namespace D2DUIv3
 {
 
-    [Activity(Label = "Volume", Theme = "@style/AppTheme")]
+    [Activity(Theme = "@style/AppTheme")]
     public class VolumeActivity : AppCompatActivity
     {
         public class Slider2 : SeekBar      //niepoprawne rozwiązanie
@@ -56,7 +56,7 @@ namespace D2DUIv3
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
-
+            this.Title = Resources.GetString(Resource.String.volume);
             client = ClientHolder.Client;
             client.volumeReady = false;
             client.InstantiateVolumeClient();
@@ -107,7 +107,7 @@ namespace D2DUIv3
                     textView.Text = volume.ProcessName;
                 }
                 else textView.Text = "unknown process";
-                textView.Text += " " + volume.ProcessID;
+               // textView.Text += " " + volume.ProcessID;
 
                 if(textView.Text.Contains("AudioSrv", StringComparison.InvariantCultureIgnoreCase))
                 {

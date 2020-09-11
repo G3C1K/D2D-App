@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> 
+<resources>
+   <string name="app_name">D2DUIv3</string>
+   <string name="action_settings">Ustawienia</string>
+   <string name="host_ip">Wprowadź adres IP komputera</string>
+   <string name="connect">Połącz</string>
+   <string name="find_open_hosts">Znajdź dostępne komputery</string>
+  <string name="loading">Ładowanie...: Proszę czekać</string>
+  <string name="pmetrics">Statystyki wydajności</string>
+  <string name="connected_with">Połączono z: </string>
+  <string name="volume">Mikser głośności</string>
+  <string name="file_transfer">Przesyłanie plików</string>
+  <string name="numpad">Numpad</string>
+  <string name="menu">Menu główne</string>
+  <string name="download_path">Miejsce pobierania: </string>
+  <string name="connected">Połączono</string>
+  <string name="insufficient_permisions">Pobieranie pliku nie powiodło się. Brak wymaganych uprawnień.</string>
+  <string name="disconnected">Rozłączono</string>
+  <string name="invalid_ip">Niewłaściwy adres IP</string>
+  <string name="connecting">Łączenie</string>
+</resources>
+
