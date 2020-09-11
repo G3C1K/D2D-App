@@ -26,6 +26,11 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:id="@+id/button_autoconfig" />
+	<Button
+		android:text="Notification Listener"
+		android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+		android:id="@+id/buttonNotification"/>
 	<LinearLayout
 		android:orientation="vertical"
 		android:minWidth="25px"
@@ -46,6 +51,7 @@
 			android:gravity="center" 
 		/>
 	</LinearLayout>
+
 
 
 </LinearLayout>

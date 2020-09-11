@@ -266,6 +266,14 @@ namespace D2DUIv3
                 autoConfigClient.Listen();
             };
 
+            Button buttonNotificationListener = FindViewById<Button>(Resource.Id.buttonNotification);
+
+            buttonNotificationListener.Click += (o, r) =>
+            {
+                Intent notificationActivity = new Intent(this, typeof(NotificationListenerActivity));
+                StartActivity(notificationActivity);
+            };
+
         }
 
         public override bool OnCreateOptionsMenu(IMenu menu)

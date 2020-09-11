@@ -64,6 +64,7 @@
   <ItemGroup>
     <Compile Include="zz_Activities\AdapterForStatistics.cs" />
     <Compile Include="zz_Activities\FileTransferActivity.cs" />
+    <Compile Include="zz_Activities\NotificationListenerActivity.cs" />
     <Compile Include="zz_Activities\NumpadActivity.cs" />
     <Compile Include="z_Clients\AutoConfigAndroid.cs" />
     <Compile Include="z_Clients\ClientHolder.cs" />
@@ -75,6 +76,7 @@
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="zz_Activities\VolumeActivity.cs" />
+    <Compile Include="z_Clients\NotificationListener.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -278,6 +280,10 @@
       <SubType>Designer</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\menu\numpad_toolbar.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\notificationlistener_submenu.axml">
+      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
       <SubType>Designer</SubType>
     </AndroidResource>
     <Content Include="zzzzzzz_DO_ZROBIENIA.txt" />
