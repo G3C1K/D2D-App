@@ -98,7 +98,7 @@ namespace D2DUIv3
                 container.AddView(inputEditText);
 
                 builder.SetView(container);
-                builder.SetMessage("Input your password");
+                builder.SetMessage(Resources.GetString(Resource.String.password_req));
                 builder.SetCancelable(false);
                 builder.SetPositiveButton("OK", (o, e) =>
                 {
@@ -148,7 +148,7 @@ namespace D2DUIv3
 
                 if (outputLista.Count == 0)
                 {
-                    Toast.MakeText(this, "No clients found!", ToastLength.Short).Show();
+                    Toast.MakeText(this, Resources.GetString(Resource.String.no_clients), ToastLength.Short).Show();
                 }
 
                 foreach (string item in outputLista)

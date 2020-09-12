@@ -10,7 +10,7 @@
   <string name="connected_with">Połączono z: </string>
   <string name="volume">Mikser głośności</string>
   <string name="file_transfer">Przesyłanie plików</string>
-  <string name="numpad">Numpad</string>
+  <string name="numpad">Klawiatura numeryczna</string>
   <string name="menu">Menu główne</string>
   <string name="download_path">Miejsce pobierania: </string>
   <string name="connected">Połączono</string>
@@ -18,5 +18,12 @@
   <string name="disconnected">Rozłączono</string>
   <string name="invalid_ip">Niewłaściwy adres IP</string>
   <string name="connecting">Łączenie</string>
+  <string name="storage_perm">Wymagane są uprawnienia do pamięci urządzenia, aby pobieranie plików było możliwe</string>
+  <string name="password_req">Wymagane hasło</string>
+  <string name="no_clients">Nie znaleziono klientów</string>
+  <string name="incorrect_pass">Nieprawidłowe hasło</string>
+  <string name="sys_vol">Głośność systemu</string>
+  <string name="download_completed">Pobieranie zakończone sukcesem</string>
+  <string name="download_failed">Pobieranie nie powiodło się</string>
 </resources>
 

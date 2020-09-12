@@ -4241,70 +4241,91 @@ namespace D2DUIv3
 			public const int disconnected = 2131623985;
 			
 			// aapt resource value: 0x7F0E0032
-			public const int download_path = 2131623986;
+			public const int download_completed = 2131623986;
 			
 			// aapt resource value: 0x7F0E0033
-			public const int fab_transformation_scrim_behavior = 2131623987;
+			public const int download_failed = 2131623987;
 			
 			// aapt resource value: 0x7F0E0034
-			public const int fab_transformation_sheet_behavior = 2131623988;
+			public const int download_path = 2131623988;
 			
 			// aapt resource value: 0x7F0E0035
-			public const int file_transfer = 2131623989;
+			public const int fab_transformation_scrim_behavior = 2131623989;
 			
 			// aapt resource value: 0x7F0E0036
-			public const int find_open_hosts = 2131623990;
+			public const int fab_transformation_sheet_behavior = 2131623990;
 			
 			// aapt resource value: 0x7F0E0037
-			public const int hide_bottom_view_on_scroll_behavior = 2131623991;
+			public const int file_transfer = 2131623991;
 			
 			// aapt resource value: 0x7F0E0038
-			public const int host_ip = 2131623992;
+			public const int find_open_hosts = 2131623992;
 			
 			// aapt resource value: 0x7F0E0039
-			public const int insufficient_permisions = 2131623993;
+			public const int hide_bottom_view_on_scroll_behavior = 2131623993;
 			
 			// aapt resource value: 0x7F0E003A
-			public const int invalid_ip = 2131623994;
+			public const int host_ip = 2131623994;
 			
 			// aapt resource value: 0x7F0E003B
-			public const int loading = 2131623995;
+			public const int incorrect_pass = 2131623995;
 			
 			// aapt resource value: 0x7F0E003C
-			public const int menu = 2131623996;
+			public const int insufficient_permisions = 2131623996;
 			
 			// aapt resource value: 0x7F0E003D
-			public const int mtrl_chip_close_icon_content_description = 2131623997;
+			public const int invalid_ip = 2131623997;
 			
 			// aapt resource value: 0x7F0E003E
-			public const int numpad = 2131623998;
+			public const int loading = 2131623998;
 			
 			// aapt resource value: 0x7F0E003F
-			public const int password_toggle_content_description = 2131623999;
+			public const int menu = 2131623999;
 			
 			// aapt resource value: 0x7F0E0040
-			public const int path_password_eye = 2131624000;
+			public const int mtrl_chip_close_icon_content_description = 2131624000;
 			
 			// aapt resource value: 0x7F0E0041
-			public const int path_password_eye_mask_strike_through = 2131624001;
+			public const int no_clients = 2131624001;
 			
 			// aapt resource value: 0x7F0E0042
-			public const int path_password_eye_mask_visible = 2131624002;
+			public const int numpad = 2131624002;
 			
 			// aapt resource value: 0x7F0E0043
-			public const int path_password_strike_through = 2131624003;
+			public const int password_req = 2131624003;
 			
 			// aapt resource value: 0x7F0E0044
-			public const int pmetrics = 2131624004;
+			public const int password_toggle_content_description = 2131624004;
 			
 			// aapt resource value: 0x7F0E0045
-			public const int search_menu_title = 2131624005;
+			public const int path_password_eye = 2131624005;
 			
 			// aapt resource value: 0x7F0E0046
-			public const int status_bar_notification_info_overflow = 2131624006;
+			public const int path_password_eye_mask_strike_through = 2131624006;
 			
 			// aapt resource value: 0x7F0E0047
-			public const int volume = 2131624007;
+			public const int path_password_eye_mask_visible = 2131624007;
+			
+			// aapt resource value: 0x7F0E0048
+			public const int path_password_strike_through = 2131624008;
+			
+			// aapt resource value: 0x7F0E0049
+			public const int pmetrics = 2131624009;
+			
+			// aapt resource value: 0x7F0E004A
+			public const int search_menu_title = 2131624010;
+			
+			// aapt resource value: 0x7F0E004B
+			public const int status_bar_notification_info_overflow = 2131624011;
+			
+			// aapt resource value: 0x7F0E004C
+			public const int storage_perm = 2131624012;
+			
+			// aapt resource value: 0x7F0E004D
+			public const int sys_vol = 2131624013;
+			
+			// aapt resource value: 0x7F0E004E
+			public const int volume = 2131624014;
 			
 			static String()
 			{
