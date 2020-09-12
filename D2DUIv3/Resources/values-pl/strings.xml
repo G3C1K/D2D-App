@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?> 
 <resources>
-   <string name="app_name">D2DUIv3</string>
+   <string name="app_name">D2D</string>
    <string name="action_settings">Ustawienia</string>
    <string name="host_ip">Wprowadź adres IP komputera</string>
    <string name="connect">Połącz</string>

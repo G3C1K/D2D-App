@@ -12,7 +12,6 @@
 	>
 	<EditText
 		android:inputType="text"
-		android:text="192.168.1.170"
 		android:layout_width="match_parent"
 		android:layout_height="61.5dp"
 		android:id="@+id/textBoxIP"
