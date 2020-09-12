@@ -34,5 +34,17 @@ namespace TCPSenderWPF.Properties {
                 this["Password"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string SystemLanguage {
+            get {
+                return ((string)(this["SystemLanguage"]));
+            }
+            set {
+                this["SystemLanguage"] = value;
+            }
+        }
     }
 }

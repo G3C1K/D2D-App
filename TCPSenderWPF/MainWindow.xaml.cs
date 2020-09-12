@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Security;
@@ -41,7 +42,6 @@ namespace TCPSenderWPF
         BitmapFrame notconnectedIcon = BitmapFrame.Create(new Uri("pack://application:,,,/Ikony/d2dnc.ico", UriKind.RelativeOrAbsolute));
         OpenFileDialog openFileDialog;
 
-
         //listy plikow
         List<string> fileList_internal = new List<string>();
         List<string> stringList = new List<string>();
@@ -49,6 +49,9 @@ namespace TCPSenderWPF
         public MainWindow()
         {
             InitializeComponent();
+
+            CultureInfo ci = CultureInfo.InstalledUICulture;
+            Properties.Settings.Default.SystemLanguage = ci.TwoLetterISOLanguageName;
 
             passwordString = Properties.Settings.Default.Password;
 

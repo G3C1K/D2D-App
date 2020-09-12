@@ -7,11 +7,19 @@
         xmlns:fw="clr-namespace:SourceChord.FluentWPF;assembly=FluentWPF"
         mc:Ignorable="d"
         Title="D2D" Height="450" Width="600"
-        Closing="Window_Closing">
+        Closing="Window_Closing" ResizeMode="NoResize">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="LanguageResources/MainWindow.en-EN.xaml"/>
+                <ResourceDictionary Source="LanguageResources/MainWindow.pl-PL.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
     <StackPanel  Background="{DynamicResource SystemBaseLowColorBrush}" fw:PointerTracker.Enabled="True">
 
         <StackPanel Orientation="Horizontal" Background="{x:Static fw:AccentColors.ImmersiveSystemAccentLight1Brush}">
-            <Button Content="Listen" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" Width="120" Height="35"  
+            <Button Content="{DynamicResource ResourceKey=ListenButton}" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" Width="120" Height="35"  
                 x:Name="button_listen" Click="Button_listen_Click" IsEnabled="False" Style="{StaticResource ButtonRevealStyle}" 
                 Background="{DynamicResource SystemBaseMediumLowColorBrush}"  Foreground="{DynamicResource SystemAltMediumHighColorBrush}"  />
             <Button Content="Advertise IP"  HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" Width="120" Height="35"

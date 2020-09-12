@@ -7,7 +7,7 @@
         xmlns:fw="clr-namespace:SourceChord.FluentWPF;assembly=FluentWPF"
         mc:Ignorable="d"
         Title="TransferWindow" Height="150" Width="200" Icon="Ikony/send.ico"
-        Closing="Window_Closing">
+        Closing="Window_Closing" ResizeMode="NoResize">
     <Grid Background="{x:Static fw:AccentColors.ImmersiveSystemAccentLight1Brush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
