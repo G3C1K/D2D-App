@@ -52,7 +52,7 @@ namespace TCPSenderWPF
 
             CultureInfo ci = CultureInfo.InstalledUICulture;
             Properties.Settings.Default.SystemLanguage = ci.TwoLetterISOLanguageName;
-
+            ChooseLanguage();
             passwordString = Properties.Settings.Default.Password;
 
             passwordForConnection = new PasswordForConnection();
@@ -340,10 +340,20 @@ namespace TCPSenderWPF
                 textBlock_password.Text = passwordString;
                 button_show_password.Content = "Hide";
             }
+            else if ((string)button_show_password.Content == "Pokaż")
+            {
+                textBlock_password.Text = passwordString;
+                button_show_password.Content = "Ukryj";
+            }
             else if ((string)button_show_password.Content == "Hide")
             {
                 textBlock_password.Text = "****";
                 button_show_password.Content = "Show";
+            }
+            else if ((string)button_show_password.Content == "Ukryj")
+            {
+                textBlock_password.Text = "****";
+                button_show_password.Content = "Pokaż";
             }
         }
 
@@ -360,6 +370,27 @@ namespace TCPSenderWPF
                 }
 
                 transferWindow.AddFiles(listaPlikow);
+            }
+        }
+
+
+        private void ChooseLanguage()
+        {
+            if(Properties.Settings.Default.SystemLanguage == "pl")
+            {
+                var languageDictionary = new ResourceDictionary();
+                string directory = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+                languageDictionary.Source = new Uri("\\LanguageResources\\MainWindow.pl-PL.xaml", UriKind.Relative);
+
+                this.Resources.MergedDictionaries.Add(languageDictionary);
+            }
+            else if(Properties.Settings.Default.SystemLanguage == "en")
+            {
+                var languageDictionary = new ResourceDictionary();
+                string directory = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+                languageDictionary.Source = new Uri("\\LanguageResources\\MainWindow.en-EN.xaml", UriKind.Relative);
+
+                this.Resources.MergedDictionaries.Add(languageDictionary);
             }
         }
     }

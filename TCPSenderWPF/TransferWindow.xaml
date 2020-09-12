@@ -6,15 +6,23 @@
         xmlns:local="clr-namespace:TCPSenderWPF"
         xmlns:fw="clr-namespace:SourceChord.FluentWPF;assembly=FluentWPF"
         mc:Ignorable="d"
-        Title="TransferWindow" Height="150" Width="200" Icon="Ikony/send.ico"
+        Title="{DynamicResource ResourceKey=TransferWindowTitle}" Height="150" Width="200" Icon="Ikony/send.ico"
         Closing="Window_Closing" ResizeMode="NoResize">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="LanguageResources/MainWindow.en-EN.xaml"/>
+                <ResourceDictionary Source="LanguageResources/MainWindow.pl-PL.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
     <Grid Background="{x:Static fw:AccentColors.ImmersiveSystemAccentLight1Brush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0">
-            <Label  Width="Auto" Margin="2" Height="22"  Content="Last sent:" BorderThickness="0" FontSize="11" Foreground="{DynamicResource SystemAltMediumHighColorBrush}" />
+            <Label  Width="Auto" Margin="2" Height="24"  Content="{DynamicResource ResourceKey=LastSent}" BorderThickness="0" FontSize="11" Foreground="{DynamicResource SystemAltMediumHighColorBrush}" />
             <Label  x:Name="lastSent" Width="Auto" VerticalAlignment="Top" Margin="0" Height="28" BorderThickness="0" 
                     ToolTip="{Binding ElementName=lastSent, Path=Content, Mode=OneWay}" Foreground="{DynamicResource SystemAltMediumHighColorBrush}" />
         </StackPanel>
