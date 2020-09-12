@@ -17,4 +17,11 @@
   <string name="disconnected">Disconnected</string>
   <string name="invalid_ip">Invalid IP Address</string>
   <string name="connecting">Connecting</string>
+  <string name="storage_perm">Storage access is required to download files</string>
+  <string name="password_req">Password required</string>
+  <string name="no_clients">No clients found</string>
+  <string name="incorrect_pass">Incorrect password</string>
+  <string name="sys_vol">System volume</string>
+  <string name="download_completed">Download completed</string>
+  <string name="download_failed">Download failed</string>
 </resources>

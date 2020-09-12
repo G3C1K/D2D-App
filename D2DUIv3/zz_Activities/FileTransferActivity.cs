@@ -151,7 +151,7 @@ namespace D2DUIv3
 
             if (ShouldShowRequestPermissionRationale(permission))
             {
-                Snackbar snackbar = Snackbar.Make(transferLayout, "Storage access is required to download files.", Snackbar.LengthIndefinite);
+                Snackbar snackbar = Snackbar.Make(transferLayout, Resources.GetString(Resource.String.storage_perm), Snackbar.LengthIndefinite);
                 snackbar.SetAction("OK", v => RequestPermissions(PermissionsStorage, RequestStorageId));
                 snackbar.Show();
 

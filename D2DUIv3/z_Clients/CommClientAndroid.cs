@@ -185,7 +185,7 @@ namespace D2DUIv3
 
         private void OpenPasswordLine()
         {
-            OpenPasswordInputDialogAction("Password required");
+            OpenPasswordInputDialogAction(Application.Context.Resources.GetString(Resource.String.password_req));
             BinaryReader passwordReader = new BinaryReader(client.GetStream());
 
             bool continueLoop = true;
@@ -209,7 +209,7 @@ namespace D2DUIv3
                 }
                 else if(input == (int)ClientFlags.Password_Incorrect)
                 {
-                    OpenPasswordInputDialogAction("Incorrect password");
+                    OpenPasswordInputDialogAction(Application.Context.Resources.GetString(Resource.String.incorrect_pass));
 
                 }
 
@@ -417,7 +417,7 @@ namespace D2DUIv3
             float systemVolume = float.Parse(reader.ReadString(), CultureInfo.InvariantCulture.NumberFormat);
             int systemVolumeIconLen = reader.ReadInt32();
             byte[] systemVolumeIconBytes = reader.ReadBytes(systemVolumeIconLen);
-            VolumeListForAndroid.Add(new VolumeAndroid("System Volume", "System Volume", false, systemVolume, int.MaxValue, systemVolumeIconBytes));
+            VolumeListForAndroid.Add(new VolumeAndroid(Application.Context.Resources.GetString(Resource.String.sys_vol), "System Volume", false, systemVolume, int.MaxValue, systemVolumeIconBytes));
 
             int procCount = int.Parse(reader.ReadString());
 
@@ -594,11 +594,11 @@ namespace D2DUIv3
             lastPacket = fileReader.ReadBytes(lastPacket.Length);
             if(lastPacket.Length != reszta)
             {
-                BrokenFileAction("Corrupted file!");
+                BrokenFileAction(Application.Context.Resources.GetString(Resource.String.download_failed));
             }
             else
             {
-                BrokenFileAction("File was downloaded correctly...");
+                BrokenFileAction(Application.Context.Resources.GetString(Resource.String.download_completed));
             }
             fileStream.Write(lastPacket, 0, lastPacket.Length);
 
