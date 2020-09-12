@@ -24,4 +24,6 @@
   <string name="sys_vol">System volume</string>
   <string name="download_completed">Download completed</string>
   <string name="download_failed">Download failed</string>
+  <string name="disconnect">Disconnect</string>
+  <string name="refresh">Refresh</string>
 </resources>

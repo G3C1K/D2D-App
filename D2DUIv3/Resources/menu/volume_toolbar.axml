@@ -8,7 +8,6 @@
        android:title="@string/action_settings" />
   <item
      android:id="@+id/volume_refresh"
-     android:icon="@mipmap/baseline_refresh_white_48"
      app:showAsAction="always"
-     android:title="Refresh" />
+     android:title="@string/refresh" />
 </menu>

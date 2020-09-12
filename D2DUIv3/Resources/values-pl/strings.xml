@@ -25,5 +25,7 @@
   <string name="sys_vol">Głośność systemu</string>
   <string name="download_completed">Pobieranie zakończone sukcesem</string>
   <string name="download_failed">Pobieranie nie powiodło się</string>
+  <string name="disconnect">Rozłącz</string>
+  <string name="refresh">Odśwież</string>
 </resources>
 
