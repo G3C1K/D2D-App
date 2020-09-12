@@ -84,7 +84,10 @@ namespace TCPSenderWPF
             textBlock_debugLog.Text = "";
             textBlock_debugLog.Text += "Nasluchiwanie na adresie: " + adresInterfejsuDoNasluchu.ToString();
             textBlock_debugLog.Text += "\n";
-            button_listen.Content = "Listening";
+            if ((string)button_listen.Content == "Listen")
+                button_listen.Content = "Listening";
+            else if((string)button_listen.Content == "Nasłuchuj")
+                button_listen.Content = "Nasłuchiwanie";
             client = new CommClientPC(OutputDelegate, ConnectedDelegate);
 
             client.DisconnectAction = DisconnectDelegate;
@@ -121,7 +124,10 @@ namespace TCPSenderWPF
                     trayIcon.ChangeIcon("Ikony/d2dc.ico", "ready");
                     this.Icon = connectedIcon;
                     button_advertise.IsEnabled = false;
-                    button_listen.Content = "Disconnect";
+                    if ((string)button_listen.Content == "Listening")
+                        button_listen.Content = "Disconnect";
+                    else if ((string)button_listen.Content == "Nasłuchiwanie")
+                        button_listen.Content = "Rozłącz";
                 })
                 );
         }
@@ -148,7 +154,10 @@ namespace TCPSenderWPF
                             textBlock_debugLog.Text += e.Message + "\n";
                         }
                     }
-                    button_listen.Content = "Listen";
+                    if ((string)button_listen.Content == "Disconnect")
+                        button_listen.Content = "Listen";
+                    else if ((string)button_listen.Content == "Rozłącz")
+                        button_listen.Content = "Nasłuchuj";
 
                     button_change_password.IsEnabled = true;
                 })
@@ -216,26 +225,30 @@ namespace TCPSenderWPF
         private void Button_listen_Click(object sender, RoutedEventArgs e)
         {
 
-            if ((string)button_listen.Content == "Listen")
+            if ((string)button_listen.Content == "Listen" || (string)button_listen.Content == "Nasłuchuj")
             {
                 InitializeClient();
                 autoConfigClient = new AutoConfigPC(StillSendDelegate);
                 button_advertise.IsEnabled = true;
             }
-            else if((string)button_listen.Content == "Listening")
+            else if((string)button_listen.Content == "Listening" || (string)button_listen.Content == "Nasłuchiwanie")
             {
                 textBlock_debugLog.Text += "Already listening!\n";
             }
-            else if((string)button_listen.Content == "Disconnect")
+            else if((string)button_listen.Content == "Disconnect" || (string)button_listen.Content == "Rozłącz")
             {
                 client.Close();
-                button_listen.Content = "Listen";
+                if((string)button_listen.Content == "Disconnect")
+                    button_listen.Content = "Listen";
+                else if((string)button_listen.Content == "Rozłącz")
+                    button_listen.Content = "Nasłuchuj";
+                button_change_password.IsEnabled = true;
             }
         }
 
         private void Button_advertise_Click(object sender, RoutedEventArgs e)
         {
-            if ((string)button_advertise.Content == "Advertise IP")
+            if ((string)button_advertise.Content == "Advertise IP" || (string)button_advertise.Content == "Ogłaszaj IP")
             {
                 sendFlag = true;
                 autoConfigClient = new AutoConfigPC(StillSendDelegate);
@@ -243,7 +256,11 @@ namespace TCPSenderWPF
                 {
                     button_advertise.Dispatcher.Invoke(
                         () => { button_advertise.IsEnabled = true;
-                            button_advertise.Content = "Advertise IP";
+
+                            if ((string)button_advertise.Content == "Stop Advertising")
+                                button_advertise.Content = "Advertise IP";
+                            else if ((string)button_advertise.Content == "Przestań ogłaszać")
+                                button_advertise.Content = "Ogłaszaj IP";
                         }
                         );
                 };
@@ -253,9 +270,12 @@ namespace TCPSenderWPF
                 // Zmiana w drugi przycisk
                 //button_advertise.Click -= Button_advertise_Click;
                 //button_advertise.Click += Button_stop_advertising_Click;
-                button_advertise.Content = "Stop Advertising";
+                if((string)button_advertise.Content == "Advertise IP")
+                    button_advertise.Content = "Stop Advertising";
+                else if((string)button_advertise.Content == "Ogłaszaj IP")
+                    button_advertise.Content = "Przestań ogłaszać";
             }
-            else if ((string)button_advertise.Content == "Stop Advertising")
+            else if ((string)button_advertise.Content == "Stop Advertising" || (string)button_advertise.Content == "Przestań ogłaszać")
             {
                 sendFlag = false;
                 button_advertise.IsEnabled = false;
@@ -303,7 +323,7 @@ namespace TCPSenderWPF
             textBlock_password.Dispatcher.Invoke(() =>
             {
                 //textBlock_password.Text = "****";
-                if((string)button_show_password.Content == "Hide")
+                if((string)button_show_password.Content == "Hide" || (string)button_show_password.Content == "Ukryj")
                 {
                     textBlock_password.Text = input;
                 }
