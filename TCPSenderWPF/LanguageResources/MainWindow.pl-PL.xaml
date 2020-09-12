@@ -4,5 +4,19 @@
     <sys:String x:Key="ResourceDictionaryName">Loc-pl-PL</sys:String>
 
     <sys:String x:Key="ListenButton">Nasłuchuj</sys:String>
+    <sys:String x:Key="AdvertiseButton">Ogłaszaj IP</sys:String>
+    <sys:String x:Key="ConnectedDevice">Podłączone urządzenie:</sys:String>
+    <sys:String x:Key="TransferHistory">Historia przesyłania:</sys:String>
+    <sys:String x:Key="Password">Hasło:</sys:String>
+    <sys:String x:Key="ChangePasswordButton">Zmień hasło</sys:String>
+    <sys:String x:Key="ShowPasswordButton">Pokaż</sys:String>
+    <sys:String x:Key="HidePasswordButton">Ukryj</sys:String>
+    <sys:String x:Key="BrowseButton">Przeglądaj</sys:String>
 
+    <sys:String x:Key="PasswordForConnectionTitle">Hasło do połączenia</sys:String>
+    <sys:String x:Key="PleaseProvide">Proszę podać hasło składające się z 4 cyfr</sys:String>
+    <sys:String x:Key="SavePassword">Zapisz</sys:String>
+
+    <sys:String x:Key="TransferWindowTitle">Okno przesyłania</sys:String>
+    <sys:String x:Key="LastSent">Ostatnio przesłane:</sys:String>
 </ResourceDictionary>

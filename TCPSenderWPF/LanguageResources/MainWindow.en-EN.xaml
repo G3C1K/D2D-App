@@ -4,5 +4,19 @@
     <sys:String x:Key="ResourceDictionaryName">Loc-en-EN</sys:String>
 
     <sys:String x:Key="ListenButton">Listen</sys:String>
+    <sys:String x:Key="AdvertiseButton">Advertise IP</sys:String>
+    <sys:String x:Key="ConnectedDevice">Connected device: </sys:String>
+    <sys:String x:Key="TransferHistory">Transfer history:</sys:String>
+    <sys:String x:Key="Password">Password:</sys:String>
+    <sys:String x:Key="ChangePasswordButton">Change password</sys:String>
+    <sys:String x:Key="ShowPasswordButton">Show</sys:String>
+    <sys:String x:Key="HidePasswordButton">Hide</sys:String>
+    <sys:String x:Key="BrowseButton">Browse</sys:String>
 
+    <sys:String x:Key="PasswordForConnectionTitle">Password for connection</sys:String>
+    <sys:String x:Key="PleaseProvide">Please provide a password composed of 4 digits</sys:String>
+    <sys:String x:Key="SavePassword">Save</sys:String>
+
+    <sys:String x:Key="TransferWindowTitle">Transfer Window</sys:String>
+    <sys:String x:Key="LastSent">Last sent:</sys:String>
 </ResourceDictionary>
