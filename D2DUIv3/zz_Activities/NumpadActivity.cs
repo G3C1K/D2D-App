@@ -79,6 +79,14 @@ namespace D2DUIv3
                 return true;
             }
 
+            if (item.ItemId == Resource.Id.menu_disconnect)
+            {
+                if(client != null)
+                {
+                    client.SendKey("NUM");
+                }
+                return true;
+            }
 
             return base.OnOptionsItemSelected(item);
         }

@@ -5,7 +5,7 @@
   <item
        android:id="@+id/menu_disconnect"
        app:showAsAction="always"
-       android:title="NUM LOCK" />
+       android:title="BACK SPACE" />
   <item
        android:id="@+id/menu_settings"
        app:showAsAction="never"

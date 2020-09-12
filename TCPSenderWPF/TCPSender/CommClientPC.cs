@@ -741,6 +741,9 @@ namespace TCPSender
                 case "PREV":
                     a = InputKeyClass.VK_PREV_TRACK;
                     break;
+                case "NUM":
+                    a = InputKeyClass.VK_BACK;
+                    break;
 
             }
 
@@ -882,6 +885,7 @@ namespace TCPSender
             public const byte VK_MEDIA_PLAY_PAUSE = 0xB3;
             public const byte VK_NEXT_TRACK = 0xB0;
             public const byte VK_PREV_TRACK = 0xB1;
+            public const byte VK_BACK = 0x08;
 
             public static void InputKeyFromByte(byte input)
             {
