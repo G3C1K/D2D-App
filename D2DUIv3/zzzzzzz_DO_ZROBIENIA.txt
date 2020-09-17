@@ -31,6 +31,16 @@ connecting/mainactivity
 
 string jako statyczne pola zalezne od globalnej opcji wyboru jezyka
 
+filetransfer
+	nie ma powodu dla ktorego filetransfer mialby byc dostepny dopiero po polaczeniu
+	transferhistory as listbox
+	progressbar
+	czemu sadzi ze kazdy plik to pdf? xD
+	compatibility z api < 23
+	download manager jest deprecated dla api > 29
+	proper wylaczanie, jak wylaczysz podczas przesylania a nic sie nie przesyla
+
+
 zrobione
 	pmetrics
 	connecting in separate thread
@@ -38,3 +48,15 @@ zrobione
 	przesylanie nazwy urzadzenia, na razie w jedna strone
 
 	persistent hwmonitor
+
+
+ostatnie poprawki
+	numpad
+	keybd eventy zamiast nugeta
+	blokada wysylania folderow
+	po polaczeniu stop advertising
+	numlock do numpada
+	zmieniony debug wysylania plikow
+	transferwindow przed polaczeniem
+	openfiledialog
+	

@@ -9,6 +9,7 @@ using Android.Views;
 using Android.Graphics;
 using Android.Content;
 using System.Collections.Generic;
+using System.IO;
 
 namespace D2DUIv3
 {
@@ -25,8 +26,10 @@ namespace D2DUIv3
 
         public void SetText2(string _message)
         {
-            //textNumber.Post(() => textNumber.Text += _message + "\n"); //????
-            //RunOnUiThread(() => textNumber.Text += _message + "\n");
+            //RunOnUiThread(() =>
+            //{
+            //    Toast.MakeText(this, _message, ToastLength.Short).Show();
+            //});
         }
 
         public void ConnectedDelegate(string message)
@@ -65,7 +68,7 @@ namespace D2DUIv3
                 {
                     client.volumeReady = false;
                     client.Close();
-                    Toast.MakeText(this, "Disconnected", ToastLength.Short).Show();
+                    Toast.MakeText(this, Resources.GetString(Resource.String.disconnected), ToastLength.Short).Show();
                     Intent rtrn = new Intent(this.ApplicationContext, typeof(MainActivity));
                     StartActivity(rtrn);
                 }
@@ -95,7 +98,7 @@ namespace D2DUIv3
                 container.AddView(inputEditText);
 
                 builder.SetView(container);
-                builder.SetMessage("Input your password");
+                builder.SetMessage(Resources.GetString(Resource.String.password_req));
                 builder.SetCancelable(false);
                 builder.SetPositiveButton("OK", (o, e) =>
                 {
@@ -112,6 +115,7 @@ namespace D2DUIv3
         public void AutoConfigFinished(List<string> outputLista)
         {
             EditText textBoxIP = FindViewById<EditText>(Resource.Id.textBoxIP);
+
             LinearLayout ACLayout = FindViewById<LinearLayout>(Resource.Id.linearLayoutAC);
 
             if (textBoxIP.Text == "acdebug")
@@ -142,9 +146,9 @@ namespace D2DUIv3
             {
                 ACLayout.RemoveAllViews();
 
-                if(outputLista.Count == 0)
+                if (outputLista.Count == 0)
                 {
-                    Toast.MakeText(this, "No clients found!", ToastLength.Short).Show();
+                    Toast.MakeText(this, Resources.GetString(Resource.String.no_clients), ToastLength.Short).Show();
                 }
 
                 foreach (string item in outputLista)
@@ -183,15 +187,15 @@ namespace D2DUIv3
             // Set our view from the "main" layout resource
             SetContentView(Resource.Layout.activity_main);
 
-            TextView testView = FindViewById<TextView>(Resource.Id.textView_test);
+           // TextView testView = FindViewById<TextView>(Resource.Id.textView_test);
             EditText textBoxIP = FindViewById<EditText>(Resource.Id.textBoxIP);
             Button buttonAutoConfig = FindViewById<Button>(Resource.Id.button_autoconfig);
 
             //do szybkiego wpisywania adresu mojego kompa
-            testView.Click += (o, e) =>
-            {
-                textBoxIP.Text = testView.Text;
-            };
+            //testView.Click += (o, e) =>
+            //{
+            //    textBoxIP.Text = testView.Text;
+            //};
 
             //pzycisk connect
             FindViewById<Button>(Resource.Id.buttonConnect).Click += (o, e) =>
@@ -208,7 +212,7 @@ namespace D2DUIv3
                     }
                     else
                     {
-                        Toast.MakeText(this, "Invalid IP Address", ToastLength.Short).Show();   //jak nie wyswietlam i nie daje pozwolenia
+                        Toast.MakeText(this, Resources.GetString(Resource.String.invalid_ip), ToastLength.Short).Show();   //jak nie wyswietlam i nie daje pozwolenia
                         canProceedToMainMenu = false;
                     }
                 }
@@ -231,11 +235,13 @@ namespace D2DUIv3
                             client.OpenPasswordInputDialogAction = OpenPasswordInputDialogDelegate;
                             ClientHolder.Client = client;
                             client.ConnectedAction = ConnectedDelegate;
+                            client.DownloadPath = System.IO.Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
+
                             isConnected = true;
                         }
                         else
                         {
-                            Toast.MakeText(this, "Connecting...", ToastLength.Short).Show();
+                            Toast.MakeText(this, Resources.GetString(Resource.String.connecting), ToastLength.Short).Show();
                             //chyba chodzi o to, ze jak nacisnie sie drugi raz connect podczas connectowania, to nie stworzy sie kolejny klient?
                         }
                     }
@@ -261,6 +267,7 @@ namespace D2DUIv3
                 autoConfigClient.Listen();
             };
 
+
         }
 
         public override bool OnCreateOptionsMenu(IMenu menu)
@@ -271,8 +278,8 @@ namespace D2DUIv3
 
         public override bool OnOptionsItemSelected(IMenuItem item)
         {
-            Toast.MakeText(this, "Action selected: " + item.TitleFormatted,
-                ToastLength.Short).Show();
+            //Toast.MakeText(this, "Action selected: " + item.TitleFormatted,
+            //    ToastLength.Short).Show();
 
             return base.OnOptionsItemSelected(item);
         }

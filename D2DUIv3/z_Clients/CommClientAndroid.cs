@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -59,6 +60,20 @@ namespace D2DUIv3
 
         public Action<string> PMReadyAction { internal get; set; }
         public Action<string> PMDataReceivedAction { internal get; set; }
+
+
+
+        //pliki
+        List<string> fileList = new List<string>();
+        public bool currentlyDownloadingFile = false;
+        public Action<List<string>> FileListReceivedAction { internal get; set; }
+
+        public Action<string, string, string, int, TextView> FileReceivedAction { internal get; set; }
+        public Action<string> BrokenFileAction { internal get; set; }
+
+        public Dictionary<string, TextView> FilesWithTheirAssociatedTextViews = new Dictionary<string, TextView>();
+        public Action<int> ProgressBarAction { internal get; set; }
+
 
 
         public CommClientAndroid(IPAddress _adresIP, Action<string> _connectedDelegate) //serwer = listen, client = connect
@@ -159,13 +174,24 @@ namespace D2DUIv3
                     nextInput = reader.ReadString();
                     PMDataReceivedAction(nextInput);
                 }
+                else if(input == (int)ClientFlags.FT_Ready)
+                {
+                    ReceiveFilesInfo(reader);
+                }
+                else if(input == (int)ClientFlags.FT_SendFile)
+                {
+                    currentlyDownloadingFile = true;
+                    nextInput = reader.ReadString();
+                    Thread recThread = new Thread(() => ReceiveFileV2(nextInput));
+                    recThread.Start();
+                }
             }
             Close_Self();
         }
 
         private void OpenPasswordLine()
         {
-            OpenPasswordInputDialogAction("Password required");
+            OpenPasswordInputDialogAction(Application.Context.Resources.GetString(Resource.String.password_req));
             BinaryReader passwordReader = new BinaryReader(client.GetStream());
 
             bool continueLoop = true;
@@ -189,7 +215,7 @@ namespace D2DUIv3
                 }
                 else if(input == (int)ClientFlags.Password_Incorrect)
                 {
-                    OpenPasswordInputDialogAction("Incorrect password");
+                    OpenPasswordInputDialogAction(Application.Context.Resources.GetString(Resource.String.incorrect_pass));
 
                 }
 
@@ -400,10 +426,10 @@ namespace D2DUIv3
 
             VolumeListForAndroid = new List<VolumeAndroid>();
 
-            float systemVolume = float.Parse(reader.ReadString());
+            float systemVolume = float.Parse(reader.ReadString(), CultureInfo.InvariantCulture.NumberFormat);
             int systemVolumeIconLen = reader.ReadInt32();
             byte[] systemVolumeIconBytes = reader.ReadBytes(systemVolumeIconLen);
-            VolumeListForAndroid.Add(new VolumeAndroid("System Volume", "System Volume", false, systemVolume, int.MaxValue, systemVolumeIconBytes));
+            VolumeListForAndroid.Add(new VolumeAndroid(Application.Context.Resources.GetString(Resource.String.sys_vol), "System Volume", false, systemVolume, int.MaxValue, systemVolumeIconBytes));
 
             int procCount = int.Parse(reader.ReadString());
 
@@ -416,7 +442,7 @@ namespace D2DUIv3
                     string displayName = reader.ReadString();
                     string processName = reader.ReadString();
                     bool mute = bool.Parse(reader.ReadString());
-                    double volume = double.Parse(reader.ReadString());
+                    double volume = double.Parse(reader.ReadString(), CultureInfo.InvariantCulture.NumberFormat);
                     int processID = int.Parse(reader.ReadString());
                     int bitmapBytesLength = reader.ReadInt32();
                     byte[] bitmapBytes = reader.ReadBytes(bitmapBytesLength);
@@ -515,6 +541,115 @@ namespace D2DUIv3
         //METRICS END
         //--------------------------------------------------
 
+        //--------------------------------------------------
+        //FILEV2 START
+        //--------------------------------------------------
+
+        public void InstantiateTransfer()
+        {
+            writer.Write((int)ClientFlags.FT_Instantiate);
+        }
+
+        private void ReceiveFilesInfo(BinaryReader reader) //odpala sie po fladze ready
+        {
+            fileList.Clear();       //czysci liste plikow
+            int count = reader.ReadInt32();
+            for (int i = 0; i < count; i++) //czyta liczbe plikow, dodaje je po kolei do listy
+            {
+                string input = reader.ReadString();
+                fileList.Add(input);
+            }
+            FileListReceivedAction(fileList);   //konczy delegatem ktory przekazuje zawartosc listy do activity, nastepnie activity umieszcze je jako textview na ekranie
+        }
+
+        public void RemoveFile(string file)
+        {
+            writer.Write((int)ClientFlags.FT_RemoveFileFromList);
+            writer.Write(file);
+        }
+
+        public void DownloadFile(string file, TextView associatedTextView)
+        {
+            writer.Write((int)ClientFlags.FT_DownloadFile);
+            writer.Write(file);
+            if (FilesWithTheirAssociatedTextViews.ContainsKey(file))
+            {
+                FilesWithTheirAssociatedTextViews.Remove(file);
+            }
+            FilesWithTheirAssociatedTextViews.Add(file, associatedTextView);
+        }
+
+        private void ReceiveFileV2(string ip)
+        {
+            TcpClient fileClient = new TcpClient();
+            //fileClient.Connect(IPAddress.Parse(ip), filePort);
+            fileClient.Connect(cIP, filePort);
+
+
+            BinaryReader fileReader = new BinaryReader(fileClient.GetStream());
+            string fullFileNameFromPC = fileReader.ReadString();
+            string fileName = fileReader.ReadString();
+            int fileLength = fileReader.ReadInt32();
+            int packetCount = fileReader.ReadInt32();
+            int reszta = fileReader.ReadInt32();
+            byte[] buffer = new byte[BUFFER_SIZE];
+            byte[] lastPacket = new byte[reszta];
+
+
+
+            string fullFilePath = System.IO.Path.Combine(DownloadPath, fileName);
+            FileStream fileStream = File.OpenWrite(fullFilePath);
+
+            for(int i = 0; i<packetCount; i++)
+            {
+                buffer = fileReader.ReadBytes(BUFFER_SIZE);
+                fileStream.Write(buffer, 0, BUFFER_SIZE);
+                if(packetCount > 500 && i%500 == 0)
+                {
+                    ProgressBarAction((int)(Math.Ceiling(((double)i/(double)packetCount)*100)));
+                }
+            }
+            lastPacket = fileReader.ReadBytes(lastPacket.Length);
+            if(lastPacket.Length != reszta)
+            {
+                BrokenFileAction(Application.Context.Resources.GetString(Resource.String.download_failed));
+            }
+            else
+            {
+                BrokenFileAction(Application.Context.Resources.GetString(Resource.String.download_completed));
+            }
+            fileStream.Write(lastPacket, 0, lastPacket.Length);
+
+
+            fileReader.Close();
+            fileStream.Close();
+            fileClient.Close();
+
+            TextView refTextView = null;
+            FilesWithTheirAssociatedTextViews.TryGetValue(fullFileNameFromPC, out refTextView);
+
+            FileReceivedAction(fileName, fileName, fullFilePath, fileLength, refTextView);
+        }
+
+
+        //--------------------------------------------------
+        //FILEV2 END
+        //--------------------------------------------------
+
+        //--------------------------------------------------
+        //NUMPAD START
+        //--------------------------------------------------
+        public void SendKey(string klawisz)
+        {
+            writer.Write((int)ClientFlags.Numpad);
+            writer.Write(klawisz);
+        }
+        //--------------------------------------------------
+        //NUMPAD END
+        //--------------------------------------------------
+
+
+
         public void SendDeviceName(string name)
         {
             writer.Write((int)ClientFlags.Config_DeviceName);
@@ -596,7 +731,13 @@ namespace D2DUIv3
         PM_Close,
         Config_DeviceName,
         Password_Correct,
-        Password_Incorrect
+        Password_Incorrect,
+        FT_Instantiate,
+        FT_Ready,
+        FT_RemoveFileFromList,
+        FT_DownloadFile,
+        FT_SendFile,
+        Numpad
     }
 
     public static class ClientUtilities

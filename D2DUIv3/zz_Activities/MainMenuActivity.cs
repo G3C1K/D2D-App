@@ -10,12 +10,10 @@ using Android.Runtime;
 using Android.Support.V7.App;
 using Android.Views;
 using Android.Widget;
-using D2DUIv3.zz_Activities;
-//sing D2DUIv3.zz_Activities;
 
 namespace D2DUIv3
 {
-    [Activity(Label = "Main menu", Theme = "@style/AppTheme")]
+    [Activity(Theme = "@style/AppTheme")]
     public class MainMenuActivity : AppCompatActivity
     {
 
@@ -26,7 +24,7 @@ namespace D2DUIv3
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
-
+            this.Title = Resources.GetString(Resource.String.menu);
             SetContentView(Resource.Layout.main_menu);
             string ip = Intent.GetStringExtra("IP" ?? "not recv");
 
@@ -35,7 +33,7 @@ namespace D2DUIv3
             var txtIP = FindViewById<TextView>(Resource.Id.textIPInfo);
             if (client != null)
             {
-                txtIP.Text += " " + ip + " " + client.DownloadPath;
+                txtIP.Text += " " + ip;
             }
             else
             {
@@ -57,13 +55,24 @@ namespace D2DUIv3
                 StartActivity(metricsActivity);
             };
 
-            var buttonNumpad = FindViewById<Button>(Resource.Id.buttonNumpad);
+            Button buttonFiles = FindViewById<Button>(Resource.Id.buttonFileTransfer);
+
+            buttonFiles.Click += (o, e) =>
+            {
+                Intent fileActivity = new Intent(this, typeof(FileTransferActivity));
+                StartActivity(fileActivity);
+            };
+
+            Button buttonNumpad = FindViewById<Button>(Resource.Id.buttonNumpad);
 
             buttonNumpad.Click += (o, e) =>
             {
                 Intent numpadActivity = new Intent(this, typeof(NumpadActivity));
                 StartActivity(numpadActivity);
             };
+
+
+
 
             // Create your application here
         }

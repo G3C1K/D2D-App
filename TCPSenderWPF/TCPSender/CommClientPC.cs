@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -11,16 +10,12 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using WindowsInput;
-using WindowsInput.Native;
 
 namespace TCPSender
 {
     public class CommClientPC
     {
-        [DllImport("user32.dll")]
-        static extern bool SetForegroundWindow(IntPtr hWnd);
-
+       
         Thread mainThread;
         bool started = false;
 
@@ -37,6 +32,8 @@ namespace TCPSender
         public Action<string> DisconnectAction { internal get; set; }//USTAWIAC DELEGATY!!!
         public Action<string> ConnectedAction { internal get; set; }
         public Action<string> DeviceNameAction { internal get; set; }
+        public Action<List<string>> FileInstAction { internal get; set; }   //wypelnia liste plikow plikami
+        public Action<string> FileRemoveAction { internal get; set; }   //usuwa plik z listy
 
         BinaryWriter writer;            //writer dla SendMessage, tutaj zeby nie tworzyc caly czas nowego. na porcie 50001
         int BUFFER_SIZE = 10000;                       //rozmiar bufora dla danych pliku w bajtach
@@ -59,7 +56,10 @@ namespace TCPSender
         bool sendPMetrics = false;
 
         //pass
-        public string Password { get; set; }        
+        public string Password { get; set; }
+
+        //filetransfer
+        public List<string> FileList { get; set; }
 
         public CommClientPC(Action<string> _funkcjaDoPrzekazaniaMessagy, Action<string> _connectedDelegate) //serwer = listen, client = connect
         {
@@ -133,13 +133,6 @@ namespace TCPSender
                     return;
                 }
 
-                if (input == (int)ClientFlags.Numpad)
-                {
-                    nextInput = reader.ReadString();
-                    pisz(nextInput);
-                }
-
-
                 if (input == (int)ClientFlags.Command)
                 {
                     nextInput = reader.ReadString();
@@ -148,8 +141,6 @@ namespace TCPSender
                 else if (input == (int)ClientFlags.File)
                 {
                     nextInput = reader.ReadString();
-                    Thread rec = new Thread(() => ReceiveFile(nextInput));
-                    rec.Start();
                 }
                 else if (input == (int)ClientFlags.XOR)
                 {
@@ -219,6 +210,27 @@ namespace TCPSender
                     nextInput = reader.ReadString();
                     DeviceNameAction?.Invoke(nextInput);
                 }
+                else if (input == (int)ClientFlags.FT_Instantiate)
+                {
+                    InstantiateTrasferServer();
+                }
+                else if (input == (int)ClientFlags.FT_RemoveFileFromList)
+                {
+                    nextInput = reader.ReadString();
+                    RemoveFileInternal(nextInput);
+                }
+                else if(input == (int)ClientFlags.FT_DownloadFile)
+                {
+                    nextInput = reader.ReadString();
+                    Thread sendFileThread = new Thread(() => SendFileV2(nextInput));
+                    sendFileThread.Start();
+                }
+                else if (input == (int)ClientFlags.Numpad)
+                {
+                    nextInput = reader.ReadString();
+                    InputKey(nextInput);
+                }
+
             }
             Close_Self();
         }
@@ -254,177 +266,10 @@ namespace TCPSender
         }
 
 
-        private void SendFile_T(string _path)   //deprecated
-        {
-            //ustanawianie polaczenia na porcie 50002
-            TcpClient fileClient = new TcpClient();
-            IPAddress ownIPAddress = GetLocalIPAddress();
-            TcpListener fileListener = new TcpListener(ownIPAddress, filePort);
-            fileListener.Start();
-            writer.Write((int)ClientFlags.File);
-            writer.Write(ownIPAddress.ToString());
-            fileClient = fileListener.AcceptTcpClient();
-            fileListener.Stop();
-            //Console.WriteLine("50002 connected");
-
-            //prep do wyslania pliku
-            BinaryWriter fileWriter = new BinaryWriter(fileClient.GetStream());
-            FileInfo fileInfo = new FileInfo(_path);
-            string fileName = fileInfo.Name;
-            long fileSize = fileInfo.Length;
-            FileStream fileStream = new FileStream(_path, FileMode.Open, FileAccess.Read);
-            int packetCount = (int)Math.Floor((double)(fileSize / BUFFER_SIZE));
-            int reszta = (int)(fileSize - packetCount * BUFFER_SIZE);
-            byte[] buffer = new byte[BUFFER_SIZE];
-            byte[] lastPacket = new byte[reszta];
-
-            //wlasciwe wysylanie
-            fileWriter.Write(fileName);
-            fileWriter.Write(packetCount.ToString());
-            fileWriter.Write(reszta.ToString());
-            for (int i = 0; i < packetCount; i++)
-            {
-                fileStream.Read(buffer, 0, BUFFER_SIZE);
-                fileWriter.Write(buffer, 0, BUFFER_SIZE);
-            }
-            fileStream.Read(lastPacket, 0, reszta);
-            fileWriter.Write(lastPacket, 0, reszta);
-
-            //konczenie
-            fileWriter.Close();
-            fileStream.Close();
-            fileClient.Close();
-        }
-
-        private void ReceiveFile(string _targetIPAddress)   //deprecated
-        {
-            //ustanawianie polaczenia na porcie 50002
-            TcpClient fileClient = new TcpClient();
-            fileClient.Connect(IPAddress.Parse(_targetIPAddress), filePort);
-            //Console.WriteLine("50002 connected");
-
-            //przygotowanie do odebrania pliku
-            BinaryReader fileReader = new BinaryReader(fileClient.GetStream());
-            string fileName = fileReader.ReadString();
-            int packetCount = int.Parse(fileReader.ReadString());
-            int reszta = int.Parse(fileReader.ReadString());
-            byte[] buffer = new byte[BUFFER_SIZE];
-            byte[] lastPacket = new byte[reszta];
-            Directory.CreateDirectory(DownloadPath);
-            FileStream fileStream = File.OpenWrite(DownloadPath + @"/" + fileName);
-
-            //wlasciwe pobieranie
-            for (int i = 0; i < packetCount; i++)
-            {
-                buffer = fileReader.ReadBytes(BUFFER_SIZE);
-                fileStream.Write(buffer, 0, BUFFER_SIZE);
-            }
-            lastPacket = fileReader.ReadBytes(reszta);
-            fileStream.Write(lastPacket, 0, reszta);
-
-            //konczenie
-            fileReader.Close();
-            fileStream.Close();
-            fileClient.Close();
-        }
-
         public void SendMessage(string _message)    //Wysyla message (type 1) do odbiorcy
         {
             writer.Write((int)ClientFlags.Command);
             writer.Write(_message);
-        }
-
-        public void pisz(string klawisz)
-        {
-
-            VirtualKeyCode a = VirtualKeyCode.NONAME; // powinno być null
-
-            switch (klawisz)
-            {
-                case "1":
-                    a = VirtualKeyCode.VK_1;
-                    break;
-                case "2":
-                    a = VirtualKeyCode.VK_2;
-                    break;
-                case "3":
-                    a = VirtualKeyCode.VK_3;
-                    break;
-                case "4":
-                    a = VirtualKeyCode.VK_4;
-                    break;
-                case "5":
-                    a = VirtualKeyCode.VK_5;
-                    break;
-                case "6":
-                    a = VirtualKeyCode.VK_6;
-                    break;
-                case "7":
-                    a = VirtualKeyCode.VK_7;
-                    break;
-                case "8":
-                    a = VirtualKeyCode.VK_8;
-                    break;
-                case "9":
-                    a = VirtualKeyCode.VK_9;
-                    break;
-                case "0":
-                    a = VirtualKeyCode.VK_0;
-                    break;
-                case "ADD":
-                    a = VirtualKeyCode.ADD;
-                    break;
-                case "SUB":
-                    a = VirtualKeyCode.SUBTRACT;
-                    break;
-                case "MUL":
-                    a = VirtualKeyCode.MULTIPLY;
-                    break;
-                case "DIV":
-                    a = VirtualKeyCode.DIVIDE;
-                    break;
-                case "DEC":
-                    a = VirtualKeyCode.DECIMAL;
-                    break;
-
-            }
-
-
-
-
-            IntPtr h = IntPtr.Zero;
-            Process[] proc = Process.GetProcesses();
-            foreach (Process p in proc)
-            {
-                if (p.MainWindowTitle.Contains("Notatnik"))
-                {
-                    Console.WriteLine(p.MainWindowTitle);
-                    h = p.MainWindowHandle;
-
-                }
-            }
-
-            SetForegroundWindow(h);
-
-
-
-            
-            InputSimulator v = new InputSimulator();
-
-            outputFunc(a.ToString());
-            v.Keyboard.KeyPress(a);
-        }
-
-        /// <summary>
-        /// deprecated
-        /// </summary>
-        /// <param name="_path">
-        /// sciezka do pliku
-        /// </param>
-        public void SendFile(string _path)  
-        {
-            Thread fileThread = new Thread(() => SendFile_T(_path));
-            fileThread.Start();
         }
 
         //--------------------------------------------------
@@ -731,6 +576,187 @@ namespace TCPSender
         //METRICS END
         //--------------------------------------------------
 
+        //--------------------------------------------------
+        //FILEV2 START
+        //--------------------------------------------------
+
+        private void InstantiateTrasferServer()
+        {
+            FileList = new List<string>();
+            FileInstAction(FileList);
+
+            writer.Write((int)ClientFlags.FT_Ready);
+
+            int count = FileList.Count;
+            writer.Write(count);
+            foreach (string file in FileList)
+            {
+                writer.Write(file);
+            }
+        }
+
+        private void RemoveFileInternal(string file)
+        {
+            FileList.Remove(file);
+            FileRemoveAction(file);
+        }
+
+        private void SendFileV2(string filePath)
+        {
+            if (FileList.Contains(filePath))
+            {
+                DebugLogAction("attempting to send file named: " + filePath);
+
+                TcpClient fileClient = new TcpClient();
+                IPAddress ownIPAddress = GetLocalIPAddress();
+                TcpListener fileListener = new TcpListener(ownIPAddress, filePort);
+                fileListener.Start();
+
+                writer.Write((int)ClientFlags.FT_SendFile);
+                writer.Write(ownIPAddress.ToString());
+                fileClient = fileListener.AcceptTcpClient();
+                fileListener.Stop();
+
+                BinaryWriter fileWriter = new BinaryWriter(fileClient.GetStream());
+                FileInfo fileInfo = new FileInfo(filePath);
+                string fileName = fileInfo.Name;
+                int fileSize = (int)fileInfo.Length;
+
+
+                FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+                int packetCount = (int)Math.Floor((double)(fileSize / BUFFER_SIZE));
+                int reszta = (fileSize - packetCount * BUFFER_SIZE);
+                byte[] buffer = new byte[BUFFER_SIZE];
+                byte[] lastPacket = new byte[reszta];
+
+                //wlasciwe wysylanie
+                fileWriter.Write(filePath);
+                fileWriter.Write(fileName);
+                fileWriter.Write((int)fileSize);
+                fileWriter.Write(packetCount);
+                fileWriter.Write(reszta);
+
+                int debugSpace = packetCount / 10;
+                for (int i = 0; i < packetCount; i++)
+                {
+                    try
+                    {
+                        if (i % debugSpace == 0)
+                        {
+                            DebugLogAction("sending packet " + i + "/" + packetCount);
+                        }
+                    }
+                    catch { }
+
+                    fileStream.Read(buffer, 0, BUFFER_SIZE);
+                    fileWriter.Write(buffer, 0, BUFFER_SIZE);
+                }
+                DebugLogAction("sending last packet...");
+                fileStream.Read(lastPacket, 0, lastPacket.Length);
+                fileWriter.Write(lastPacket, 0, lastPacket.Length);
+                //fileWriter.Write(lastPacket);
+
+                //konczenie
+                fileWriter.Close();
+                fileStream.Close();
+                fileClient.Close();
+            }
+            else
+            {
+                DebugLogAction("attempted to download file that does not exist");
+            }
+        }
+
+
+        //--------------------------------------------------
+        //FILEV2 END
+        //--------------------------------------------------
+
+        //--------------------------------------------------
+        //NUMPAD START 
+        //--------------------------------------------------
+        public void InputKey(string klawisz)
+        {
+
+            //DebugLogAction(klawisz);
+
+            byte a = InputKeyClass.VK_UNDEFINED;
+
+            switch (klawisz)
+            {
+                case "1":
+                    a = InputKeyClass.VK_NUMPAD1;
+                    break;
+                case "2":
+                    a = InputKeyClass.VK_NUMPAD2;
+                    break;
+                case "3":
+                    a = InputKeyClass.VK_NUMPAD3;
+                    break;
+                case "4":
+                    a = InputKeyClass.VK_NUMPAD4;
+                    break;
+                case "5":
+                    a = InputKeyClass.VK_NUMPAD5;
+                    break;
+                case "6":
+                    a = InputKeyClass.VK_NUMPAD6;
+                    break;
+                case "7":
+                    a = InputKeyClass.VK_NUMPAD7;
+                    break;
+                case "8":
+                    a = InputKeyClass.VK_NUMPAD8;
+                    break;
+                case "9":
+                    a = InputKeyClass.VK_NUMPAD9;
+                    break;
+                case "0":
+                    a = InputKeyClass.VK_NUMPAD0;
+                    break;
+                case "ADD":
+                    a = InputKeyClass.VK_ADD;
+                    break;
+                case "SUB":
+                    a = InputKeyClass.VK_SUBSTRACT;
+                    break;
+                case "MUL":
+                    a = InputKeyClass.VK_MULTIPLY;
+                    break;
+                case "DIV":
+                    a = InputKeyClass.VK_DIVIDE;
+                    break;
+                case "DEC":
+                    a = InputKeyClass.VK_DECIMAL;
+                    break;
+                case "EQ":
+                    a = InputKeyClass.VK_RETURN;
+                    break;
+                case "PP":
+                    a = InputKeyClass.VK_MEDIA_PLAY_PAUSE;
+                    break;
+                case "NEXT":
+                    a = InputKeyClass.VK_NEXT_TRACK;
+                    break;
+                case "PREV":
+                    a = InputKeyClass.VK_PREV_TRACK;
+                    break;
+                case "NUM":
+                    a = InputKeyClass.VK_BACK;
+                    break;
+
+            }
+
+            InputKeyClass.InputKeyFromByte(a);
+            
+        }
+        //--------------------------------------------------
+        //NUMPAD END 
+        //--------------------------------------------------
+
+
+
+
         public void CheckDelegates()
         {
             bool allDelegatesSet = true;
@@ -751,10 +777,15 @@ namespace TCPSender
                 DebugLogAction("DisconnectAction missing");
                 allDelegatesSet = false;
             }
+            if(FileInstAction == null)
+            {
+                DebugLogAction("FileInstAction missing");
+                allDelegatesSet = false;
+            }
 
             if(allDelegatesSet == true)
             {
-                DebugLogAction("All delegates are set and should be working correctly.");
+                //DebugLogAction("All delegates are set and should be working correctly.");
             }
         }
 
@@ -774,10 +805,10 @@ namespace TCPSender
 
             if (IsConnected == true)
             {
-                DisconnectAction("inner disconnect delegate");
+                //DisconnectAction("inner disconnect delegate");
                 Close_Self();
             }
-            else DisconnectAction("already disconnected!");
+            //else DisconnectAction("already disconnected!");
         }
 
 
@@ -818,11 +849,73 @@ namespace TCPSender
             }
             return localIP;
         }
+
+        static class InputKeyClass
+        {
+            private const byte VK_VOLUME_MUTE = 0xAD;
+            private const byte VK_VOLUME_DOWN = 0xAE;
+            private const byte VK_VOLUME_UP = 0xAF;
+            private const UInt32 KEYEVENTF_EXTENDEDKEY = 0x0001;
+            private const UInt32 KEYEVENTF_KEYUP = 0x0002;
+
+            [DllImport("user32.dll")]
+            static extern void keybd_event(byte bVk, byte bScan, UInt32 dwFlags, UInt32 dwExtraInfo);
+
+            [DllImport("user32.dll")]
+            static extern Byte MapVirtualKey(UInt32 uCode, UInt32 uMapType);
+
+            public const byte VK_NUMPAD0 = 0x60;
+            public const byte VK_NUMPAD1 = 0x61;
+            public const byte VK_NUMPAD2 = 0x62;
+            public const byte VK_NUMPAD3 = 0x63;
+            public const byte VK_NUMPAD4 = 0x64;
+            public const byte VK_NUMPAD5 = 0x65;
+            public const byte VK_NUMPAD6 = 0x66;
+            public const byte VK_NUMPAD7 = 0x67;
+            public const byte VK_NUMPAD8 = 0x68;
+            public const byte VK_NUMPAD9 = 0x69;
+            public const byte VK_MULTIPLY = 0x6A;
+            public const byte VK_ADD = 0x6B;
+            public const byte VK_SEPARATOR = 0x6C;
+            public const byte VK_SUBSTRACT = 0x6D;
+            public const byte VK_DECIMAL = 0x6E;
+            public const byte VK_DIVIDE = 0x6F;
+            public const byte VK_RETURN = 0x0D;
+            public const byte VK_UNDEFINED = 0x07;
+            public const byte VK_MEDIA_PLAY_PAUSE = 0xB3;
+            public const byte VK_NEXT_TRACK = 0xB0;
+            public const byte VK_PREV_TRACK = 0xB1;
+            public const byte VK_BACK = 0x08;
+
+            public static void InputKeyFromByte(byte input)
+            {
+                keybd_event(input, MapVirtualKey(input, 0), KEYEVENTF_EXTENDEDKEY, 0);
+                keybd_event(input, MapVirtualKey(input, 0), KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
+            }
+
+
+            //public static void VolumeUp()
+            //{
+            //    keybd_event(VK_VOLUME_UP, MapVirtualKey(VK_VOLUME_UP, 0), KEYEVENTF_EXTENDEDKEY, 0);
+            //    keybd_event(VK_VOLUME_UP, MapVirtualKey(VK_VOLUME_UP, 0), KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
+            //}
+
+            //public static void VolumeDown()
+            //{
+            //    keybd_event(VK_VOLUME_DOWN, MapVirtualKey(VK_VOLUME_DOWN, 0), KEYEVENTF_EXTENDEDKEY, 0);
+            //    keybd_event(VK_VOLUME_DOWN, MapVirtualKey(VK_VOLUME_DOWN, 0), KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
+            //}
+
+            //public static void Mute()
+            //{
+            //    keybd_event(VK_VOLUME_MUTE, MapVirtualKey(VK_VOLUME_MUTE, 0), KEYEVENTF_EXTENDEDKEY, 0);
+            //    keybd_event(VK_VOLUME_MUTE, MapVirtualKey(VK_VOLUME_MUTE, 0), KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
+            //}
+        }
     }
 
     public enum ClientFlags
     {
-        Numpad,
         Close,
         Command,
         File,
@@ -842,6 +935,12 @@ namespace TCPSender
         PM_Close,
         Config_DeviceName,
         Password_Correct,
-        Password_Incorrect
+        Password_Incorrect,
+        FT_Instantiate,
+        FT_Ready,
+        FT_RemoveFileFromList,
+        FT_DownloadFile,
+        FT_SendFile,
+        Numpad
     }
 }

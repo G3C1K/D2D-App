@@ -19,7 +19,7 @@ namespace TCPSenderWPF
     /// <summary>
     /// Logika interakcji dla klasy PasswordForConnection.xaml
     /// </summary>
-    public partial class PasswordForConnection : Window
+    public partial class PasswordForConnection
     {
         CommClientPC client;
         public Action<string> SetPasswordAction { internal get; set; }

@@ -4,11 +4,10 @@
       >
   <item
        android:id="@+id/menu_disconnect"
-       android:icon="@mipmap/disconnect"
        app:showAsAction="always"
-       android:title="Disconnect" />
-  <item
+       android:title="@string/disconnect" />
+  <!--<item
        android:id="@+id/menu_settings"
        app:showAsAction="never"
-       android:title="Settings" />
+       android:title="@string/action_settings" />-->
 </menu>

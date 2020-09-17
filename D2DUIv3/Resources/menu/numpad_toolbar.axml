@@ -2,12 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto"
       >
+  <item
+       android:id="@+id/menu_disconnect"
+       app:showAsAction="always"
+       android:title="BACK SPACE" />
   <!--<item
        android:id="@+id/menu_settings"
        app:showAsAction="never"
        android:title="@string/action_settings" />-->
-  <item
-     android:id="@+id/volume_refresh"
-     app:showAsAction="always"
-     android:title="@string/refresh" />
 </menu>

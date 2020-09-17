@@ -39,6 +39,9 @@
     </ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FluentWPF, Version=0.8.0.6, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FluentWPF.0.8.0\lib\net45\FluentWPF.dll</HintPath>
+    </Reference>
     <Reference Include="Hardcodet.Wpf.TaskbarNotification, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Hardcodet.NotifyIcon.Wpf.1.0.8\lib\net451\Hardcodet.Wpf.TaskbarNotification.dll</HintPath>
     </Reference>
@@ -88,6 +91,16 @@
       <DependentUpon>TransferWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="TrayIcon.cs" />
+    <Page Include="LanguageResources\MainWindow.en-EN.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Page>
+    <Page Include="LanguageResources\MainWindow.pl-PL.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -147,6 +160,16 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Ikony\notconnected.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Ikony\d2dc.ico" />
+    <Resource Include="Ikony\d2dnc.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Ikony\lock.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Ikony\send.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

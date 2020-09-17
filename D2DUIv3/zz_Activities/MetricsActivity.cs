@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using Android.App;
 using Android.Content;
+using Android.Content.Res;
 using Android.OS;
 using Android.Runtime;
 using Android.Support.V7.App;
@@ -14,7 +15,7 @@ using Android.Widget;
 
 namespace D2DUIv3
 {
-    [Activity(Label = "MetricsActivity")]
+    [Activity]
     public class MetricsActivity : AppCompatActivity
     {
 
@@ -79,13 +80,15 @@ namespace D2DUIv3
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
+            this.Title = Resources.GetString(Resource.String.pmetrics);
             stillAsk = true;
             SetContentView(Resource.Layout.metrics_submenu);
 
             //textViewMetrics = FindViewById<TextView>(Resource.Id.textView_pms5);
             //textViewMetrics.Text += " test instancji\n";
             string[] statOnStart = new string[1];
-            statOnStart[0] = "Loading...: Please wait";
+            //statOnStart[0] = "Loading...: Please wait";
+            statOnStart[0] = Resources.GetString(Resource.String.loading);
             HardwareSeparated1D = statOnStart;
 
             // Recycler view

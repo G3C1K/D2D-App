@@ -11,34 +11,92 @@ using Android.Runtime;
 using Android.Support.V7.App;
 using Android.Views;
 using Android.Widget;
+using Java.Security;
 
-namespace D2DUIv3.zz_Activities
+namespace D2DUIv3
 {
-    [Activity(Label = "NumpadActivity")]
+    [Activity]
     public class NumpadActivity : AppCompatActivity
     {
         public CommClientAndroid client;
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
+            this.Title = Resources.GetString(Resource.String.numpad);
             client = ClientHolder.Client;
-            //client.NumpadInstantiate();
-            
-
-
-
+            // client.NumpadInstantiate();
             SetContentView(Resource.Layout.numpad_submenu);
+
+            int[] tab =
+            {
+                Resource.Id.one,
+                Resource.Id.two,
+                Resource.Id.three,
+                Resource.Id.four,
+                Resource.Id.five,
+                Resource.Id.six,
+                Resource.Id.seven,
+                Resource.Id.eight,
+                Resource.Id.nine,
+                Resource.Id.zero,
+                Resource.Id.dot,
+                Resource.Id.plus,
+                Resource.Id.minus,
+                Resource.Id.div,
+                Resource.Id.razy,
+                Resource.Id.equal
+            };
+
+
+
+
+
+            foreach (int id in tab)
+            {
+                Button b = FindViewById<Button>(id);
+                b.Click += NumClick;
+
+            }
+
+
             // Create your application here
         }
 
-
-        [Java.Interop.Export("NumClick")]
-        public void NumClick(View v)
+        public override bool OnCreateOptionsMenu(IMenu menu)
         {
-            
-            string klawisz = "nic";
-            Button guzik = (Button)v;
-            switch (guzik.Text)
+            MenuInflater.Inflate(Resource.Menu.numpad_toolbar, menu);
+
+            SupportActionBar.SetDisplayHomeAsUpEnabled(true);
+            SupportActionBar.SetDisplayShowHomeEnabled(true);
+            return base.OnCreateOptionsMenu(menu);
+        }
+
+        public override bool OnOptionsItemSelected(IMenuItem item)
+        {
+            if (item.ItemId == Android.Resource.Id.Home)
+            {
+                this.Finish();
+                return true;
+            }
+
+            if (item.ItemId == Resource.Id.menu_disconnect)
+            {
+                if(client != null)
+                {
+                    client.SendKey("NUM");
+                }
+                return true;
+            }
+
+            return base.OnOptionsItemSelected(item);
+        }
+
+    public void NumClick(object sender, EventArgs e)
+        {
+            string klawisz = null;
+            Button g = (Button)sender;
+
+            switch (g.Text)
             {
                 case "1":
                     klawisz = "1";
@@ -85,15 +143,15 @@ namespace D2DUIv3.zz_Activities
                 case "*":
                     klawisz = "MUL";
                     break;
+                case "enter":
+                    klawisz = "EQ";
+                    break;
 
-                
+
             }
             client.SendKey(klawisz);
-           
-        } 
+        }
 
     }
-
-
 
 }

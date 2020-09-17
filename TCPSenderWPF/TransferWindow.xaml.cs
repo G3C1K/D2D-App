@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,9 +18,12 @@ namespace TCPSenderWPF
     /// <summary>
     /// Logika interakcji dla klasy TransferWindow.xaml
     /// </summary>
-    public partial class TransferWindow : Window
+    public partial class TransferWindow
     {
         public Action<string> TransferAction { internal get; set; }
+        public Action<string> FinishAction { internal get; set; }
+
+
         public TransferWindow()
         {
             InitializeComponent();
@@ -42,9 +46,15 @@ namespace TCPSenderWPF
 
                 foreach(var file in files)
                 {
-                    //Sending files function here
-                    this.lastSent.Content = file;
-                    TransferAction.Invoke(file);
+                    FileAttributes attr = File.GetAttributes(file);
+
+                    if (!((attr & FileAttributes.Directory) == FileAttributes.Directory))
+                    {
+                        this.lastSent.Content = file;
+                        TransferAction.Invoke(file);
+                    }
+
+                    
                 }
             }
             if (e.Data.GetDataPresent(DataFormats.Text))
@@ -52,10 +62,27 @@ namespace TCPSenderWPF
                 string text = (string)e.Data.GetData(DataFormats.Text);
                 //Sending text function here if first if doesn't work for text as well
                 this.lastSent.Content = text;
-                TransferAction.Invoke(text);
+                //TransferAction.Invoke(text);
             }
+
+            FinishAction("Finished adding files");
             var tsPanel = sender as StackPanel;
             tsPanel.Background = Brushes.Gray;
+        }
+
+        public void AddFiles(List<string> files)
+        {
+            foreach (var file in files)
+            {
+                FileAttributes attr = File.GetAttributes(file);
+
+                if (!((attr & FileAttributes.Directory) == FileAttributes.Directory))
+                {
+                    this.lastSent.Content = file;
+                    TransferAction.Invoke(file);
+                }           
+            }
+            FinishAction("Finished adding files");
         }
 
         private void Space_DragOver(object sender, DragEventArgs e)
