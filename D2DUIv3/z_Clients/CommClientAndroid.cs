@@ -132,12 +132,6 @@ namespace D2DUIv3
                     Close();
                     return;
                 }
-                if(input == (int)ClientFlags.Numpad)
-                {
-                    nextInput = reader.ReadString();
-                    SendKey(nextInput);
-                }
-                
 
                 if (input == (int)ClientFlags.Command)
                 {
@@ -413,12 +407,6 @@ namespace D2DUIv3
             writer.Write("hi. placeholder for flags and options");
         }       
 
-        public void NumpadInstantiate()
-        {
-            writer.Write((int)ClientFlags.Numpad);
-            //oczekuje string???
-        }
-
         //po fladze vIS
         private void ReadVolumeClient(BinaryReader reader)
         {
@@ -460,12 +448,6 @@ namespace D2DUIv3
             writer.Write((int)ClientFlags.Volume_ProcessID);
             writer.Write(_id.ToString());
             writer.Write(_volume.ToString());
-        }
-
-        public void SendKey(string klawisz)
-        {
-            writer.Write((int)ClientFlags.Numpad);
-            writer.Write(klawisz);
         }
 
         public void ChangeVolumeClientPN(string _processName, float _volume)
@@ -711,7 +693,6 @@ namespace D2DUIv3
 
     public enum ClientFlags
     {
-        Numpad,
         Close,
         Command,
         File,
