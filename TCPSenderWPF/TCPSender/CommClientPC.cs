@@ -805,10 +805,10 @@ namespace TCPSender
 
             if (IsConnected == true)
             {
-                //DisconnectAction("inner disconnect delegate");
+                DisconnectAction("inner disconnect delegate");
                 Close_Self();
             }
-            //else DisconnectAction("already disconnected!");
+            else DisconnectAction("already disconnected!");
         }
 
 

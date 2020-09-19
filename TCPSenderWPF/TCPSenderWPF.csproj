@@ -66,18 +66,19 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="WindowsInput, Version=1.0.4.0, Culture=neutral, PublicKeyToken=9b287f7dc5073cad, processorArchitecture=MSIL">
-      <HintPath>..\packages\InputSimulator.1.0.4.0\lib\net20\WindowsInput.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Commands\ExitCommand.cs" />
     <Compile Include="PasswordForConnection.xaml.cs">
       <DependentUpon>PasswordForConnection.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Commands\RelayCommand.cs" />
+    <Compile Include="Commands\ShowTransferWindowCommand.cs" />
+    <Compile Include="Commands\ShowWindowCommand.cs" />
     <Compile Include="TCPSender\AutoConfig.cs" />
     <Compile Include="TCPSender\AutoConfigPC.cs" />
     <Compile Include="TCPSender\ClientHolder.cs" />
@@ -85,12 +86,12 @@
     <Compile Include="TCPSender\PM.cs" />
     <Compile Include="TCPSender\Program.cs" />
     <Compile Include="TCPSender\Test.cs" />
+    <Compile Include="TCPSender\TransferWindowHolder.cs" />
     <Compile Include="TCPSender\VolumeHandling.cs" />
     <Compile Include="TCPSender\VolumeMixer.cs" />
     <Compile Include="TransferWindow.xaml.cs">
       <DependentUpon>TransferWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="TrayIcon.cs" />
     <Page Include="LanguageResources\MainWindow.en-EN.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -162,8 +163,12 @@
     <Resource Include="Ikony\notconnected.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Ikony\d2dc.ico" />
-    <Resource Include="Ikony\d2dnc.ico" />
+    <Content Include="Ikony\d2dc.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Ikony\d2dnc.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Ikony\lock.ico" />

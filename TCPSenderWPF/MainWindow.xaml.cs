@@ -1,8 +1,12 @@
-﻿using System;
+﻿using Hardcodet.Wpf.TaskbarNotification;
+using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 using System.Security;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,6 +21,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using TCPSender;
+using TCPSenderWPF.TCPSender;
 
 namespace TCPSenderWPF
 {
@@ -30,7 +35,8 @@ namespace TCPSenderWPF
     {
         CommClientPC client = null;
         IPAddress adresInterfejsuDoNasluchu;
-        TrayIcon trayIcon;
+        // TrayIcon trayIcon;
+       // TaskbarIcon taskbarIcon;
         PasswordForConnection passwordForConnection;
         TransferWindow transferWindow;
         int password;
@@ -38,8 +44,10 @@ namespace TCPSenderWPF
         AutoConfigPC autoConfigClient;
         bool sendFlag;
         //Ikony do paska okna
-        BitmapFrame connectedIcon = BitmapFrame.Create(new Uri("pack://application:,,,/Ikony/d2dc.ico", UriKind.RelativeOrAbsolute));
-        BitmapFrame notconnectedIcon = BitmapFrame.Create(new Uri("pack://application:,,,/Ikony/d2dnc.ico", UriKind.RelativeOrAbsolute));
+        //BitmapFrame connectedIcon = BitmapFrame.Create(new Uri("pack://application:,,,/Ikony/d2dc.ico", UriKind.RelativeOrAbsolute));
+        //BitmapFrame notconnectedIcon = BitmapFrame.Create(new Uri("pack://application:,,,/Ikony/d2dnc.ico", UriKind.RelativeOrAbsolute));
+        Icon connectedIcon = new Icon("Ikony/d2dc.ico");
+        Icon notconnectedIcon = new Icon("Ikony/d2dnc.ico");
         OpenFileDialog openFileDialog;
 
         //listy plikow
@@ -49,6 +57,7 @@ namespace TCPSenderWPF
         public MainWindow()
         {
             InitializeComponent();
+            this.Hide();
 
             CultureInfo ci = CultureInfo.InstalledUICulture;
             Properties.Settings.Default.SystemLanguage = ci.TwoLetterISOLanguageName;
@@ -58,7 +67,8 @@ namespace TCPSenderWPF
             passwordForConnection = new PasswordForConnection();
             passwordForConnection.SetPasswordAction = SetPasswordDelegate;
 
-            transferWindow = new TransferWindow();
+            TransferWindowHolder.TransferWindow = new TransferWindow();
+            transferWindow = TransferWindowHolder.TransferWindow;
             transferWindow.TransferAction = TransferHistoryDelegate;
             transferWindow.FinishAction = FinishDelegate_TransferWindow;
 
@@ -67,8 +77,9 @@ namespace TCPSenderWPF
             openFileDialog = new OpenFileDialog();
             openFileDialog.Multiselect = true;
 
-            trayIcon = new TrayIcon(this, transferWindow);
-            this.Icon = notconnectedIcon;
+            //trayIcon = new TrayIcon(this, transferWindow);
+            taskbarIcon.ToolTipText = "IP: " + CommClientPC.GetLocalIPAddress().ToString() + "\n" + (string)System.Windows.Application.Current.MainWindow.FindResource("ConnectedDevice");
+            taskbarIcon.Icon = notconnectedIcon;
         }
 
         //--------------------------------------------------
@@ -121,8 +132,11 @@ namespace TCPSenderWPF
 
 
                     textBlock_debugLog.Text += input + " ConnectedDelegate \n";
-                    trayIcon.ChangeIcon("Ikony/d2dc.ico", "ready");
-                    this.Icon = connectedIcon;
+                  //  trayIcon.ChangeIcon("Ikony/d2dc.ico", "ready");
+                    taskbarIcon.Icon = connectedIcon;
+                    taskbarIcon.Tag = "ready";
+                   // taskbarIcon.ToolTipText = "IP: " + GetIPAdress().ToString() + "\n" + (string)System.Windows.Application.Current.MainWindow.FindResource("ConnectedDevice") + nazwa_urzadzenia;
+                    // this.Icon = connectedIcon;
                     button_advertise.IsEnabled = false;
                     if ((string)button_listen.Content == "Listening")
                         button_listen.Content = "Disconnect";
@@ -141,13 +155,17 @@ namespace TCPSenderWPF
                     //Zamykanie wszystkich okien oprócz MainWindow
                     for (int i = App.Current.Windows.Count - 1; i > 0; i--)
                         App.Current.Windows[i].Hide();
-                    connected_device.Text = "None";
-                    if (trayIcon != null)
+                    connected_device.Text = "";
+                    taskbarIcon.ToolTipText = "IP: " + CommClientPC.GetLocalIPAddress().ToString() + "\n" + (string)System.Windows.Application.Current.MainWindow.FindResource("ConnectedDevice") + connected_device.Text;
+                    // if (trayIcon != null)
+                    if (taskbarIcon != null)
                     {
                         try
                         {
-                            trayIcon.ChangeIcon("Ikony/d2dnc.ico", "not ready");
-                            this.Icon = notconnectedIcon;
+                            //trayIcon.ChangeIcon("Ikony/d2dnc.ico", "not ready");
+                            //this.Icon = notconnectedIcon;
+                            taskbarIcon.Icon = notconnectedIcon;
+                            taskbarIcon.Tag = "not ready";
                         }
                         catch (Exception e)
                         {
@@ -170,6 +188,7 @@ namespace TCPSenderWPF
                 () =>
                 {
                     connected_device.Text = name;
+                    taskbarIcon.ToolTipText = "IP: " + CommClientPC.GetLocalIPAddress().ToString() + "\n" + (string)System.Windows.Application.Current.MainWindow.FindResource("ConnectedDevice") + connected_device.Text;
                 });
         }
 
@@ -306,7 +325,8 @@ namespace TCPSenderWPF
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            trayIcon.DisposeIcon();
+            // trayIcon.DisposeIcon();
+            taskbarIcon.Dispose();
             if (client!= null)
             {
                 client.Close();
@@ -411,6 +431,14 @@ namespace TCPSenderWPF
                 languageDictionary.Source = new Uri("\\LanguageResources\\MainWindow.en-EN.xaml", UriKind.Relative);
 
                 this.Resources.MergedDictionaries.Add(languageDictionary);
+            }
+        }
+
+        private void AcrylicWindow_StateChanged(object sender, EventArgs e)
+        {
+            if (WindowState is WindowState.Minimized)
+            {
+                this.Hide();
             }
         }
     }
